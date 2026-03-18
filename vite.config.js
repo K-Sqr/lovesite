@@ -11,6 +11,7 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
         memories: resolve(__dirname, 'memories.html'),
         timeline: resolve(__dirname, 'timeline.html'),
+        lovegpt: resolve(__dirname, 'lovegpt.html'),
       },
     },
   },

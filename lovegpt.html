@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Us Machina &mdash; LoveGPT &hearts;</title>
+  <meta name="description" content="LoveGPT — your personal relationship AI. Ask anything about us." />
+</head>
+<body>
+
+  <!-- ═══ NAVBAR ═══ -->
+  <nav class="site-nav" id="siteNav">
+    <a href="./index.html" class="nav-brand">&hearts; Us Machina</a>
+    <a href="./index.html" class="nav-link">Home</a>
+    <a href="./timeline.html" class="nav-link">Timeline</a>
+    <a href="./memories.html" class="nav-link">Memories</a>
+    <a href="./lovegpt.html" class="nav-link">LoveGPT</a>
+    <button class="theme-toggle" aria-label="Toggle theme">&#x1F319;</button>
+  </nav>
+
+  <div class="lovegpt-page">
+    <!-- Header -->
+    <div class="lovegpt-header">
+      <div class="lovegpt-logo">&#x2728;</div>
+      <h1>LoveGPT</h1>
+      <p class="lovegpt-subtitle">love in the machine</p>
+    </div>
+
+    <!-- Starter pills -->
+    <div class="lovegpt-starters" id="starters">
+      <button class="starter-pill" data-q="What does Tolu like to eat?">&#x1F35F; What does she like to eat?</button>
+      <button class="starter-pill" data-q="Remind us of our first date">&#x1F4F1; Remind us of our first date</button>
+      <button class="starter-pill" data-q="How was October for us?">&#x1F342; How was October for us?</button>
+      <button class="starter-pill" data-q="Suggest a date night idea">&#x1F3AC; Suggest a date night idea</button>
+      <button class="starter-pill" data-q="What are Emmanuel's promises?">&#x1F4DC; What are Emmanuel's promises?</button>
+      <button class="starter-pill" data-q="What did Tolu write about meeting me in person?">&#x1F917; What did she write about meeting me?</button>
+    </div>
+
+    <!-- Chat area -->
+    <div class="lovegpt-chat" id="chatArea">
+      <!-- Messages injected here -->
+    </div>
+
+    <!-- Input area -->
+    <div class="lovegpt-input-area">
+      <div class="lovegpt-input-wrap">
+        <input
+          type="text"
+          id="chatInput"
+          class="lovegpt-input"
+          placeholder="Ask LoveGPT anything..."
+          autocomplete="off"
+        />
+        <button class="lovegpt-send" id="sendBtn" aria-label="Send">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+      <p class="lovegpt-disclaimer">LoveGPT knows your story from the documents you shared. Responses are AI-generated.</p>
+    </div>
+  </div>
+
+  <script type="module" src="/src/lovegpt.js"></script>
+</body>
+</html>

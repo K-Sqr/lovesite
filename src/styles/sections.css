@@ -510,6 +510,52 @@ body { padding-top: 52px; }
   background: rgba(255, 77, 166, 0.06);
 }
 
+/* ── "I Still Love You" Overlay ── */
+.love-message-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.love-message-overlay.active {
+  opacity: 1;
+}
+
+.love-message-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem 3rem;
+  box-shadow: 0 8px 40px var(--shadow-pink);
+  text-align: center;
+  transform: scale(0.8);
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.love-message-overlay.active .love-message-card {
+  transform: scale(1);
+}
+
+.love-message-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  animation: pulse 1.2s infinite;
+}
+
+.love-message-text {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  color: var(--pink-deep);
+}
+
 /* ── Footer ── */
 .site-footer {
   padding: 1.5rem 1rem 1rem;

@@ -3,7 +3,8 @@ const STORAGE_KEY = 'aho_theme';
 function getPreferred() {
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored) return stored;
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  // Default to light on first visit
+  return 'light';
 }
 
 function apply(theme) {

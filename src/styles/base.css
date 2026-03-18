@@ -7,13 +7,30 @@
   --pink-bg: #ffe6f0;
   --pink-bg-alt: #fff0f5;
   --white: #ffffff;
+  --card-bg: rgba(255, 255, 255, 0.85);
   --shadow-pink: rgba(215, 38, 96, 0.12);
   --shadow-soft: rgba(215, 38, 96, 0.06);
+  --text-primary: #d72660;
+  --text-muted: rgba(215, 38, 96, 0.7);
   --font-display: 'Dancing Script', cursive, sans-serif;
   --font-body: 'Inter', sans-serif;
   --radius-sm: 12px;
   --radius-md: 20px;
   --radius-lg: 28px;
+}
+
+[data-theme="dark"] {
+  --pink-deep: #f087a8;
+  --pink-hot: #ff6bb5;
+  --pink-light: #9e4466;
+  --pink-bg: #1a1018;
+  --pink-bg-alt: #221520;
+  --white: #2a1c24;
+  --card-bg: rgba(42, 28, 36, 0.9);
+  --shadow-pink: rgba(255, 107, 181, 0.15);
+  --shadow-soft: rgba(255, 107, 181, 0.08);
+  --text-primary: #f5c2d4;
+  --text-muted: rgba(245, 194, 212, 0.6);
 }
 
 *,
@@ -32,10 +49,11 @@ html {
 body {
   font-family: var(--font-body);
   background: linear-gradient(135deg, var(--pink-bg) 0%, var(--pink-bg-alt) 100%);
-  color: var(--pink-deep);
+  color: var(--text-primary);
   min-height: 100vh;
   overflow-x: hidden;
   text-align: center;
+  transition: background 0.4s ease, color 0.4s ease;
 }
 
 h1, h2, h3 {

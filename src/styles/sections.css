@@ -74,7 +74,7 @@
 }
 
 #noBtn {
-  background: var(--white);
+  background: var(--card-bg);
   color: var(--pink-deep);
   border: 2px solid var(--pink-deep);
 }
@@ -98,7 +98,7 @@
   bottom: 10vh;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--card-bg);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: var(--radius-lg);
@@ -150,7 +150,7 @@
   position: relative;
   width: 45%;
   padding: 1.2rem 1.5rem;
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--card-bg);
   backdrop-filter: blur(6px);
   border-radius: var(--radius-sm);
   box-shadow: 0 2px 12px var(--shadow-soft);
@@ -232,7 +232,7 @@
   aspect-ratio: 1;
   border-radius: var(--radius-sm);
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--card-bg);
   border: 2px dashed var(--pink-light);
   display: flex;
   flex-direction: column;
@@ -294,7 +294,7 @@
   margin-top: 1.5rem;
   padding: 0.6rem 1.6rem;
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--card-bg);
   color: var(--pink-deep);
   text-decoration: none;
   font-weight: 600;
@@ -383,7 +383,7 @@
 }
 
 .verse-card {
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--card-bg);
   backdrop-filter: blur(8px);
   border-radius: var(--radius-lg);
   padding: clamp(1.2rem, 4vw, 2rem) clamp(1.5rem, 5vw, 2.5rem);
@@ -414,7 +414,7 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--card-bg);
   color: var(--pink-deep);
   font-size: 1.2rem;
   box-shadow: 0 2px 8px var(--shadow-soft);
@@ -433,10 +433,11 @@
   left: 0;
   right: 0;
   z-index: 400;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--card-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 1px 8px var(--shadow-soft);
+  transition: background 0.4s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -474,6 +475,40 @@
 
 /* Push page content below fixed nav */
 body { padding-top: 52px; }
+
+/* ── Theme Toggle ── */
+.theme-toggle {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0.3rem;
+  border-radius: 50%;
+  transition: transform 0.2s;
+  line-height: 1;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.2);
+}
+
+/* ── Skip Button ── */
+.skip-btn {
+  margin-top: 1.5rem;
+  padding: 0.4rem 1.2rem;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  transition: color 0.2s, background 0.2s;
+}
+
+.skip-btn:hover {
+  color: var(--pink-hot);
+  background: rgba(255, 77, 166, 0.06);
+}
 
 /* ── Footer ── */
 .site-footer {
@@ -554,7 +589,7 @@ body { padding-top: 52px; }
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--card-bg);
   backdrop-filter: blur(8px);
   box-shadow: 0 4px 16px var(--shadow-pink);
   display: flex;

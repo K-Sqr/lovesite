@@ -28,32 +28,39 @@ export function initButtons(onYes) {
       noBtn.textContent = noTexts[noClickCount];
     }
 
-    // On last message, hide the button
     if (noClickCount >= noTexts.length) {
       noBtn.style.opacity = '0';
       setTimeout(() => { noBtn.style.display = 'none'; }, 400);
       return;
     }
 
-    // Ensure button dimensions are measured before repositioning
-    const btnRect = noBtn.getBoundingClientRect();
-    const btnW = btnRect.width || 120;
-    const btnH = btnRect.height || 50;
-    const pad = 30;
+    // Switch to fixed positioning on first dodge
+    if (noBtn.style.position !== 'fixed') {
+      noBtn.style.position = 'fixed';
+      noBtn.style.zIndex = '400';
+      noBtn.style.maxWidth = '70vw';
+      noBtn.style.whiteSpace = 'nowrap';
+      noBtn.style.transition = 'left 0.3s ease, top 0.3s ease, opacity 0.4s ease';
+    }
 
-    // Spread across the full viewport, clamped to stay fully visible
-    const minX = pad;
-    const maxX = window.innerWidth - btnW - pad;
-    const minY = pad;
-    const maxY = window.innerHeight - btnH - pad;
+    // Wait for text reflow before measuring and repositioning
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const btnW = noBtn.offsetWidth;
+        const btnH = noBtn.offsetHeight;
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const pad = 20;
 
-    const x = minX + Math.random() * Math.max(0, maxX - minX);
-    const y = minY + Math.random() * Math.max(0, maxY - minY);
+        const maxX = Math.max(pad, vw - btnW - pad);
+        const maxY = Math.max(pad + 60, vh - btnH - pad);
 
-    noBtn.style.position = 'fixed';
-    noBtn.style.left = x + 'px';
-    noBtn.style.top = y + 'px';
-    noBtn.style.zIndex = '400';
-    noBtn.style.transition = 'left 0.25s ease, top 0.25s ease, opacity 0.4s ease';
+        const x = pad + Math.random() * (maxX - pad);
+        const y = 60 + Math.random() * (maxY - 60);
+
+        noBtn.style.left = Math.round(x) + 'px';
+        noBtn.style.top = Math.round(y) + 'px';
+      });
+    });
   });
 }

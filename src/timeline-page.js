@@ -8,6 +8,7 @@ import { initTimeline } from './modules/timeline.js';
 import { fullMilestones } from './data/milestones.js';
 import { initLoveCounter } from './modules/loveCounter.js';
 import { initNavbar } from './modules/navbar.js';
+import { initTheme } from './modules/theme.js';
 
 function calculateStats() {
   const statsContainer = document.getElementById('timelineStats');
@@ -48,6 +49,7 @@ function setupScrollReveal() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
   initNavbar();
   calculateStats();
   initTimeline(true);

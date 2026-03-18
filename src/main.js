@@ -2,7 +2,7 @@ import './styles/base.css';
 import './styles/sections.css';
 import './styles/animations.css';
 
-import { revealTextWithSparkles } from './modules/textReveal.js';
+import { revealTextWithSparkles, skipReveal } from './modules/textReveal.js';
 import { initButtons } from './modules/buttons.js';
 import { initTimeline } from './modules/timeline.js';
 import { initGallery } from './modules/gallery.js';
@@ -10,6 +10,7 @@ import { initVerseCarousel } from './modules/verses.js';
 import { initMusicPlayer } from './modules/musicPlayer.js';
 import { initLoveCounter } from './modules/loveCounter.js';
 import { initNavbar } from './modules/navbar.js';
+import { initTheme } from './modules/theme.js';
 
 const MESSAGE = "I would like to make this dream a reality with you as God stirs the waters of life, both stormy and still.\n\nI don\u2019t want to navigate them alone. I want you as my co-captain.\n\nWill you be my Boo? \u2764";
 
@@ -66,17 +67,29 @@ function unlockSections() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
   initNavbar();
   spawnFloatingHearts();
 
   const mainMessage = document.getElementById('mainMessage');
   const buttonGroup = document.getElementById('buttonGroup');
+  const skipBtn = document.getElementById('skipBtn');
 
-  revealTextWithSparkles(MESSAGE, mainMessage, () => {
+  function onRevealComplete() {
+    if (skipBtn) skipBtn.style.display = 'none';
     buttonGroup.style.display = 'flex';
     buttonGroup.classList.add('reveal');
     requestAnimationFrame(() => buttonGroup.classList.add('visible'));
-  });
+  }
+
+  if (skipBtn) {
+    skipBtn.addEventListener('click', () => {
+      skipBtn.style.display = 'none';
+      skipReveal();
+    });
+  }
+
+  revealTextWithSparkles(MESSAGE, mainMessage, onRevealComplete);
 
   initButtons(unlockSections);
   initTimeline();

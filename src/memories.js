@@ -6,10 +6,12 @@ import { fetchMemories, renderMemoryCard, setupLightbox } from './modules/memori
 import { uploadMemory } from './modules/upload.js';
 import { isAuthenticated, showPasscodeModal } from './modules/auth.js';
 import { initNavbar } from './modules/navbar.js';
+import { initTheme } from './modules/theme.js';
 
 let selectedFiles = [];
 
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
   initNavbar();
   const grid = document.getElementById('memoriesGrid');
   const emptyMsg = document.getElementById('memoriesEmpty');

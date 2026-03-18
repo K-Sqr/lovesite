@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Our Memories &hearts;</title>
+  <meta name="description" content="Our shared memory wall -- upload and browse our favourite moments." />
+  <script type="module" crossorigin src="/ahosite/assets/memories-BT3AP-2Q.js"></script>
+  <link rel="modulepreload" crossorigin href="/ahosite/assets/memoriesGallery-DzXO4EL8.js">
+  <link rel="stylesheet" crossorigin href="/ahosite/assets/memoriesGallery-rsUosPL4.css">
+  <link rel="stylesheet" crossorigin href="/ahosite/assets/memories-DtZH_A0H.css">
+</head>
+<body>
+
+  <div class="memories-page">
+    <!-- Header -->
+    <div class="memories-header">
+      <h1>Our Memories</h1>
+      <div class="memories-header-actions">
+        <a href="./index.html" class="back-link">&larr; Back to story</a>
+        <button class="upload-btn" id="uploadToggle">+ Add Memory</button>
+      </div>
+    </div>
+
+    <!-- Upload Panel -->
+    <div class="upload-panel" id="uploadPanel">
+      <div class="upload-drop-zone" id="dropZone">
+        <span class="drop-icon">&#x1F4F7;</span>
+        <p>Tap to select photos or drag & drop</p>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" multiple hidden />
+      <div class="upload-preview-list" id="previewList"></div>
+      <div class="upload-progress" id="uploadProgress">
+        <div class="upload-progress-bar" id="progressBar"></div>
+      </div>
+      <p class="upload-status" id="uploadStatus"></p>
+      <div class="upload-actions">
+        <button class="upload-cancel" id="uploadCancel">Cancel</button>
+        <button class="upload-submit" id="uploadSubmit" disabled>Upload</button>
+      </div>
+    </div>
+
+    <!-- Gallery Grid -->
+    <div class="memories-grid" id="memoriesGrid"></div>
+    <div class="memories-empty" id="memoriesEmpty" style="display:none">
+      No memories yet -- be the first to add one!
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+    <img id="lightbox-img" src="" alt="" />
+    <p class="lightbox-caption" id="lightbox-caption"></p>
+  </div>
+
+</body>
+</html>

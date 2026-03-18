@@ -14,8 +14,15 @@ const starters = document.getElementById('starters');
 let history = [];
 let isLoading = false;
 
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
 function formatReply(text) {
-  return text
+  const escaped = escapeHtml(text);
+  return escaped
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
     .replace(/\n\n/g, '</p><p>')

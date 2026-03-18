@@ -2,3 +2,18 @@ node_modules/
 dist/
 .DS_Store
 *.local
+
+# Environment & secrets
+.env
+.env.*
+.env.local
+.env.production
+
+# Firebase
+firebase-debug.log
+firebase-debug.*.log
+.firebase/
+functions/node_modules/
+
+# OS
+Thumbs.db

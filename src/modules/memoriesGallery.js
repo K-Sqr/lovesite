@@ -20,10 +20,21 @@ export function renderMemoryCard(memory) {
   const card = document.createElement('div');
   card.className = 'gallery-card reveal';
   card.dataset.id = memory.id;
-  card.innerHTML = `
-    <img src="${memory.url}" alt="${memory.caption || 'Memory'}" loading="lazy" />
-    ${memory.caption ? `<div class="caption">${memory.caption}</div>` : ''}
-  `;
+
+  const img = document.createElement('img');
+  const safeUrl = (memory.url && /^https:\/\//.test(memory.url)) ? memory.url : '';
+  img.src = safeUrl;
+  img.alt = memory.caption || 'Memory';
+  img.loading = 'lazy';
+  card.appendChild(img);
+
+  if (memory.caption) {
+    const caption = document.createElement('div');
+    caption.className = 'caption';
+    caption.textContent = memory.caption;
+    card.appendChild(caption);
+  }
+
   return card;
 }
 

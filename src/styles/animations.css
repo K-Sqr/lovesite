@@ -1,0 +1,155 @@
+/* ── Heart Pulse ── */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* ── Graffiti Fall ── */
+.graffiti {
+  position: absolute;
+  font-size: 2.5em;
+  color: var(--pink-hot);
+  opacity: 0.8;
+  text-shadow: 2px 2px 8px var(--pink-bg-alt);
+  animation: graffiti-fall 2.5s linear forwards;
+}
+
+@keyframes graffiti-fall {
+  0% { opacity: 0.8; transform: translateY(-50px) scale(1) rotate(0deg); }
+  50% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(100vh) scale(1.2) rotate(15deg); }
+}
+
+/* ── Sparkle ── */
+.glitter {
+  color: var(--pink-deep);
+  position: relative;
+  text-shadow:
+    0 0 6px rgba(255, 182, 193, 0.6),
+    0 0 14px rgba(255, 77, 166, 0.25);
+}
+
+.glitter span {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
+  transition: opacity 140ms ease, transform 260ms cubic-bezier(.2, .8, .2, 1);
+  will-change: opacity, transform;
+}
+
+.sparkle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 255, 255, 0.95),
+    rgba(255, 214, 232, 0.9) 40%,
+    var(--pink-hot) 70%
+  );
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.6);
+  animation: sparkle-anim 700ms ease-out forwards;
+  filter: drop-shadow(0 0 6px var(--pink-light));
+  z-index: 30;
+}
+
+.sparkle.large {
+  width: 12px;
+  height: 12px;
+  animation-duration: 900ms;
+}
+
+.sparkle.warm {
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 255, 255, 0.9),
+    rgba(255, 182, 193, 0.9) 40%,
+    var(--pink-deep) 70%
+  );
+}
+
+@keyframes sparkle-anim {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(0.6) translateY(0); }
+  60% { opacity: 1; transform: translate(-50%, -100%) scale(1.2); }
+  100% { opacity: 0; transform: translate(-50%, -140%) scale(0.2); }
+}
+
+/* ── Section Reveal ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal[data-delay="1"] { transition-delay: 0.1s; }
+.reveal[data-delay="2"] { transition-delay: 0.2s; }
+.reveal[data-delay="3"] { transition-delay: 0.3s; }
+.reveal[data-delay="4"] { transition-delay: 0.4s; }
+
+/* ── Timeline Entry Slide ── */
+.timeline-entry {
+  opacity: 0;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.timeline-entry:nth-child(odd) {
+  transform: translateX(-30px);
+}
+
+.timeline-entry:nth-child(even) {
+  transform: translateX(30px);
+}
+
+.timeline-entry.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ── Floating Hearts Background ── */
+@keyframes float-up {
+  0% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.12;
+  }
+  90% {
+    opacity: 0.12;
+  }
+  100% {
+    transform: translateY(-10vh) rotate(25deg);
+    opacity: 0;
+  }
+}
+
+/* ── Music Pulse ── */
+@keyframes music-pulse {
+  0%, 100% { box-shadow: 0 4px 16px var(--shadow-pink); }
+  50% { box-shadow: 0 4px 24px rgba(255, 77, 166, 0.35); }
+}
+
+/* ── Accessibility: Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .floating-heart {
+    display: none;
+  }
+
+  .sparkle {
+    display: none;
+  }
+}

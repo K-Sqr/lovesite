@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --pink-deep: #d72660;
+  --pink-hot: #ff4da6;
+  --pink-light: #ffb6c1;
+  --pink-bg: #ffe6f0;
+  --pink-bg-alt: #fff0f5;
+  --white: #ffffff;
+  --shadow-pink: rgba(215, 38, 96, 0.12);
+  --shadow-soft: rgba(215, 38, 96, 0.06);
+  --font-display: 'Dancing Script', cursive, sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  background: linear-gradient(135deg, var(--pink-bg) 0%, var(--pink-bg-alt) 100%);
+  color: var(--pink-deep);
+  min-height: 100vh;
+  overflow-x: hidden;
+  text-align: center;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}

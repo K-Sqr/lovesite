@@ -1,0 +1,17 @@
+export const noTexts = [
+  'Are you sure?',
+  'Really?',
+  'Pretty please?',
+  'I do really love you!',
+  'I will be your second pair of eyes, or even, first!',
+  'I brought flowers \u{1F339}',
+  'You make my days',
+  'Abeg na!',
+  "Can't SEE us together?",
+  'Fine geh, please now',
+  'se na because my socks get hole?',
+  'Still no?',
+  'You sure?',
+  'two is better than one',
+  'oops I wonder where the "no" went',
+];

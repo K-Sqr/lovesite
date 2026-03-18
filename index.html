@@ -8,6 +8,14 @@
 </head>
 <body>
 
+  <!-- ═══ NAVBAR ═══ -->
+  <nav class="site-nav" id="siteNav">
+    <a href="./index.html" class="nav-brand">&hearts; Lovesite</a>
+    <a href="./index.html" class="nav-link">Home</a>
+    <a href="./timeline.html" class="nav-link">Timeline</a>
+    <a href="./memories.html" class="nav-link">Memories</a>
+  </nav>
+
   <!-- Floating Hearts Background -->
   <div id="hearts-bg"></div>
 
@@ -54,15 +62,19 @@
     </div>
   </section>
 
+  <!-- ═══ LOVE COUNTER ═══ -->
+  <div class="love-counter locked" id="counterSection">
+    <div id="loveCounter"></div>
+  </div>
+
   <!-- ═══ FOOTER ═══ -->
   <footer class="site-footer locked" id="footerSection">
-    <p>Made with <span>&hearts;</span> and a little bit of code</p>
+    <p>Made with <span class="heart-icon">&hearts;</span> and a little bit of code</p>
   </footer>
 
   <!-- ═══ MUSIC ═══ -->
   <button class="music-toggle" id="musicToggle" aria-label="Toggle music">&#x1F507;</button>
   <audio id="bgMusic" preload="none">
-    <!-- Drop your audio file in public/music/ and update the src -->
     <source src="" type="audio/mpeg" />
   </audio>
 

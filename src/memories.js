@@ -5,10 +5,12 @@ import './styles/memories.css';
 import { fetchMemories, renderMemoryCard, setupLightbox } from './modules/memoriesGallery.js';
 import { uploadMemory } from './modules/upload.js';
 import { isAuthenticated, showPasscodeModal } from './modules/auth.js';
+import { initNavbar } from './modules/navbar.js';
 
 let selectedFiles = [];
 
 document.addEventListener('DOMContentLoaded', () => {
+  initNavbar();
   const grid = document.getElementById('memoriesGrid');
   const emptyMsg = document.getElementById('memoriesEmpty');
   const uploadToggle = document.getElementById('uploadToggle');

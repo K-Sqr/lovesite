@@ -1,10 +1,10 @@
-import { milestones, getPreviewMilestones } from '../data/milestones.js';
+import { mainMilestones, fullMilestones } from '../data/milestones.js';
 
 export function initTimeline(full = false) {
   const container = document.querySelector('.timeline');
   if (!container) return;
 
-  const items = full ? milestones : getPreviewMilestones();
+  const items = full ? fullMilestones : mainMilestones;
 
   items.forEach((m, i) => {
     const entry = document.createElement('div');

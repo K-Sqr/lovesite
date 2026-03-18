@@ -5,7 +5,9 @@ import './styles/memories.css';
 import './styles/timeline-page.css';
 
 import { initTimeline } from './modules/timeline.js';
-import { milestones } from './data/milestones.js';
+import { fullMilestones } from './data/milestones.js';
+import { initLoveCounter } from './modules/loveCounter.js';
+import { initNavbar } from './modules/navbar.js';
 
 function calculateStats() {
   const statsContainer = document.getElementById('timelineStats');
@@ -27,7 +29,7 @@ function calculateStats() {
       <div class="stat-label">months</div>
     </div>
     <div class="stat-card reveal" data-delay="3">
-      <div class="stat-number">${milestones.length}</div>
+      <div class="stat-number">${fullMilestones.length}</div>
       <div class="stat-label">milestones</div>
     </div>
   `;
@@ -46,7 +48,9 @@ function setupScrollReveal() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  initNavbar();
   calculateStats();
   initTimeline(true);
+  initLoveCounter();
   requestAnimationFrame(() => setTimeout(setupScrollReveal, 50));
 });

@@ -426,18 +426,124 @@
   transform: scale(1.1);
 }
 
+/* ── Navbar ── */
+.site-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 400;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 1px 8px var(--shadow-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.8rem, 3vw, 2rem);
+  padding: 0.6rem 1rem;
+}
+
+.nav-brand {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--pink-deep);
+  text-decoration: none;
+  margin-right: auto;
+}
+
+.nav-link {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--pink-deep);
+  text-decoration: none;
+  padding: 0.35rem 0.7rem;
+  border-radius: var(--radius-sm);
+  transition: background 0.2s, color 0.2s;
+}
+
+.nav-link:hover {
+  background: rgba(255, 77, 166, 0.08);
+}
+
+.nav-link.active {
+  background: rgba(255, 77, 166, 0.12);
+  color: var(--pink-hot);
+}
+
+/* Push page content below fixed nav */
+body { padding-top: 52px; }
+
 /* ── Footer ── */
 .site-footer {
-  padding: 2rem 1rem;
+  padding: 1.5rem 1rem 1rem;
   text-align: center;
   font-size: 0.9rem;
   color: var(--pink-hot);
   font-family: var(--font-display);
 }
 
-.site-footer span {
+.site-footer .heart-icon {
   animation: pulse 1.2s infinite;
   display: inline-block;
+}
+
+/* ── Love Counter ── */
+.love-counter {
+  padding: 1rem 1rem 2rem;
+  text-align: center;
+}
+
+.counter-label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+  color: var(--pink-deep);
+  opacity: 0.75;
+  margin-bottom: 0.5rem;
+}
+
+.counter-digits {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.counter-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 36px;
+}
+
+.counter-num {
+  font-family: var(--font-body);
+  font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+  font-weight: 700;
+  color: var(--pink-hot);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.counter-tag {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--pink-deep);
+  opacity: 0.55;
+  margin-top: 0.15rem;
+}
+
+.counter-sep {
+  font-size: 1.2rem;
+  color: var(--pink-light);
+  padding: 0 0.1rem;
+  align-self: flex-start;
+  margin-top: 0.1rem;
 }
 
 /* ── Music Player ── */
@@ -522,5 +628,19 @@
     right: 1rem;
     width: 44px;
     height: 44px;
+  }
+
+  .site-nav {
+    gap: 0.4rem;
+    padding: 0.5rem 0.6rem;
+  }
+
+  .nav-brand {
+    font-size: 0.95rem;
+  }
+
+  .nav-link {
+    font-size: 0.78rem;
+    padding: 0.3rem 0.5rem;
   }
 }

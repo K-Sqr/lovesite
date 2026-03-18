@@ -24,25 +24,36 @@ export function initButtons(onYes) {
     sendResponse('no');
     noClickCount++;
 
-    const btnW = noBtn.offsetWidth;
-    const btnH = noBtn.offsetHeight;
-    const pad = 20;
+    if (noClickCount < noTexts.length) {
+      noBtn.textContent = noTexts[noClickCount];
+    }
+
+    // On last message, hide the button
+    if (noClickCount >= noTexts.length) {
+      noBtn.style.opacity = '0';
+      setTimeout(() => { noBtn.style.display = 'none'; }, 400);
+      return;
+    }
+
+    // Ensure button dimensions are measured before repositioning
+    const btnRect = noBtn.getBoundingClientRect();
+    const btnW = btnRect.width || 120;
+    const btnH = btnRect.height || 50;
+    const pad = 30;
+
+    // Spread across the full viewport, clamped to stay fully visible
+    const minX = pad;
     const maxX = window.innerWidth - btnW - pad;
+    const minY = pad;
     const maxY = window.innerHeight - btnH - pad;
-    const x = Math.max(pad, Math.random() * maxX);
-    const y = Math.max(pad, Math.random() * maxY);
+
+    const x = minX + Math.random() * Math.max(0, maxX - minX);
+    const y = minY + Math.random() * Math.max(0, maxY - minY);
 
     noBtn.style.position = 'fixed';
     noBtn.style.left = x + 'px';
     noBtn.style.top = y + 'px';
     noBtn.style.zIndex = '400';
-    noBtn.style.transition = 'left 0.3s ease, top 0.3s ease';
-
-    if (noClickCount < noTexts.length) {
-      noBtn.textContent = noTexts[noClickCount];
-    }
-    if (noClickCount >= noTexts.length) {
-      noBtn.style.display = 'none';
-    }
+    noBtn.style.transition = 'left 0.25s ease, top 0.25s ease, opacity 0.4s ease';
   });
 }

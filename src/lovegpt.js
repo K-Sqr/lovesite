@@ -4,7 +4,7 @@ import './styles/lovegpt.css';
 import { initNavbar } from './modules/navbar.js';
 import { initTheme } from './modules/theme.js';
 
-const FUNCTION_URL = 'https://us-central1-lovesite-1540e.cloudfunctions.net/lovegpt';
+const FUNCTION_URL = 'https://lovegpt-osmy5pclpq-uc.a.run.app';
 
 const chatArea = document.getElementById('chatArea');
 const chatInput = document.getElementById('chatInput');

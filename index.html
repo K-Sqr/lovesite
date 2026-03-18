@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Our Love Story &hearts;</title>
+  <meta name="description" content="A love story told through code, faith, and a little bit of magic." />
+  <script type="module" crossorigin src="/ahosite/assets/index-C6e_bAQb.js"></script>
+  <link rel="stylesheet" crossorigin href="/ahosite/assets/index-CXEnlU1T.css">
+</head>
+<body>
+
+  <!-- Floating Hearts Background -->
+  <div id="hearts-bg"></div>
+
+  <!-- Graffiti Rain Overlay -->
+  <div id="graffiti-container"></div>
+
+  <!-- Floating Verse (celebration) -->
+  <div id="verse-container"></div>
+
+  <!-- ═══ HERO ═══ -->
+  <section class="section hero" id="hero">
+    <h1 id="mainMessage" class="romantic-title"></h1>
+    <div class="button-group" id="buttonGroup" style="display: none;">
+      <button id="yesBtn">Yes <span class="heart">&#x1F496;</span></button>
+      <button id="noBtn">No &#x1F645;&#x200D;&#x2640;&#xFE0F;</button>
+    </div>
+  </section>
+
+  <!-- ═══ TIMELINE ═══ -->
+  <section class="section timeline-section locked" id="timelineSection">
+    <h2 class="section-title reveal">Our Story So Far</h2>
+    <div class="timeline">
+      <!-- entries injected by JS -->
+    </div>
+  </section>
+
+  <!-- ═══ GALLERY ═══ -->
+  <section class="section gallery-section locked" id="gallerySection">
+    <h2 class="section-title reveal">Memories</h2>
+    <div class="gallery-grid">
+      <!-- cards injected by JS -->
+    </div>
+  </section>
+
+  <!-- ═══ VERSES ═══ -->
+  <section class="section verses-section locked" id="versesSection">
+    <h2 class="section-title reveal">Words of Love</h2>
+    <div class="verse-carousel">
+      <div class="verse-card"></div>
+    </div>
+    <div class="verse-nav">
+      <button id="versePrev" aria-label="Previous verse">&larr;</button>
+      <button id="verseNext" aria-label="Next verse">&rarr;</button>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="site-footer locked" id="footerSection">
+    <p>Made with <span>&hearts;</span> and a little bit of code</p>
+  </footer>
+
+  <!-- ═══ MUSIC ═══ -->
+  <button class="music-toggle" id="musicToggle" aria-label="Toggle music">&#x1F507;</button>
+  <audio id="bgMusic" preload="none">
+    <!-- Drop your audio file in public/music/ and update the src -->
+    <source src="" type="audio/mpeg" />
+  </audio>
+
+  <!-- ═══ LIGHTBOX ═══ -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+    <img id="lightbox-img" src="" alt="" />
+    <p class="lightbox-caption" id="lightbox-caption"></p>
+  </div>
+
+</body>
+</html>

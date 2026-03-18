@@ -77,6 +77,15 @@
   background: var(--card-bg);
   color: var(--pink-deep);
   border: 2px solid var(--pink-deep);
+  padding: clamp(0.8em, 2vw, 1.2em) clamp(1.5em, 4vw, 2.5em);
+  font-size: clamp(1em, 2.5vw, 1.3em);
+  font-family: inherit;
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 16px var(--shadow-pink);
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+  white-space: nowrap;
 }
 
 .heart {

@@ -1,43 +1,45 @@
-const placeholderCount = 6;
+import { fetchMemories, renderMemoryCard, setupLightbox } from './memoriesGallery.js';
+
+const PREVIEW_COUNT = 6;
 
 export function initGallery() {
   const grid = document.querySelector('.gallery-grid');
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImg = document.getElementById('lightbox-img');
-  const lightboxCaption = document.getElementById('lightbox-caption');
-  const lightboxClose = document.getElementById('lightbox-close');
   if (!grid) return;
 
-  for (let i = 0; i < placeholderCount; i++) {
+  setupLightbox(grid);
+  loadPreview(grid);
+}
+
+async function loadPreview(grid) {
+  const memories = await fetchMemories(PREVIEW_COUNT);
+
+  grid.innerHTML = '';
+
+  if (memories.length > 0) {
+    memories.forEach((m, i) => {
+      const card = renderMemoryCard(m);
+      card.classList.add('reveal');
+      card.setAttribute('data-delay', String((i % 4) + 1));
+      grid.appendChild(card);
+    });
+  }
+
+  const remaining = PREVIEW_COUNT - memories.length;
+  for (let i = 0; i < remaining; i++) {
     const card = document.createElement('div');
     card.className = 'gallery-card placeholder reveal';
-    card.setAttribute('data-delay', String((i % 4) + 1));
+    card.setAttribute('data-delay', String(((memories.length + i) % 4) + 1));
     grid.appendChild(card);
   }
 
-  if (lightbox && lightboxClose) {
-    lightboxClose.addEventListener('click', closeLightbox);
-    lightbox.addEventListener('click', (e) => {
-      if (e.target === lightbox) closeLightbox();
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeLightbox();
-    });
-  }
+  addViewAllLink(grid);
+}
 
-  function closeLightbox() {
-    if (!lightbox) return;
-    lightbox.classList.remove('active');
-  }
-
-  grid.addEventListener('click', (e) => {
-    const card = e.target.closest('.gallery-card:not(.placeholder)');
-    if (!card || !lightbox) return;
-    const img = card.querySelector('img');
-    if (!img) return;
-    lightboxImg.src = img.src;
-    lightboxImg.alt = img.alt || '';
-    lightboxCaption.textContent = card.querySelector('.caption')?.textContent || '';
-    lightbox.classList.add('active');
-  });
+function addViewAllLink(grid) {
+  const link = document.createElement('a');
+  link.href = './memories.html';
+  link.className = 'view-all-link reveal';
+  link.setAttribute('data-delay', '2');
+  link.textContent = 'View all memories \u2192';
+  grid.parentElement.appendChild(link);
 }

@@ -10,11 +10,19 @@
     "preview": "vite preview",
     "deploy": "vite build && gh-pages -d dist"
   },
-  "keywords": ["love", "romantic", "creative", "animation"],
+  "keywords": [
+    "love",
+    "romantic",
+    "creative",
+    "animation"
+  ],
   "author": "",
   "license": "MIT",
   "devDependencies": {
     "gh-pages": "^6.3.0",
     "vite": "^8.0.0"
+  },
+  "dependencies": {
+    "firebase": "^12.10.0"
   }
 }

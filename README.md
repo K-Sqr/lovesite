@@ -1,4 +1,4 @@
-# Lovesite
+# Us Machina
 
 A romantic love story website built with vanilla JavaScript, CSS animations, and a whole lot of heart.
 

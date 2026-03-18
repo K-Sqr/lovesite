@@ -3,7 +3,6 @@ import { sendResponse } from './webhook.js';
 import { startGraffitiRain } from './graffiti.js';
 import { showFloatingVerses } from './verses.js';
 
-// Predefined zones as % of viewport -- guarantees full-screen spread
 const ZONES = [
   { left: '10%', top: '15%' },
   { left: '70%', top: '20%' },
@@ -24,6 +23,7 @@ const ZONES = [
 
 let noClickCount = 0;
 let lastZone = -1;
+let detached = false;
 
 function pickZone() {
   let idx;
@@ -70,30 +70,34 @@ export function initButtons(onYes) {
     sendResponse('no');
     noClickCount++;
 
-    // Update text
     if (noClickCount < noTexts.length) {
       noBtn.textContent = noTexts[noClickCount];
     }
 
-    // After 15 clicks: fade out, show love message
     if (noClickCount >= 15) {
       noBtn.style.opacity = '0';
       noBtn.style.pointerEvents = 'none';
       setTimeout(() => {
-        noBtn.style.display = 'none';
+        noBtn.remove();
         showLoveMessage();
       }, 400);
       return;
     }
 
-    // Move to a predefined zone using CSS percentages (no pixel math needed)
+    // Rip the button out of the flex container on the first dodge
+    // so it's truly free-floating on the page
+    if (!detached) {
+      detached = true;
+      document.body.appendChild(noBtn);
+      noBtn.style.position = 'fixed';
+      noBtn.style.zIndex = '400';
+      noBtn.style.maxWidth = '80vw';
+      noBtn.style.transform = 'translate(-50%, -50%)';
+      noBtn.style.transition = 'left 0.3s ease, top 0.3s ease, opacity 0.4s ease';
+    }
+
     const zone = pickZone();
-    noBtn.style.position = 'fixed';
     noBtn.style.left = zone.left;
     noBtn.style.top = zone.top;
-    noBtn.style.zIndex = '400';
-    noBtn.style.transform = 'translate(-50%, -50%)';
-    noBtn.style.transition = 'left 0.3s ease, top 0.3s ease, opacity 0.4s ease';
-    noBtn.style.maxWidth = '80vw';
   });
 }

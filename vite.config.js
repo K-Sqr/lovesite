@@ -3,7 +3,7 @@ import { resolve } from 'path';
 
 export default defineConfig({
   root: '.',
-  base: '/ahosite/',
+  base: '/lovesite/',
   build: {
     outDir: 'dist',
     rollupOptions: {

@@ -5,34 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Our Timeline &hearts;</title>
   <meta name="description" content="The full story of us -- every milestone, every moment." />
-  <script type="module" crossorigin src="/lovesite/assets/timeline-DZ7SGLmx.js"></script>
-  <link rel="modulepreload" crossorigin href="/lovesite/assets/sections-DM2VKbvV.js">
-  <link rel="modulepreload" crossorigin href="/lovesite/assets/timeline-CNc_2XC8.js">
-  <link rel="stylesheet" crossorigin href="/lovesite/assets/sections-rsUosPL4.css">
-  <link rel="stylesheet" crossorigin href="/lovesite/assets/timeline-889kUVNP.css">
+  <script type="module" crossorigin src="/lovesite/assets/timeline-BiPtlMug.js"></script>
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/navbar-C7ur9g_8.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/loveCounter-DnUPHvg2.js">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/navbar-CQuI_Dl0.css">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/loveCounter-889kUVNP.css">
   <link rel="stylesheet" crossorigin href="/lovesite/assets/timeline-GSN59KdI.css">
   <link rel="stylesheet" crossorigin href="/lovesite/assets/memories-DtZH_A0H.css">
 </head>
 <body>
 
+  <!-- ═══ NAVBAR ═══ -->
+  <nav class="site-nav" id="siteNav">
+    <a href="./index.html" class="nav-brand">&hearts; Lovesite</a>
+    <a href="./index.html" class="nav-link">Home</a>
+    <a href="./timeline.html" class="nav-link">Timeline</a>
+    <a href="./memories.html" class="nav-link">Memories</a>
+  </nav>
+
   <div class="timeline-page">
     <!-- Header -->
     <div class="timeline-page-header">
       <h1>Our Story</h1>
-      <a href="./index.html" class="back-link">&larr; Back home</a>
     </div>
     <p class="timeline-page-subtitle">Every chapter of us, from the very beginning</p>
 
     <!-- Stats -->
-    <div class="timeline-stats" id="timelineStats">
-      <!-- injected by JS -->
-    </div>
+    <div class="timeline-stats" id="timelineStats"></div>
 
     <!-- Full Timeline -->
-    <div class="timeline" id="fullTimeline">
-      <!-- entries injected by JS -->
+    <div class="timeline" id="fullTimeline"></div>
+
+    <!-- Love Counter -->
+    <div class="love-counter">
+      <div id="loveCounter"></div>
     </div>
   </div>
+
+  <footer class="site-footer">
+    <p>Made with <span class="heart-icon">&hearts;</span> and a little bit of code</p>
+  </footer>
 
 </body>
 </html>

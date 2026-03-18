@@ -5,14 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Our Love Story &hearts;</title>
   <meta name="description" content="A love story told through code, faith, and a little bit of magic." />
-  <script type="module" crossorigin src="/lovesite/assets/main-vg4ktX9z.js"></script>
-  <link rel="modulepreload" crossorigin href="/lovesite/assets/sections-DM2VKbvV.js">
+  <script type="module" crossorigin src="/lovesite/assets/main-BbDrsSQs.js"></script>
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/navbar-C7ur9g_8.js">
   <link rel="modulepreload" crossorigin href="/lovesite/assets/memoriesGallery-NtoFWxlH.js">
-  <link rel="modulepreload" crossorigin href="/lovesite/assets/timeline-CNc_2XC8.js">
-  <link rel="stylesheet" crossorigin href="/lovesite/assets/sections-rsUosPL4.css">
-  <link rel="stylesheet" crossorigin href="/lovesite/assets/timeline-889kUVNP.css">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/loveCounter-DnUPHvg2.js">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/navbar-CQuI_Dl0.css">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/loveCounter-889kUVNP.css">
 </head>
 <body>
+
+  <!-- ═══ NAVBAR ═══ -->
+  <nav class="site-nav" id="siteNav">
+    <a href="./index.html" class="nav-brand">&hearts; Lovesite</a>
+    <a href="./index.html" class="nav-link">Home</a>
+    <a href="./timeline.html" class="nav-link">Timeline</a>
+    <a href="./memories.html" class="nav-link">Memories</a>
+  </nav>
 
   <!-- Floating Hearts Background -->
   <div id="hearts-bg"></div>
@@ -60,15 +68,19 @@
     </div>
   </section>
 
+  <!-- ═══ LOVE COUNTER ═══ -->
+  <div class="love-counter locked" id="counterSection">
+    <div id="loveCounter"></div>
+  </div>
+
   <!-- ═══ FOOTER ═══ -->
   <footer class="site-footer locked" id="footerSection">
-    <p>Made with <span>&hearts;</span> and a little bit of code</p>
+    <p>Made with <span class="heart-icon">&hearts;</span> and a little bit of code</p>
   </footer>
 
   <!-- ═══ MUSIC ═══ -->
   <button class="music-toggle" id="musicToggle" aria-label="Toggle music">&#x1F507;</button>
   <audio id="bgMusic" preload="none">
-    <!-- Drop your audio file in public/music/ and update the src -->
     <source src="" type="audio/mpeg" />
   </audio>
 

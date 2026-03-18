@@ -24,12 +24,19 @@ export function initButtons(onYes) {
     sendResponse('no');
     noClickCount++;
 
-    const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
-    const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 80) + 40;
+    const btnW = noBtn.offsetWidth;
+    const btnH = noBtn.offsetHeight;
+    const pad = 20;
+    const maxX = window.innerWidth - btnW - pad;
+    const maxY = window.innerHeight - btnH - pad;
+    const x = Math.max(pad, Math.random() * maxX);
+    const y = Math.max(pad, Math.random() * maxY);
+
     noBtn.style.position = 'fixed';
     noBtn.style.left = x + 'px';
     noBtn.style.top = y + 'px';
     noBtn.style.zIndex = '400';
+    noBtn.style.transition = 'left 0.3s ease, top 0.3s ease';
 
     if (noClickCount < noTexts.length) {
       noBtn.textContent = noTexts[noClickCount];

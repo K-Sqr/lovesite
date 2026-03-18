@@ -1,10 +1,12 @@
-import { milestones } from '../data/milestones.js';
+import { milestones, getPreviewMilestones } from '../data/milestones.js';
 
-export function initTimeline() {
+export function initTimeline(full = false) {
   const container = document.querySelector('.timeline');
   if (!container) return;
 
-  milestones.forEach((m, i) => {
+  const items = full ? milestones : getPreviewMilestones();
+
+  items.forEach((m, i) => {
     const entry = document.createElement('div');
     entry.className = 'timeline-entry reveal';
     entry.setAttribute('data-delay', String((i % 4) + 1));
@@ -16,4 +18,13 @@ export function initTimeline() {
     `;
     container.appendChild(entry);
   });
+
+  if (!full) {
+    const link = document.createElement('a');
+    link.href = './timeline.html';
+    link.className = 'view-all-link reveal';
+    link.setAttribute('data-delay', '2');
+    link.textContent = 'View full timeline \u2192';
+    container.parentElement.appendChild(link);
+  }
 }

@@ -8,6 +8,15 @@ import { isAuthenticated, showPasscodeModal } from './modules/auth.js';
 import { initNavbar } from './modules/navbar.js';
 import { initTheme } from './modules/theme.js';
 
+const LOCAL_PHOTOS = [
+  { id: 'local-1', url: './photos/IMG_5697.JPG', caption: '' },
+  { id: 'local-2', url: './photos/IMG_9651.jpg', caption: '' },
+  { id: 'local-3', url: './photos/IMG_9742.jpg', caption: '' },
+  { id: 'local-4', url: './photos/WhatsApp Image 2026-03-18 at 8.35.33 PM.jpeg', caption: '' },
+  { id: 'local-5', url: './photos/WhatsApp Image 2026-03-18 at 8.36.15 PM.jpeg', caption: '' },
+  { id: 'local-6', url: './photos/WhatsApp Image 2026-03-18 at 8.36.44 PM.jpeg', caption: '' },
+];
+
 let selectedFiles = [];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -31,13 +40,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function loadGallery() {
     grid.innerHTML = '';
-    const memories = await fetchMemories(100);
-    if (memories.length === 0) {
+    const uploaded = await fetchMemories(100);
+    const allMemories = [...LOCAL_PHOTOS, ...uploaded];
+    if (allMemories.length === 0) {
       emptyMsg.style.display = 'block';
       return;
     }
     emptyMsg.style.display = 'none';
-    memories.forEach((m, i) => {
+    allMemories.forEach((m, i) => {
       const card = renderMemoryCard(m);
       card.setAttribute('data-delay', String((i % 4) + 1));
       grid.appendChild(card);

@@ -22,7 +22,7 @@ export function renderMemoryCard(memory) {
   card.dataset.id = memory.id;
 
   const img = document.createElement('img');
-  const safeUrl = (memory.url && /^https:\/\//.test(memory.url)) ? memory.url : '';
+  const safeUrl = (memory.url && /^(https:\/\/|\.?\/)/.test(memory.url)) ? memory.url : '';
   img.src = safeUrl;
   img.alt = memory.caption || 'Memory';
   img.loading = 'lazy';

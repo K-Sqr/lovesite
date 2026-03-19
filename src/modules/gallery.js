@@ -2,6 +2,15 @@ import { fetchMemories, renderMemoryCard, setupLightbox } from './memoriesGaller
 
 const PREVIEW_COUNT = 6;
 
+const LOCAL_PHOTOS = [
+  { url: './photos/IMG_5697.JPG', caption: '' },
+  { url: './photos/IMG_9651.jpg', caption: '' },
+  { url: './photos/IMG_9742.jpg', caption: '' },
+  { url: './photos/WhatsApp Image 2026-03-18 at 8.35.33 PM.jpeg', caption: '' },
+  { url: './photos/WhatsApp Image 2026-03-18 at 8.36.15 PM.jpeg', caption: '' },
+  { url: './photos/WhatsApp Image 2026-03-18 at 8.36.44 PM.jpeg', caption: '' },
+];
+
 export function initGallery() {
   const grid = document.querySelector('.gallery-grid');
   if (!grid) return;
@@ -26,13 +35,34 @@ async function loadPreview(grid) {
 
   const remaining = PREVIEW_COUNT - memories.length;
   for (let i = 0; i < remaining; i++) {
-    const card = document.createElement('div');
-    card.className = 'gallery-card placeholder reveal';
+    const photo = LOCAL_PHOTOS[i % LOCAL_PHOTOS.length];
+    const card = renderLocalCard(photo);
+    card.classList.add('reveal');
     card.setAttribute('data-delay', String(((memories.length + i) % 4) + 1));
     grid.appendChild(card);
   }
 
   addViewAllLink(grid);
+}
+
+function renderLocalCard(photo) {
+  const card = document.createElement('div');
+  card.className = 'gallery-card';
+
+  const img = document.createElement('img');
+  img.src = photo.url;
+  img.alt = photo.caption || 'Memory';
+  img.loading = 'lazy';
+  card.appendChild(img);
+
+  if (photo.caption) {
+    const caption = document.createElement('div');
+    caption.className = 'caption';
+    caption.textContent = photo.caption;
+    card.appendChild(caption);
+  }
+
+  return card;
 }
 
 function addViewAllLink(grid) {

@@ -30,7 +30,7 @@
 }
 
 .glitter span {
-  display: inline-block;
+  display: inline; /* Prevent words from breaking mid-letter due to inline-block boxes */
   opacity: 0;
   transform: translateY(8px) scale(0.98);
   transition: opacity 140ms ease, transform 260ms cubic-bezier(.2, .8, .2, 1);

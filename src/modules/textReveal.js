@@ -33,9 +33,9 @@ export function revealTextWithSparkles(text, container, onComplete, charDelay = 
       if (line === '') return;
       for (const ch of line) {
         const span = document.createElement('span');
-        span.textContent = (ch === ' ') ? '\u00A0' : ch;
+        // Use normal spaces so the browser can wrap at word boundaries.
+        span.textContent = (ch === ' ') ? ' ' : ch;
         span.style.opacity = '1';
-        span.style.display = 'inline-block';
         container.appendChild(span);
       }
     });
@@ -63,7 +63,8 @@ export function revealTextWithSparkles(text, container, onComplete, charDelay = 
     }
 
     const span = document.createElement('span');
-    span.textContent = (ch === ' ') ? '\u00A0' : ch;
+    // Use normal spaces so the browser can wrap at word boundaries.
+    span.textContent = (ch === ' ') ? ' ' : ch;
     span.style.opacity = '0';
     span.style.transform = 'translateY(8px) scale(0.98)';
     container.appendChild(span);

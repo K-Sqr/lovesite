@@ -9,6 +9,7 @@ import { fullMilestones } from './data/milestones.js';
 import { initLoveCounter } from './modules/loveCounter.js';
 import { initNavbar } from './modules/navbar.js';
 import { initTheme } from './modules/theme.js';
+import { initMusicPlayer } from './modules/musicPlayer.js';
 
 function calculateStats() {
   const statsContainer = document.getElementById('timelineStats');
@@ -54,5 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
   calculateStats();
   initTimeline(true);
   initLoveCounter();
+  initMusicPlayer();
   requestAnimationFrame(() => setTimeout(setupScrollReveal, 50));
 });

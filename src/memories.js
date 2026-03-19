@@ -8,6 +8,7 @@ import { ensureAuthenticated } from './modules/auth.js';
 import { initNavbar } from './modules/navbar.js';
 import { initTheme } from './modules/theme.js';
 import { deleteMemory } from './modules/memoryAdmin.js';
+import { initMusicPlayer } from './modules/musicPlayer.js';
 
 const LOCAL_PHOTOS = [
   { id: 'local-1', url: './photos/IMG_5697.JPG', caption: '' },
@@ -23,6 +24,7 @@ let selectedFiles = [];
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   initNavbar();
+  initMusicPlayer();
   const grid = document.getElementById('memoriesGrid');
   const emptyMsg = document.getElementById('memoriesEmpty');
   const uploadToggle = document.getElementById('uploadToggle');

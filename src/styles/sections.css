@@ -664,6 +664,74 @@ body { padding-top: 52px; }
   animation: music-pulse 1.5s ease-in-out infinite;
 }
 
+/* ── Music Popup (mute hint) ── */
+.music-popup {
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  transform: translateX(-50%);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.music-popup.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.music-popup-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: var(--radius-lg);
+  padding: 0.9rem 1rem;
+  box-shadow: 0 8px 40px var(--shadow-soft);
+  text-align: center;
+  min-width: 240px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "title close"
+    "btn btn";
+  gap: 0.4rem 0.6rem;
+}
+
+.music-popup-title {
+  grid-area: title;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--pink-deep);
+  font-weight: 700;
+}
+
+.music-popup-close {
+  grid-area: close;
+  border: none;
+  background: transparent;
+  color: var(--pink-deep);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.music-popup-btn {
+  grid-area: btn;
+  border: 2px solid var(--pink-deep);
+  background: linear-gradient(135deg, var(--pink-hot), var(--pink-light));
+  color: var(--white);
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  min-height: 44px;
+  padding: 0 1.2rem;
+  cursor: pointer;
+}
+
+.music-popup-btn:active {
+  transform: translateY(1px);
+}
+
 /* ── Hidden Sections (pre-"Yes") ── */
 .locked {
   display: none;

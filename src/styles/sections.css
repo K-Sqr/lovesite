@@ -31,6 +31,17 @@
   line-height: 1.5;
 }
 
+/* ── Hero Tagline ── */
+.hero-tagline {
+  font-family: var(--font-display);
+  font-size: clamp(0.95rem, 2.6vw, 1.35rem);
+  color: var(--pink-hot);
+  margin-bottom: 0.75rem;
+  text-shadow: 0 2px 8px var(--pink-bg-alt);
+  max-width: 700px;
+  line-height: 1.2;
+}
+
 /* ── Response Section ── */
 .response-section {
   min-height: 50vh;

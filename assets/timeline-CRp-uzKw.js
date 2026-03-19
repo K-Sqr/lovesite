@@ -1,4 +1,4 @@
-import{n as e,t}from"./theme-CNK2W7vF.js";import{n,r,t as i}from"./loveCounter-SWwDK_U-.js";/* empty css                 */function a(){let e=document.getElementById(`timelineStats`);if(!e)return;let t=new Date(2025,8,13),n=new Date-t,i=Math.floor(n/(1e3*60*60*24));e.innerHTML=`
+import{n as e,t}from"./theme-CNK2W7vF.js";import{n,r,t as i}from"./loveCounter-8KZ_Jv1S.js";/* empty css                 */function a(){let e=document.getElementById(`timelineStats`);if(!e)return;let t=new Date(2025,8,13),n=new Date-t,i=Math.floor(n/(1e3*60*60*24));e.innerHTML=`
     <div class="stat-card reveal" data-delay="1">
       <div class="stat-number">${i}</div>
       <div class="stat-label">days together</div>

@@ -5,6 +5,16 @@ export function initMusicPlayer() {
 
   let playing = false;
 
+  function startPlaying() {
+    audio.play().then(() => {
+      playing = true;
+      toggle.textContent = '\u{1F3B5}';
+      toggle.classList.add('playing');
+    }).catch(() => {});
+  }
+
+  startPlaying();
+
   toggle.addEventListener('click', () => {
     if (playing) {
       audio.pause();

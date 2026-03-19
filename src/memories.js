@@ -53,11 +53,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const id = memory && memory.id;
       if (!id || String(id).startsWith('local-')) return;
 
-      const ok = await ensureAuthenticated();
-      if (!ok) return;
+      const authed = await ensureAuthenticated();
+      if (!authed) return;
 
-      const ok = window.confirm('Delete this memory?');
-      if (!ok) return;
+      const confirmed = window.confirm('Delete this memory?');
+      if (!confirmed) return;
 
       try {
         await deleteMemory(memory);

@@ -1,45 +1,48 @@
-const SESSION_KEY = 'aho_auth';
+import { auth } from './firebase.js';
+import { setPersistence, signInWithCustomToken, browserSessionPersistence } from 'firebase/auth';
 
-async function hashPasscode(passcode) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(passcode.trim().toLowerCase());
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-export function getStoredHash() {
-  return sessionStorage.getItem(SESSION_KEY);
-}
-
-export async function authenticate(passcode) {
-  const hash = await hashPasscode(passcode);
-  sessionStorage.setItem(SESSION_KEY, hash);
-  return hash;
-}
+// Reuse the LoveGPT Cloud Function URL.
+// It now supports `action: "verify-passcode"` for secure admin actions.
+const FUNCTION_URL = 'https://lovegpt-osmy5pclpq-uc.a.run.app';
 
 export function isAuthenticated() {
-  return !!sessionStorage.getItem(SESSION_KEY);
+  return !!auth.currentUser;
 }
 
-export function clearAuth() {
-  sessionStorage.removeItem(SESSION_KEY);
+export async function authenticateWithPasscode(passcode) {
+  const res = await fetch(FUNCTION_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'verify-passcode', passcode }),
+  });
+
+  if (!res.ok) {
+    return false;
+  }
+
+  const data = await res.json();
+  if (!data || !data.token) return false;
+
+  // Keep auth scoped to this browser session.
+  await setPersistence(auth, browserSessionPersistence);
+  await signInWithCustomToken(auth, data.token);
+  return true;
 }
 
-export function showPasscodeModal() {
+export async function showPasscodeModal() {
   return new Promise((resolve) => {
     const overlay = document.createElement('div');
     overlay.className = 'passcode-overlay';
     overlay.innerHTML = `
       <div class="passcode-modal">
         <h3>Enter Passcode</h3>
-        <p>Enter your shared passcode to upload memories</p>
+        <p>Enter your shared passcode to manage memories</p>
         <input type="password" class="passcode-input" placeholder="Passcode" autocomplete="off" />
         <div class="passcode-actions">
-          <button class="passcode-cancel">Cancel</button>
-          <button class="passcode-submit">Enter</button>
+          <button type="button" class="passcode-cancel">Cancel</button>
+          <button type="button" class="passcode-submit">Enter</button>
         </div>
-        <p class="passcode-error" style="display:none">Please enter a passcode</p>
+        <p class="passcode-error" style="display:none">Wrong passcode</p>
       </div>
     `;
     document.body.appendChild(overlay);
@@ -50,23 +53,38 @@ export function showPasscodeModal() {
     const cancelBtn = overlay.querySelector('.passcode-cancel');
     const errorMsg = overlay.querySelector('.passcode-error');
 
+    let closed = false;
     input.focus();
 
     function close(result) {
+      if (closed) return;
+      closed = true;
       overlay.classList.remove('active');
       setTimeout(() => overlay.remove(), 300);
       resolve(result);
     }
 
     async function submit() {
-      const val = input.value.trim();
-      if (!val) {
+      const passcode = input.value.trim();
+      if (!passcode) {
+        errorMsg.textContent = 'Please enter a passcode';
         errorMsg.style.display = 'block';
         input.focus();
         return;
       }
-      const hash = await authenticate(val);
-      close(hash);
+
+      submitBtn.disabled = true;
+      const ok = await authenticateWithPasscode(passcode);
+      submitBtn.disabled = false;
+
+      if (!ok) {
+        errorMsg.style.display = 'block';
+        errorMsg.textContent = 'Wrong passcode';
+        input.focus();
+        return;
+      }
+
+      close(true);
     }
 
     submitBtn.addEventListener('click', submit);
@@ -79,4 +97,10 @@ export function showPasscodeModal() {
       if (e.target === overlay) close(null);
     });
   });
+}
+
+export async function ensureAuthenticated() {
+  if (isAuthenticated()) return true;
+  const ok = await showPasscodeModal();
+  return ok === true;
 }

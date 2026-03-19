@@ -4,9 +4,12 @@ service firebase.storage {
   match /b/{bucket}/o {
     match /memories/{fileName} {
       allow read: if true;
-      allow create: if request.resource.size < 10 * 1024 * 1024
+      allow create: if request.auth != null
+                    && request.auth.uid == 'owner'
+                    && request.resource.size < 10 * 1024 * 1024
                     && request.resource.contentType.matches('image/.*');
-      allow update, delete: if false;
+      allow update: if false;
+      allow delete: if request.auth != null && request.auth.uid == 'owner';
     }
 
     match /{allPaths=**} {

@@ -16,10 +16,11 @@ export async function fetchMemories(maxItems = 50) {
   }
 }
 
-export function renderMemoryCard(memory) {
+export function renderMemoryCard(memory, { canDelete = false, onDelete = null } = {}) {
   const card = document.createElement('div');
   card.className = 'gallery-card reveal';
   card.dataset.id = memory.id;
+  if (memory.filename) card.dataset.filename = memory.filename;
 
   const img = document.createElement('img');
   const safeUrl = (memory.url && /^(https:\/\/|\.?\/)/.test(memory.url)) ? memory.url : '';
@@ -33,6 +34,18 @@ export function renderMemoryCard(memory) {
     caption.className = 'caption';
     caption.textContent = memory.caption;
     card.appendChild(caption);
+  }
+
+  if (canDelete && typeof onDelete === 'function') {
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.className = 'memory-delete-btn';
+    delBtn.textContent = 'Delete';
+    delBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      onDelete(memory);
+    });
+    card.appendChild(delBtn);
   }
 
   return card;

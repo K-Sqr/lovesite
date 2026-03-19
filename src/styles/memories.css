@@ -232,6 +232,27 @@
   gap: 1rem;
 }
 
+.memory-delete-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+  padding: 0.35rem 0.6rem;
+  border-radius: var(--radius-sm);
+  background: rgba(215, 38, 96, 0.92);
+  color: var(--white);
+  font-weight: 700;
+  font-size: 0.8rem;
+  box-shadow: 0 4px 16px rgba(215, 38, 96, 0.25);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.memory-delete-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(215, 38, 96, 0.3);
+}
+
 .memories-empty {
   text-align: center;
   padding: 4rem 1rem;

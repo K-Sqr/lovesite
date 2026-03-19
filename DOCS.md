@@ -57,7 +57,7 @@ After a successful proposal, the site was upgraded from a one-time artifact into
     │  Firebase Client  │   │  Firebase Cloud Function  │
     │  (Firestore +     │   │  (LoveGPT endpoint)       │
     │   Storage +       │   │                            │
-    │   Analytics)      │   │  Gemini 2.0 Flash API      │
+    │   Analytics)      │   │  Gemini 2.5 Flash API      │
     └──────────────────┘   │  + RAG knowledge base       │
                             └──────────────────────────┘
 ```

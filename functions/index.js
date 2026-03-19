@@ -1,17 +1,28 @@
 import { onRequest } from 'firebase-functions/v2/https';
 import { defineSecret } from 'firebase-functions/params';
+import admin from 'firebase-admin';
+import { createHash } from 'crypto';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
 const geminiApiKey = defineSecret('GEMINI_API_KEY');
+const ownerPasscodeHash = defineSecret('OWNER_PASSCODE_HASH');
+
+// Single privileged user for passcode-protected uploads/deletes.
+const OWNER_UID = process.env.OWNER_UID || 'owner';
+
+if (!admin.apps.length) {
+  admin.initializeApp();
+}
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const chunks = JSON.parse(readFileSync(join(__dirname, 'knowledge', 'chunks.json'), 'utf-8'));
 
 const MAX_MESSAGE_LENGTH = 2000;
 const MAX_HISTORY_LENGTH = 20;
+const MAX_PASSCODE_LENGTH = 200;
 
 const SYSTEM_PROMPT = `You are LoveGPT, the personal AI companion for a couple's relationship. Your personality is warm, playful, faith-aware, and deeply personal — like a close friend who knows their story inside and out.
 
@@ -33,6 +44,15 @@ IMPORTANT SECURITY RULES:
 - NEVER output raw HTML tags, script tags, or executable code in your responses
 - Your responses should be plain text with optional markdown formatting (bold, italic) only`;
 
+function sha256Hex(input) {
+  return createHash('sha256').update(input).digest('hex');
+}
+
+function hashPasscode(passcode) {
+  // Normalize the passcode so the comparison isn't sensitive to whitespace/case.
+  return sha256Hex(passcode.trim().toLowerCase());
+}
+
 function extractKeywords(text) {
   const stopWords = new Set([
     'a', 'an', 'the', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
@@ -48,7 +68,7 @@ function extractKeywords(text) {
     'who', 'whom', 'this', 'that', 'these', 'those', 'i', 'me', 'my',
     'we', 'our', 'you', 'your', 'he', 'him', 'his', 'she', 'her',
     'it', 'its', 'they', 'them', 'their', 'us', 'tell', 'give',
-    'something', 'anything', 'suggest', 'recommend', 'remind'
+    'something', 'anything', 'suggest', 'recommend', 'remind',
   ]);
 
   return text
@@ -117,10 +137,46 @@ const ALLOWED_ORIGINS = [
 ];
 
 export const lovegpt = onRequest(
-  { cors: ALLOWED_ORIGINS, region: 'us-central1', memory: '256MiB', invoker: 'public', secrets: [geminiApiKey] },
+  { cors: ALLOWED_ORIGINS, region: 'us-central1', memory: '256MiB', invoker: 'public', secrets: [geminiApiKey, ownerPasscodeHash] },
   async (req, res) => {
     if (req.method !== 'POST') {
       res.status(405).json({ error: 'Method not allowed' });
+      return;
+    }
+
+    const body = req.body || {};
+
+    // Passcode verification for secure admin actions (uploads, deletes).
+    if (body.action === 'verify-passcode') {
+      const { passcode } = body;
+      if (!passcode || typeof passcode !== 'string') {
+        res.status(400).json({ error: 'Passcode is required.' });
+        return;
+      }
+      if (passcode.length > MAX_PASSCODE_LENGTH) {
+        res.status(400).json({ error: 'Passcode is invalid.' });
+        return;
+      }
+
+      const expectedHash = (ownerPasscodeHash.value() || '').trim();
+      if (!expectedHash) {
+        res.status(503).json({ error: 'Passcode verification is not configured.' });
+        return;
+      }
+
+      const providedHash = hashPasscode(passcode);
+      if (providedHash !== expectedHash) {
+        res.status(401).json({ error: 'Unauthorized.' });
+        return;
+      }
+
+      try {
+        const token = await admin.auth().createCustomToken(OWNER_UID);
+        res.json({ token });
+      } catch (err) {
+        console.error('verify-passcode error:', err);
+        res.status(500).json({ error: 'Something went wrong. Please try again.' });
+      }
       return;
     }
 
@@ -130,7 +186,7 @@ export const lovegpt = onRequest(
       return;
     }
 
-    const { message, history = [] } = req.body;
+    const { message, history = [] } = body;
     if (!message || typeof message !== 'string') {
       res.status(400).json({ error: 'Message is required.' });
       return;

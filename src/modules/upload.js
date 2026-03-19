@@ -1,7 +1,7 @@
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, storage } from './firebase.js';
-import { getStoredHash, isAuthenticated, showPasscodeModal } from './auth.js';
+import { ensureAuthenticated } from './auth.js';
 
 function compressImage(file, maxWidth = 1200, quality = 0.82) {
   return new Promise((resolve) => {
@@ -30,21 +30,15 @@ function compressImage(file, maxWidth = 1200, quality = 0.82) {
 }
 
 export async function uploadMemory(file, caption, onProgress) {
-  if (!isAuthenticated()) {
-    const hash = await showPasscodeModal();
-    if (!hash) throw new Error('Authentication cancelled');
-  }
+  const ok = await ensureAuthenticated();
+  if (!ok) throw new Error('Authentication cancelled');
 
   const compressed = await compressImage(file);
   const filename = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
   const storageRef = ref(storage, `memories/${filename}`);
 
-  const metadata = {
-    customMetadata: { passcodeHash: getStoredHash() },
-  };
-
   return new Promise((resolve, reject) => {
-    const task = uploadBytesResumable(storageRef, compressed, metadata);
+    const task = uploadBytesResumable(storageRef, compressed);
 
     task.on('state_changed',
       (snapshot) => {
@@ -60,7 +54,6 @@ export async function uploadMemory(file, caption, onProgress) {
             caption: caption || '',
             filename,
             createdAt: serverTimestamp(),
-            passcodeHash: getStoredHash(),
           });
           resolve({ id: doc.id, url: downloadURL, caption });
         } catch (err) {

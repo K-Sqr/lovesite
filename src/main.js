@@ -61,6 +61,13 @@ function unlockSections() {
 
   initLoveCounter();
 
+  const timelineSection = document.getElementById('timelineSection');
+  if (timelineSection) {
+    setTimeout(() => {
+      timelineSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 250);
+  }
+
   requestAnimationFrame(() => {
     setTimeout(setupScrollReveal, 100);
   });

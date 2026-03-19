@@ -4,9 +4,10 @@ import './styles/memories.css';
 
 import { fetchMemories, renderMemoryCard, setupLightbox } from './modules/memoriesGallery.js';
 import { uploadMemory } from './modules/upload.js';
-import { isAuthenticated, showPasscodeModal } from './modules/auth.js';
+import { ensureAuthenticated } from './modules/auth.js';
 import { initNavbar } from './modules/navbar.js';
 import { initTheme } from './modules/theme.js';
+import { deleteMemory } from './modules/memoryAdmin.js';
 
 const LOCAL_PHOTOS = [
   { id: 'local-1', url: './photos/IMG_5697.JPG', caption: '' },
@@ -47,8 +48,29 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     emptyMsg.style.display = 'none';
+
+    async function handleDelete(memory) {
+      const id = memory && memory.id;
+      if (!id || String(id).startsWith('local-')) return;
+
+      const ok = await ensureAuthenticated();
+      if (!ok) return;
+
+      const ok = window.confirm('Delete this memory?');
+      if (!ok) return;
+
+      try {
+        await deleteMemory(memory);
+        await loadGallery();
+      } catch (err) {
+        console.error('Delete failed:', err);
+        window.alert('Delete failed. Please try again.');
+      }
+    }
+
     allMemories.forEach((m, i) => {
-      const card = renderMemoryCard(m);
+      const canDelete = !!m.id && !String(m.id).startsWith('local-');
+      const card = renderMemoryCard(m, { canDelete, onDelete: handleDelete });
       card.setAttribute('data-delay', String((i % 4) + 1));
       grid.appendChild(card);
     });
@@ -67,10 +89,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Upload toggle
   uploadToggle.addEventListener('click', async () => {
-    if (!isAuthenticated()) {
-      const hash = await showPasscodeModal();
-      if (!hash) return;
-    }
+    const ok = await ensureAuthenticated();
+    if (!ok) return;
     uploadPanel.classList.toggle('active');
     if (!uploadPanel.classList.contains('active')) resetUpload();
   });

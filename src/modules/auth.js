@@ -23,10 +23,15 @@ export async function authenticateWithPasscode(passcode) {
   const data = await res.json();
   if (!data || !data.token) return false;
 
-  // Keep auth scoped to this browser session.
-  await setPersistence(auth, browserSessionPersistence);
-  await signInWithCustomToken(auth, data.token);
-  return true;
+  try {
+    // Keep auth scoped to this browser session.
+    await setPersistence(auth, browserSessionPersistence);
+    await signInWithCustomToken(auth, data.token);
+    return true;
+  } catch (err) {
+    console.error('Custom token sign-in failed:', err);
+    return false;
+  }
 }
 
 export async function showPasscodeModal() {

@@ -247,7 +247,7 @@ User question
            │
            ▼
 ┌─────────────────────┐
-│  Gemini 2.0 Flash    │  ← system prompt + context + user question + conversation history
+│  Gemini 2.5 Flash    │  ← system prompt + context + user question + conversation history
 └──────────┬──────────┘
            │
            ▼

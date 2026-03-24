@@ -299,5 +299,40 @@
     "section": "health_details",
     "tags": ["health", "eyes", "contacts", "hydrate", "pet peeve", "disrespect"],
     "content": "Tolu's health details: Needs to hydrate a lot. Contacts worn for too long cause headaches. Needs breaks to rest her eyes. Very sensation-sensitive. Her biggest pet peeve is disrespect — and 'to be okay with things that are not okay (sitting in the fire and calling it warmth).'"
+  },
+  {
+    "id": "wedding_guest_list_peter_vasko",
+    "source": "both",
+    "section": "wedding_planning",
+    "tags": ["wedding", "guest list", "Peter Vasko", "marriage", "guests", "invite"],
+    "content": "Wedding planning detail: The first person named on their wedding guest list is Peter Vasko. (He is also the man from Tolu's August 2025 prophetic encounter who spoke about her future husband and asked to be invited to the wedding.)"
+  },
+  {
+    "id": "emmanuel_attraction_physical",
+    "source": "emmanuel",
+    "section": "intimacy_attraction",
+    "tags": ["attraction", "body", "beautiful", "compliments", "physical", "desire", "love"],
+    "content": "Emmanuel openly talks about Tolu's body with love and attraction — he finds her stunning, tells her so often, and their conversations include playful, affectionate, and affirming talk about her appearance and physical beauty as part of how he cherishes her in the relationship."
+  },
+  {
+    "id": "date_night_beyond_cooking",
+    "source": "both",
+    "section": "dates_activities",
+    "tags": ["date night", "dates", "ideas", "activities", "fun", "together", "weekend", "outing"],
+    "content": "Date night and shared-time ideas beyond cooking together: watching movies or a series episode cuddled up, museum or art exhibition visits, live music, theatre, road trips, games (video or board), dressing up for a nice restaurant, library or bookstore dates, amusement parks, quiet night walks, sports nights (e.g. watching their team's match highlights together), midweek mini-dates on FaceTime, and their planned rhythm of weekend intentional date nights with emotional check-ins."
+  },
+  {
+    "id": "current_book_tuesday_reading",
+    "source": "both",
+    "section": "routine_reading",
+    "tags": ["book", "reading", "Tuesday", "marriage prep", "together", "devotional", "couple"],
+    "content": "They are currently reading the book 'Things I Wish I Knew Before I Got Married' together. They read it every Tuesday as a couple rhythm — a practical, ongoing way to prepare their hearts and conversations for marriage."
+  },
+  {
+    "id": "sports_real_madrid",
+    "source": "both",
+    "section": "sports",
+    "tags": ["sports", "football", "soccer", "Real Madrid", "team", "highlights", "watch", "fan"],
+    "content": "They follow football (soccer) and support Real Madrid. Whenever Real Madrid plays, they watch the match highlights together. For questions about whether they like sports or which team they support: yes — they care about the sport in this shared way, and their club is Real Madrid."
   }
 ]

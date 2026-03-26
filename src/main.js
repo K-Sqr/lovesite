@@ -12,7 +12,7 @@ import { initLoveCounter } from './modules/loveCounter.js';
 import { initNavbar } from './modules/navbar.js';
 import { initTheme } from './modules/theme.js';
 
-const MESSAGE = "I would like to make this dream a reality with you as God stirs the waters of life, both stormy and still.\n\nI don\u2019t want to navigate them alone. I want you as my co-captain.\n\nWill you be my Boo? \u2764";
+const MESSAGE = "The question that started it all\n I would like to make this dream a reality with you as God stirs the waters of life, both stormy and still.\n\nI don\u2019t want to navigate them alone. I want you as my co-captain.\n\nWill you be my Boo? \u2764";
 
 function spawnFloatingHearts() {
   const container = document.getElementById('hearts-bg');

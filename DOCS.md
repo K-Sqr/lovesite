@@ -112,6 +112,25 @@ A personalized AI chatbot page.
 - **Cloud Function backend** — sends messages to the LoveGPT endpoint, receives AI responses
 - **Conversation history** — maintained client-side, capped at 20 messages, sent with each request for context
 
+### `foryou.html` — For You hub
+
+The entrance to the personal tools. One sentence of writing, then a card per tool. Cards are
+rendered from the `TOOLS` list in `src/foryou.js`; a tool that has not shipped yet renders as a
+plain card marked "Coming soon" (`comingSoon: true`) — flip it when the page lands.
+
+### Information architecture
+
+Top-level navigation (one list, `NAV_LINKS` in `src/modules/siteChrome.js`):
+
+```
+♥ Us Machina    Home    Our Story    Memories    LoveGPT    For You    🌙
+```
+
+"Our Story" is `timeline.html`. On screens ≤600px the links move into a fixed bottom tab bar
+(`.site-tabs`) and the top bar keeps only the brand and theme toggle. Tool pages (Letters, The
+Application Desk, People, Rhythm, What to Wear) are reached only from the For You hub, never from
+the nav. See `docs/anniversary/PAGE-CHECKLIST.md` for how to add a page.
+
 ---
 
 ## JavaScript Modules
@@ -121,6 +140,11 @@ All modules live in `src/modules/`. Each page imports only the modules it needs.
 | Module | Purpose |
 |--------|---------|
 | `auth.js` | Passcode authentication for uploads. Hashes input with SHA-256 (Web Crypto API), compares against stored hash, persists auth state in `sessionStorage`. |
+| `dates.js` | Real calendar math: `daysBetween` (DST-safe), `calendarDuration` (month-by-month, not `/30.44`), `addDays`, `addMonths`, `formatDateRange`, and `formatRelativeGentle` — relative wording that never says "overdue", "late" or "should". |
+| `modal.js` | `openModal()` / `closeModal()` for `.usm-modal`: focus trap (`data-focus-trap`), Escape-to-close, focus restore. |
+| `reveal.js` | The single scroll-reveal `IntersectionObserver` (`initReveal(root)`, `observeReveal(el)`). Marks everything visible immediately under `prefers-reduced-motion` or when the API is missing. |
+| `siteChrome.js` | Renders the nav (top bar + mobile tab bar), music toggle/`<audio>`, and footer into mount points, then calls `initTheme()` and `initMusicPlayer()`. `NAV_LINKS` is the only place links are defined. |
+| `storage.js` | Local persistence. `createStore(name, { version, migrate, initial })` → sync localStorage store with `{ v, updatedAt, data }` envelope, migrations, export/import, cross-tab `subscribe`, fail-soft in-memory fallback + one calm banner. `encrypted: true` → async AES-GCM store (PBKDF2-SHA256, 310k iterations, non-extractable key held in memory only, wrong passphrase = clean failure). `createBlobStore(name)` → IndexedDB for photos. Never touches the network. |
 | `buttons.js` | Yes/No button behavior. "Yes" triggers celebration (graffiti rain, verse reveal, webhook). "No" detaches from its parent on first click, becomes `position: fixed` on `document.body`, bounces through 15 predefined zones (percentage-based), shows messages from `noTexts.js`, fades out after 15 clicks with a love message. |
 | `firebase.js` | Initializes Firebase app, exports `db` (Firestore), `storage` (Storage), and analytics. Contains the project config object. |
 | `gallery.js` | Home page gallery preview. Loads the 6 most recent memories from Firestore and renders them with lightbox support. |
@@ -128,7 +152,6 @@ All modules live in `src/modules/`. Each page imports only the modules it needs.
 | `loveCounter.js` | Live relationship duration counter. Calculates elapsed time from Sep 13, 2025 and updates every second showing months, days, hours, minutes, seconds. |
 | `memoriesGallery.js` | Memories page gallery. Fetches all memories from Firestore, renders cards with safe DOM construction (no `innerHTML` for user content), sets up lightbox click handlers. Image URLs validated to require HTTPS. |
 | `musicPlayer.js` | Background music toggle for the hero section. Play/pause with loop. |
-| `navbar.js` | Sets the `active` class on the navigation link matching the current page path. |
 | `textReveal.js` | Sparkle text reveal animation. Reveals text character-by-character with sparkle particle effects. Supports a skip button to complete instantly. |
 | `theme.js` | Light/dark theme toggle. Uses `data-theme` attribute on `<html>`, persists choice in `localStorage`. Defaults to light mode on first visit. |
 | `timeline.js` | Renders milestones from `milestones.js` data as a vertical timeline with icons, dates, titles, and descriptions. Supports both compact (5 items) and full (18 items) modes. |
@@ -156,11 +179,13 @@ CSS uses custom properties for theming, `clamp()` for responsive typography, and
 
 | File | Scope |
 |------|-------|
-| `base.css` | Root CSS variables (pink palette, card backgrounds, shadows, border radii), reset, body styles, typography (Dancing Script for headings, Inter for body), and `[data-theme="dark"]` overrides. |
+| `base.css` | Root CSS variables (pink palette, card backgrounds, shadows, border radii, spacing scale `--space-*`, status tones `--tone-*`, `--error`, `--surface-sunken`, `--border-subtle`), reset, body styles, typography (Dancing Script for headings, Inter for body), `[data-theme="dark"]` overrides, and the global `:focus-visible` ring. |
 | `sections.css` | Layout for all homepage sections (hero, response, timeline, gallery, verses, footer), navbar, buttons (including standalone `#noBtn` styles), lightbox, love counter, music toggle, locked sections, floating hearts, and mobile breakpoints. |
 | `animations.css` | All `@keyframes`: `pulse`, `graffiti-fall`, `sparkle-anim`, `reveal`, `float-up`, `music-pulse`, `love-message`, `typingBounce`, `msgSlideIn`. Includes `prefers-reduced-motion` overrides. |
 | `memories.css` | Memories page: upload panel, drag-and-drop zone, image preview list, progress bar, passcode modal, gallery grid, mobile adjustments. |
 | `timeline-page.css` | Timeline page: stats bar with stat cards, extended timeline layout, responsive breakpoints. |
+| `ui.css` | Shared primitives for the tool pages (`.usm-card`, `.usm-btn--*`, `.usm-pill`, `.usm-input`, `.usm-panel`, `.usm-modal`, `.usm-empty`, `.usm-toast`, `.usm-tone--*`, `.usm-skeleton`). Each is extracted from an existing class — the header comment names which. Imported only by new pages. |
+| `foryou.css` | For You hub: header, lede, centred card wrap. |
 | `lovegpt.css` | LoveGPT page: subtle gradient background, sparkly header, starter pills, chat area, message bubbles (user: pink gradient, AI: glass card with `backdrop-filter`), typing dots animation, input area, custom scrollbar. |
 
 ### Theming
@@ -168,8 +193,20 @@ CSS uses custom properties for theming, `clamp()` for responsive typography, and
 The site supports light and dark modes via the `data-theme` attribute on `<html>`:
 
 - **Light mode** (default on first visit): warm pink/white palette
-- **Dark mode**: deep navy/purple palette with adjusted shadows and card backgrounds
-- Toggle is in the navbar; preference stored in `localStorage`
+- **Dark mode**: deep plum palette with adjusted shadows and card backgrounds
+- Toggle is in the navbar; preference stored in `localStorage` under `aho_theme`
+
+### Browser storage keys
+
+The site lives at `k-sqr.github.io/lovesite/`; localStorage is scoped to the whole
+`k-sqr.github.io` origin, so every key is namespaced.
+
+| Key | Store | Owner |
+|-----|-------|-------|
+| `aho_theme` | localStorage | `theme.js` |
+| `usm.<name>.v<version>` | localStorage | `storage.js` — one per `createStore()`; encrypted stores hold ciphertext only |
+| `usm.<name>` | IndexedDB database | `storage.js` — `createBlobStore()` |
+| `music_should_play`, `music_muted`, `music_popup_shown` | sessionStorage | `musicPlayer.js` |
 
 ---
 
@@ -449,6 +486,7 @@ ahosite/
 ├── memories.html                # Photo gallery page
 ├── timeline.html                # Relationship timeline page
 ├── lovegpt.html                 # LoveGPT chat page
+├── foryou.html                  # For You hub
 ├── package.json                 # Root dependencies & scripts
 ├── vite.config.js               # Vite build config (multi-page)
 ├── src/
@@ -456,6 +494,7 @@ ahosite/
 │   ├── memories.js              # Memories page entry point
 │   ├── timeline-page.js         # Timeline page entry point
 │   ├── lovegpt.js               # LoveGPT page entry point
+│   ├── foryou.js                # For You hub entry point
 │   ├── data/
 │   │   ├── milestones.js        # Relationship milestones
 │   │   ├── noTexts.js           # No-button messages
@@ -463,13 +502,17 @@ ahosite/
 │   ├── modules/
 │   │   ├── auth.js              # Passcode auth
 │   │   ├── buttons.js           # Yes/No button logic
+│   │   ├── dates.js             # Calendar math + gentle relative dates
 │   │   ├── firebase.js          # Firebase init & config
 │   │   ├── gallery.js           # Home gallery preview
 │   │   ├── graffiti.js          # Heart/emoji rain animation
 │   │   ├── loveCounter.js       # Live duration counter
 │   │   ├── memoriesGallery.js   # Memories fetch, render, lightbox
+│   │   ├── modal.js             # Accessible modal open/close
 │   │   ├── musicPlayer.js       # Background music toggle
-│   │   ├── navbar.js            # Active nav link
+│   │   ├── reveal.js            # Shared scroll-reveal observer
+│   │   ├── siteChrome.js        # Nav + music + footer renderer
+│   │   ├── storage.js           # Namespaced local storage (+ encrypted, + blobs)
 │   │   ├── textReveal.js        # Sparkle text reveal
 │   │   ├── theme.js             # Light/dark theme toggle
 │   │   ├── timeline.js          # Timeline renderer
@@ -478,11 +521,15 @@ ahosite/
 │   │   └── webhook.js           # Response webhook
 │   └── styles/
 │       ├── animations.css       # All @keyframes
-│       ├── base.css             # Variables, reset, typography
+│       ├── base.css             # Variables, reset, typography, focus ring
+│       ├── foryou.css           # For You hub styles
 │       ├── lovegpt.css          # LoveGPT chat styles
 │       ├── memories.css         # Memories page styles
 │       ├── sections.css         # Homepage section layouts
-│       └── timeline-page.css    # Timeline page styles
+│       ├── timeline-page.css    # Timeline page styles
+│       └── ui.css               # Shared primitives for tool pages
+├── docs/anniversary/
+│   └── PAGE-CHECKLIST.md        # How to add a page
 └── functions/
     ├── index.js                 # LoveGPT Cloud Function
     ├── package.json             # Function dependencies

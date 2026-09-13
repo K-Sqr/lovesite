@@ -10,6 +10,7 @@ import { initLoveCounter } from './modules/loveCounter.js';
 import { initNavbar } from './modules/navbar.js';
 import { initTheme } from './modules/theme.js';
 import { initMusicPlayer } from './modules/musicPlayer.js';
+import { initReveal } from './modules/reveal.js';
 
 function calculateStats() {
   const statsContainer = document.getElementById('timelineStats');
@@ -37,18 +38,6 @@ function calculateStats() {
   `;
 }
 
-function setupScrollReveal() {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) entry.target.classList.add('visible');
-      });
-    },
-    { threshold: 0.1, rootMargin: '0px 0px -30px 0px' }
-  );
-  document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
-}
-
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   initNavbar();
@@ -56,5 +45,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initTimeline(true);
   initLoveCounter();
   initMusicPlayer();
-  requestAnimationFrame(() => setTimeout(setupScrollReveal, 50));
+  requestAnimationFrame(() => setTimeout(() => initReveal(), 50));
 });

@@ -11,6 +11,7 @@ import { initMusicPlayer } from './modules/musicPlayer.js';
 import { initLoveCounter } from './modules/loveCounter.js';
 import { initNavbar } from './modules/navbar.js';
 import { initTheme } from './modules/theme.js';
+import { initReveal } from './modules/reveal.js';
 
 const MESSAGE = "I would like to make this dream a reality with you as God stirs the waters of life, both stormy and still.\n\nI don\u2019t want to navigate them alone. I want you as my co-captain.\n\nWill you be my Boo? \u2764";
 
@@ -39,21 +40,6 @@ function spawnFloatingHearts() {
   setInterval(addHeart, 3000);
 }
 
-function setupScrollReveal() {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
-      });
-    },
-    { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
-  );
-
-  document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
-}
-
 function unlockSections() {
   document.querySelectorAll('.locked').forEach((section) => {
     section.classList.add('unlocked');
@@ -69,7 +55,7 @@ function unlockSections() {
   }
 
   requestAnimationFrame(() => {
-    setTimeout(setupScrollReveal, 100);
+    setTimeout(() => initReveal(), 100);
   });
 }
 

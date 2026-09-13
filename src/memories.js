@@ -1,5 +1,6 @@
 import './styles/base.css';
 import './styles/sections.css';
+import './styles/animations.css';
 import './styles/memories.css';
 
 import { fetchMemories, renderMemoryCard, setupLightbox } from './modules/memoriesGallery.js';
@@ -9,6 +10,7 @@ import { initNavbar } from './modules/navbar.js';
 import { initTheme } from './modules/theme.js';
 import { deleteMemory } from './modules/memoryAdmin.js';
 import { initMusicPlayer } from './modules/musicPlayer.js';
+import { initReveal } from './modules/reveal.js';
 
 const LOCAL_PHOTOS = [
   { id: 'local-1', url: './photos/IMG_5697.JPG', caption: '' },
@@ -76,17 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
       card.setAttribute('data-delay', String((i % 4) + 1));
       grid.appendChild(card);
     });
-    setupReveal();
-  }
-
-  function setupReveal() {
-    const observer = new IntersectionObserver(
-      (entries) => entries.forEach(e => {
-        if (e.isIntersecting) e.target.classList.add('visible');
-      }),
-      { threshold: 0.1 }
-    );
-    grid.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    initReveal(grid);
   }
 
   // Upload toggle

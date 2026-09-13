@@ -813,3 +813,100 @@ body { padding-top: 52px; }
     padding: 0.3rem 0.5rem;
   }
 }
+
+/* ══ Site chrome (siteChrome.js) ══
+   Top bar on desktop; on phones the links move into a bottom tab bar.
+   The top-bar look above is untouched — these rules only add the tab bar and
+   reserve the bar's height while the mount is still empty (no jump on load). */
+:root {
+  --site-tabs-height: 58px;
+}
+
+.site-nav:empty {
+  min-height: 46px; /* measured height of the rendered desktop bar */
+}
+
+.site-tabs {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .site-nav:empty {
+    min-height: 43px;
+  }
+
+  .site-nav .nav-link {
+    display: none;
+  }
+
+  .site-tabs {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 400;
+    display: flex;
+    align-items: stretch;
+    gap: 0.2rem;
+    min-height: var(--site-tabs-height);
+    padding: 0.3rem 0.4rem;
+    padding-bottom: calc(0.3rem + env(safe-area-inset-bottom));
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 -1px 8px var(--shadow-soft);
+    transition: background 0.4s ease;
+  }
+
+  .site-tab {
+    flex: 1 1 0;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 0.25rem 0.2rem;
+    border-radius: var(--radius-sm);
+    color: var(--pink-deep);
+    text-decoration: none;
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    white-space: nowrap;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .site-tab__icon {
+    font-size: 1.15rem;
+    line-height: 1;
+  }
+
+  .site-tab:hover {
+    background: rgba(255, 77, 166, 0.08);
+  }
+
+  .site-tab[aria-current="page"] {
+    background: rgba(255, 77, 166, 0.12);
+    color: var(--pink-hot);
+  }
+
+  /* Make room for the bar: page end, and the fixed/sticky things that sat at the bottom edge. */
+  body {
+    padding-bottom: calc(var(--site-tabs-height) + env(safe-area-inset-bottom));
+  }
+
+  .music-toggle {
+    bottom: calc(var(--site-tabs-height) + 0.75rem + env(safe-area-inset-bottom));
+  }
+
+  .music-popup {
+    bottom: calc(var(--site-tabs-height) + 1rem + env(safe-area-inset-bottom));
+  }
+
+  .lovegpt-input-area {
+    bottom: calc(var(--site-tabs-height) + env(safe-area-inset-bottom));
+  }
+}

@@ -17,3 +17,11 @@ functions/node_modules/
 
 # OS
 Thumbs.db
+
+# Private documents - never commit, never publish.
+# NOTE: .gitignore does NOT stop `npm run deploy` from publishing public/ !
+# Letters must live OUTSIDE public/ . See docs/anniversary/03-SECURITY-REMEDIATION.md
+public/letters/
+letters-source/
+*.pdf
+!docs/anniversary/**

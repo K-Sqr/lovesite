@@ -66,7 +66,7 @@ After a successful proposal, the site was upgraded from a one-time artifact into
 - **Language**: Vanilla JavaScript (ES modules), CSS3 custom properties
 - **Hosting**: GitHub Pages via `gh-pages` npm package
 - **Backend**: Firebase (Firestore, Storage, Cloud Functions 2nd gen)
-- **AI**: Google Gemini 2.0 Flash via `@google/generative-ai`
+- **AI**: Google Gemini 2.5 Flash via `@google/generative-ai`
 
 ---
 

@@ -1,0 +1,513 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   ui.css — shared primitives for the For You tools (02-DESIGN-SYSTEM §8.2)
+
+   These are EXTRACTIONS, not a redesign. Each primitive reproduces the
+   declarations of an existing class so the two stay visually in sync:
+
+     .usm-card            <- .timeline-entry / .stat-card   (sections.css, timeline-page.css)
+     .usm-btn--primary    <- .upload-btn                    (memories.css)
+     .usm-btn--secondary  <- .upload-cancel                 (memories.css)
+     .usm-btn--ghost      <- .skip-btn                      (sections.css)
+     .usm-pill            <- .starter-pill                  (lovegpt.css)
+     .usm-icon-btn        <- .verse-nav button              (sections.css)
+     .usm-input/-textarea/-select <- .passcode-input        (memories.css)
+     .usm-panel           <- .upload-panel                  (memories.css)  .is-open instead of .active
+     .usm-modal(__scrim)  <- .passcode-overlay / -modal     (memories.css)  + focus/Escape hooks
+     .usm-empty           <- .memories-empty                (memories.css)
+     .usm-toast           <- .music-popup / -card           (sections.css)
+     .usm-tone--*         new, tokens from base.css §8.1
+     .usm-skeleton        new
+     :focus-visible       lives in base.css (see note there)
+
+   Tokens used here (--space-*, --tone-*, --error, --surface-sunken,
+   --border-subtle) are defined in base.css. No hardcoded hex.
+   This file is imported only by the new tool pages; nothing on the four
+   original pages consumes it.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Card ── (.timeline-entry surface; no backdrop-filter — glass is for overlays) */
+.usm-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 2px 12px var(--shadow-soft);
+  padding: 1.2rem 1.5rem;
+  text-align: left;
+  color: var(--text-primary);
+}
+
+.usm-card--link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* lift + shadow step-up exactly as .gallery-card */
+.usm-card--link:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px var(--shadow-pink);
+}
+
+.usm-card--link:active {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px var(--shadow-pink);
+}
+
+/* ── Buttons ── */
+.usm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.6rem 1.4rem;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s, color 0.2s;
+}
+
+.usm-btn:disabled,
+.usm-btn[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* .upload-btn */
+.usm-btn--primary {
+  background: linear-gradient(135deg, var(--pink-hot) 0%, var(--pink-light) 100%);
+  color: var(--white);
+  box-shadow: 0 4px 16px var(--shadow-pink);
+}
+
+.usm-btn--primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px var(--shadow-pink);
+}
+
+/* .upload-cancel */
+.usm-btn--secondary {
+  background: var(--card-bg);
+  color: var(--pink-deep);
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 0.5rem 1.5rem;
+  box-shadow: 0 2px 12px var(--shadow-soft);
+}
+
+.usm-btn--secondary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: var(--white);
+  box-shadow: 0 4px 20px var(--shadow-pink);
+}
+
+/* .skip-btn */
+.usm-btn--ghost {
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  padding: 0.4rem 1.2rem;
+}
+
+.usm-btn--ghost:hover:not(:disabled) {
+  color: var(--pink-hot);
+  background: rgba(255, 77, 166, 0.06);
+}
+
+.usm-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* ── Pill ── (.starter-pill; also filters and tone chips) */
+.usm-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--card-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid var(--pink-light);
+  border-radius: 999px;
+  padding: 8px 16px;
+  min-height: 36px;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  white-space: nowrap;
+}
+
+.usm-pill:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px var(--shadow-pink);
+  background: var(--pink-light);
+}
+
+.usm-pill.is-selected,
+.usm-pill[aria-pressed="true"] {
+  background: rgba(255, 77, 166, 0.12);
+  border-color: var(--pink-hot);
+  color: var(--pink-hot);
+}
+
+/* ── Circular icon button ── (.verse-nav button) */
+.usm-icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  color: var(--pink-deep);
+  font-size: 1.2rem;
+  box-shadow: 0 2px 8px var(--shadow-soft);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.usm-icon-btn:hover {
+  background: var(--white);
+  transform: scale(1.1);
+}
+
+/* ── Form controls ── (.passcode-input border/focus treatment) */
+.usm-input,
+.usm-textarea,
+.usm-select {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 2px solid var(--pink-light);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-family: var(--font-body);
+  outline: none;
+  min-height: 44px;
+  transition: border-color 0.2s;
+}
+
+.usm-input::placeholder,
+.usm-textarea::placeholder {
+  color: var(--pink-light);
+}
+
+.usm-input:focus,
+.usm-textarea:focus,
+.usm-select:focus {
+  border-color: var(--pink-hot);
+}
+
+.usm-textarea {
+  resize: vertical;
+  min-height: 6rem;
+  line-height: 1.5;
+}
+
+.usm-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 2.4rem;
+  cursor: pointer;
+  /* chevron drawn with the current text colour so it follows the theme */
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+                    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 1.15rem) 50%, calc(100% - 0.8rem) 50%;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+.usm-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  text-align: left;
+}
+
+.usm-field__label {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--pink-hot);
+}
+
+.usm-field__hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.usm-field__error {
+  font-size: 0.8rem;
+  color: var(--error);
+}
+
+/* ── Panel ── (.upload-panel; `.is-open` instead of `.active`) */
+.usm-panel {
+  display: none;
+  background: var(--card-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 24px var(--shadow-soft);
+  text-align: left;
+}
+
+.usm-panel.is-open {
+  display: block;
+}
+
+/* ── Modal ── (.passcode-overlay / .passcode-modal)
+   Markup contract:
+     <div class="usm-modal" role="dialog" aria-modal="true" aria-labelledby="…" data-focus-trap hidden>
+       <div class="usm-modal__scrim" data-modal-close></div>
+       <div class="usm-modal__card"> … </div>
+     </div>
+   JS toggles `.is-open` (and the `hidden` attribute). Escape-to-close and the
+   focus trap are wired by `openModal()` in src/modules/modal.js. */
+.usm-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 600;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  padding: var(--space-4);
+}
+
+.usm-modal[hidden] {
+  display: none;
+}
+
+.usm-modal.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.usm-modal__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.usm-modal__card {
+  position: relative;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 2rem 2.5rem;
+  max-width: 360px;
+  width: 100%;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  color: var(--text-primary);
+  transform: scale(0.8);
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.usm-modal.is-open .usm-modal__card {
+  transform: scale(1);
+}
+
+.usm-modal__card h3 {
+  font-size: 1.4rem;
+  color: var(--pink-deep);
+  margin-bottom: 0.3rem;
+}
+
+.usm-modal__card p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1.2rem;
+  line-height: 1.5;
+}
+
+.usm-modal__actions {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: 1.2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ── Empty state ── (.memories-empty) */
+.usm-empty {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--pink-light);
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  line-height: 1.5;
+}
+
+/* ── Toast ── (.music-popup) */
+.usm-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  transform: translateX(-50%);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  max-width: calc(100vw - 2rem);
+}
+
+.usm-toast.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.usm-toast__card {
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: var(--radius-lg);
+  padding: 0.9rem 1rem;
+  box-shadow: 0 8px 40px var(--shadow-soft);
+  text-align: center;
+  min-width: 240px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.usm-toast__card--writing {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--pink-deep);
+}
+
+.usm-toast__close {
+  border: none;
+  background: transparent;
+  color: var(--pink-deep);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+  margin: -0.6rem -0.6rem -0.6rem 0;
+}
+
+/* ── Tone chips ── text + tint from §8.1. Never colour-only: always carry a word/emoji. */
+.usm-tone {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+
+.usm-tone--calm    { color: var(--tone-calm);    background: var(--tone-calm-soft); }
+.usm-tone--soon    { color: var(--tone-soon);    background: var(--tone-soon-soft); }
+.usm-tone--waiting { color: var(--tone-waiting); background: var(--tone-waiting-soft); }
+.usm-tone--warm    { color: var(--tone-warm);    background: var(--tone-warm-soft); }
+.usm-tone--quiet   { color: var(--tone-quiet);   background: var(--tone-quiet-soft); }
+
+/* ── Skeleton ── loading placeholder; shimmer is removed under reduced-motion */
+.usm-skeleton {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--pink-light);
+  opacity: 0.35;
+  min-height: 1em;
+}
+
+.usm-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  animation: usm-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes usm-shimmer {
+  100% { transform: translateX(100%); }
+}
+
+/* ── Sunken well ── (list rows, prompt preview boxes) */
+.usm-well {
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+}
+
+.usm-divider {
+  border: none;
+  border-top: 1px solid var(--border-subtle);
+  margin: var(--space-4) 0;
+}
+
+/* ── Calm storage banner ── shown once by storage.js when saving is unavailable */
+.usm-banner {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  max-width: calc(100vw - 2rem);
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 0.7rem 1rem;
+  box-shadow: 0 4px 16px var(--shadow-pink);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* ── Reduced motion ── every primitive must survive this (base rule lives in animations.css) */
+@media (prefers-reduced-motion: reduce) {
+  .usm-skeleton::after { animation: none; display: none; }
+  .usm-card--link:hover,
+  .usm-btn:hover,
+  .usm-pill:hover,
+  .usm-icon-btn:hover { transform: none; }
+}
+
+/* ── Mobile ── */
+@media (max-width: 600px) {
+  .usm-panel { padding: 1.2rem 1rem; }
+  .usm-modal__card { padding: 1.5rem 1.2rem; }
+  .usm-pill { font-size: 0.78rem; padding: 6px 12px; }
+}

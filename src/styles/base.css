@@ -15,6 +15,31 @@
   --radius-sm: 12px;
   --radius-md: 20px;
   --radius-lg: 28px;
+  /* ── Additive tokens (02-DESIGN-SYSTEM §8.1) ── */
+  /* Spacing scale — codifies the rhythm already in use */
+  --space-1: 0.3rem;
+  --space-2: 0.5rem;
+  --space-3: 0.8rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 2.5rem;
+  /* Status hues — hue-shifted from --pink-*, desaturated, no traffic-light semantics.
+     Each *-text passes 4.5:1 on --card-bg; *-soft is the matching tint. Always pair with a word or emoji. */
+  --tone-calm: #7b4f8c;              /* recently done / on track */
+  --tone-calm-soft: rgba(123, 79, 140, 0.10);
+  --tone-soon: #b0536a;              /* gentle "coming up" */
+  --tone-soon-soft: rgba(176, 83, 106, 0.10);
+  --tone-waiting: #6f5f96;           /* "it's been a little while" — never alarm */
+  --tone-waiting-soft: rgba(111, 95, 150, 0.10);
+  --tone-warm: #c02a6a;              /* positive / offer / good news */
+  --tone-warm-soft: rgba(192, 42, 106, 0.10);
+  --tone-quiet: #8a6a78;             /* archived, closed, snoozed */
+  --tone-quiet-soft: rgba(138, 106, 120, 0.10);
+  /* Feedback */
+  --error: #e74c3c;                  /* promoted from the hardcoded .passcode-error value */
+  --surface-sunken: rgba(215, 38, 96, 0.04);
+  --border-subtle: rgba(215, 38, 96, 0.14);
 }
 
 [data-theme="dark"] {
@@ -29,6 +54,20 @@
   --shadow-soft: rgba(255, 107, 181, 0.08);
   --text-primary: #f5c2d4;
   --text-muted: rgba(245, 194, 212, 0.6);
+  /* ── Additive tokens (02-DESIGN-SYSTEM §8.1) — dark counterparts ── */
+  --tone-calm: #d3a9e6;
+  --tone-calm-soft: rgba(211, 169, 230, 0.14);
+  --tone-soon: #f0a6b8;
+  --tone-soon-soft: rgba(240, 166, 184, 0.14);
+  --tone-waiting: #c4b5ee;
+  --tone-waiting-soft: rgba(196, 181, 238, 0.14);
+  --tone-warm: #ff8fc2;
+  --tone-warm-soft: rgba(255, 143, 194, 0.14);
+  --tone-quiet: #c9a9b6;
+  --tone-quiet-soft: rgba(201, 169, 182, 0.14);
+  --error: #ff8a80;
+  --surface-sunken: rgba(0, 0, 0, 0.22);
+  --border-subtle: rgba(245, 194, 212, 0.16);
 }
 
 *,
@@ -82,4 +121,12 @@ button {
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
+}
+
+/* ── Keyboard focus (02-DESIGN-SYSTEM §8.2) ──
+   Lives here rather than in ui.css so the four existing pages get a visible ring
+   without importing the (still inert) primitives file. */
+:focus-visible {
+  outline: 2px solid var(--pink-hot);
+  outline-offset: 2px;
 }

@@ -6,10 +6,8 @@ import './styles/memories.css';
 import { fetchMemories, renderMemoryCard, setupLightbox } from './modules/memoriesGallery.js';
 import { uploadMemory } from './modules/upload.js';
 import { ensureAuthenticated } from './modules/auth.js';
-import { initNavbar } from './modules/navbar.js';
-import { initTheme } from './modules/theme.js';
+import { initSiteChrome } from './modules/siteChrome.js';
 import { deleteMemory } from './modules/memoryAdmin.js';
-import { initMusicPlayer } from './modules/musicPlayer.js';
 import { initReveal } from './modules/reveal.js';
 
 const LOCAL_PHOTOS = [
@@ -24,9 +22,7 @@ const LOCAL_PHOTOS = [
 let selectedFiles = [];
 
 document.addEventListener('DOMContentLoaded', () => {
-  initTheme();
-  initNavbar();
-  initMusicPlayer();
+  initSiteChrome({ active: 'memories' });
   const grid = document.getElementById('memoriesGrid');
   const emptyMsg = document.getElementById('memoriesEmpty');
   const uploadToggle = document.getElementById('uploadToggle');

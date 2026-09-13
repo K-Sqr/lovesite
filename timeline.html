@@ -13,15 +13,8 @@
 </head>
 <body>
 
-  <!-- ═══ NAVBAR ═══ -->
-  <nav class="site-nav" id="siteNav">
-    <a href="./index.html" class="nav-brand">&hearts; Us Machina</a>
-    <a href="./index.html" class="nav-link">Home</a>
-    <a href="./timeline.html" class="nav-link">Timeline</a>
-    <a href="./memories.html" class="nav-link">Memories</a>
-    <a href="./lovegpt.html" class="nav-link">LoveGPT</a>
-    <button class="theme-toggle" aria-label="Toggle theme">&#x1F319;</button>
-  </nav>
+  <!-- ═══ NAVBAR (rendered by src/modules/siteChrome.js) ═══ -->
+  <nav class="site-nav" id="siteNav"></nav>
 
   <div class="timeline-page">
     <!-- Header -->
@@ -46,11 +39,8 @@
     <p>Made with <span class="heart-icon">&hearts;</span> and a little bit of code</p>
   </footer>
 
-  <!-- ═══ MUSIC ═══ -->
-  <button class="music-toggle" id="musicToggle" aria-label="Toggle music">&#x1F507;</button>
-  <audio id="bgMusic" preload="none">
-    <source src="./music/Venus (Bass Version).mp3" type="audio/mpeg" />
-  </audio>
+  <!-- ═══ MUSIC (rendered by src/modules/siteChrome.js) ═══ -->
+  <div id="siteMusic"></div>
 
   <script type="module" src="/src/timeline-page.js"></script>
 </body>

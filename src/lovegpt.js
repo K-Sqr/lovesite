@@ -1,9 +1,7 @@
 import './styles/base.css';
 import './styles/sections.css';
 import './styles/lovegpt.css';
-import { initNavbar } from './modules/navbar.js';
-import { initTheme } from './modules/theme.js';
-import { initMusicPlayer } from './modules/musicPlayer.js';
+import { initSiteChrome } from './modules/siteChrome.js';
 
 const FUNCTION_URL = 'https://lovegpt-osmy5pclpq-uc.a.run.app';
 
@@ -127,9 +125,7 @@ async function sendMessage(text) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  initTheme();
-  initNavbar();
-  initMusicPlayer();
+  initSiteChrome({ active: 'lovegpt' });
 
   sendBtn.addEventListener('click', () => sendMessage(chatInput.value));
 

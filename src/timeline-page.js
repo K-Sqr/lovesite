@@ -7,9 +7,7 @@ import './styles/timeline-page.css';
 import { initTimeline } from './modules/timeline.js';
 import { fullMilestones } from './data/milestones.js';
 import { initLoveCounter } from './modules/loveCounter.js';
-import { initNavbar } from './modules/navbar.js';
-import { initTheme } from './modules/theme.js';
-import { initMusicPlayer } from './modules/musicPlayer.js';
+import { initSiteChrome } from './modules/siteChrome.js';
 import { initReveal } from './modules/reveal.js';
 
 function calculateStats() {
@@ -39,11 +37,9 @@ function calculateStats() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  initTheme();
-  initNavbar();
+  initSiteChrome({ active: 'story' });
   calculateStats();
   initTimeline(true);
   initLoveCounter();
-  initMusicPlayer();
   requestAnimationFrame(() => setTimeout(() => initReveal(), 50));
 });

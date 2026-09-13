@@ -13,6 +13,7 @@ export default defineConfig({
         timeline: resolve(__dirname, 'timeline.html'),
         lovegpt: resolve(__dirname, 'lovegpt.html'),
         foryou: resolve(__dirname, 'foryou.html'),
+        rhythm: resolve(__dirname, 'rhythm.html'),
         applications: resolve(__dirname, 'applications.html'),
         people: resolve(__dirname, 'people.html'),
       },

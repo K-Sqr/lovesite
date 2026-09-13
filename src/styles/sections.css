@@ -906,7 +906,8 @@ body { padding-top: 52px; }
     bottom: calc(var(--site-tabs-height) + 1rem + env(safe-area-inset-bottom));
   }
 
-  .lovegpt-input-area {
+  /* .lovegpt-page prefix: lovegpt.css loads after this file and sets bottom: 0 */
+  .lovegpt-page .lovegpt-input-area {
     bottom: calc(var(--site-tabs-height) + env(safe-area-inset-bottom));
   }
 }

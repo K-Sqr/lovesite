@@ -1,0 +1,558 @@
+/* ── Letters ── a drawer of kept letters, not a PDF folder (06-LETTERS) ── */
+.letters-page {
+  min-height: 70vh;
+  padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem);
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+/* ── Locked ── the first thing she sees: one sentence in his voice, then the passcode.
+   No padlock, no red, nothing that reads as an error. */
+.letters-locked {
+  text-align: center;
+  padding: clamp(3rem, 14vh, 7rem) 0;
+  max-width: 34ch;
+  margin: 0 auto;
+}
+
+.letters-locked__line {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 4.5vw, 2.1rem);
+  font-weight: 600;
+  color: var(--pink-deep);
+  line-height: 1.4;
+  margin-bottom: var(--space-6);
+}
+
+.letters-locked__form {
+  display: flex;
+  gap: var(--space-2);
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.letters-locked__form[hidden] {
+  display: none;
+}
+
+.letters-locked__input {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+
+.letters-locked__note {
+  margin-top: var(--space-4);
+  min-height: 1.4em;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+/* ── Archive header ── */
+.letters-header {
+  text-align: center;
+  margin-bottom: clamp(1.75rem, 5vw, 2.75rem);
+}
+
+.letters-eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pink-deep);
+  opacity: 0.55;
+  margin-bottom: var(--space-3);
+}
+
+.letters-header h1 {
+  font-size: clamp(2rem, 6vw, 3.1rem);
+  color: var(--pink-deep);
+  margin-bottom: var(--space-2);
+}
+
+.letters-lede {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 2.8vw, 1.4rem);
+  color: var(--pink-hot);
+  opacity: 0.85;
+  line-height: 1.5;
+  max-width: 28ch;
+  margin: 0 auto;
+}
+
+.letters-count {
+  margin-top: var(--space-4);
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--pink-deep);
+  opacity: 0.55;
+}
+
+.letters-header::after {
+  content: '';
+  display: block;
+  width: 4.5rem;
+  height: 1px;
+  margin: 1.35rem auto 0;
+  background: linear-gradient(90deg, transparent, var(--pink-hot), transparent);
+}
+
+/* ── The stack ── oldest first, growing downward the way they were written ── */
+.letters-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.letters-skeleton {
+  min-height: 148px;
+  border-radius: var(--radius-sm);
+}
+
+/* year as a chapter plate */
+.letters-year {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  margin: var(--space-5) 0 var(--space-1);
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 3.2vw, 1.7rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--pink-deep);
+  opacity: 0.8;
+}
+
+.letters-year::before,
+.letters-year::after {
+  content: '';
+  flex: 1;
+  max-width: 5.5rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--pink-light), transparent);
+}
+
+.letters-year:first-child {
+  margin-top: 0;
+}
+
+/* ── Card ── a kept letter: date stamp, number, occasion, the line he wrote it for ── */
+.letter-item {
+  position: relative;
+  isolation: isolate;
+}
+
+.letter-item::before,
+.letter-item::after {
+  content: '';
+  position: absolute;
+  inset: 8px -5px -8px 5px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  z-index: -1;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.letter-item::after {
+  inset: 14px -9px -12px 9px;
+  opacity: 0.22;
+}
+
+.letter-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: stretch;
+  gap: 0.35rem 1.15rem;
+  width: 100%;
+  padding: 1.35rem 1.4rem 1.25rem 1.3rem;
+  font: inherit;
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  overflow: hidden;
+}
+
+.letter-card::before {
+  content: '';
+  position: absolute;
+  top: 0.9rem;
+  bottom: 0.9rem;
+  left: 0;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: linear-gradient(180deg, var(--pink-hot), var(--pink-light));
+}
+
+.letter-card__stamp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  align-self: start;
+  min-width: 3.6rem;
+  padding: 0.55rem 0.45rem 0.5rem;
+  margin-top: 0.15rem;
+  background: var(--tone-warm-soft);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  color: var(--pink-deep);
+}
+
+.letter-card__day {
+  font-family: var(--font-body);
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.letter-card__month {
+  margin-top: 0.22rem;
+  font-family: var(--font-body);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.letter-card__main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.letter-card__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  margin-bottom: 0.35rem;
+}
+
+.letter-card__num {
+  font-family: var(--font-body);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pink-deep);
+  opacity: 0.5;
+}
+
+.letter-card__open {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--pink-hot);
+  opacity: 0.9;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.letter-card:hover .letter-card__open {
+  transform: translateX(4px);
+}
+
+.letter-card__occasion {
+  font-family: var(--font-display);
+  font-size: clamp(1.45rem, 3.6vw, 1.85rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--pink-deep);
+}
+
+.letter-card__title {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1.4;
+  margin-top: 0.12rem;
+  opacity: 0.9;
+}
+
+.letter-card__teaser {
+  font-family: var(--font-body);
+  font-size: clamp(0.88rem, 2vw, 0.95rem);
+  line-height: 1.55;
+  opacity: 0.82;
+  margin-top: 0.45rem;
+}
+
+.letter-card__meta {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--pink-deep);
+  opacity: 0.5;
+  margin-top: 0.55rem;
+}
+
+.letter-card--soon {
+  cursor: default;
+  opacity: 0.92;
+}
+
+.letter-card--soon:hover {
+  transform: none;
+}
+
+.letter-card--soon .letter-card__open {
+  font-family: var(--font-body);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
+.letter-item.is-coming-soon::before,
+.letter-item.is-coming-soon::after {
+  border-style: dashed;
+}
+
+/* ── Reading page ── */
+.letters-page:has(.letters-reading:not([hidden])) {
+  max-width: 960px;
+}
+
+.letters-archive[hidden],
+.letters-reading[hidden] {
+  display: none !important;
+}
+
+.letters-reading {
+  width: 100%;
+}
+
+.letters-reading__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-5);
+}
+
+.letter-stage {
+  margin-top: var(--space-4);
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 8px 40px var(--shadow-pink);
+  background: var(--surface-sunken);
+}
+
+.letter-embed {
+  display: block;
+  width: 100%;
+  min-height: min(92vh, 1200px);
+  height: 92vh;
+  border: 0;
+  background: var(--surface-sunken);
+}
+
+.letter-embed--page {
+  border-radius: var(--radius-sm);
+}
+
+.letter__header {
+  text-align: center;
+  margin-bottom: clamp(1.25rem, 4vw, 2rem);
+}
+
+.letter__title {
+  font-size: clamp(1.9rem, 5.5vw, 2.7rem);
+  line-height: 1.2;
+  color: var(--pink-deep);
+  margin-bottom: var(--space-2);
+}
+
+.letter__occasion {
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 3vw, 1.45rem);
+  font-weight: 600;
+  color: var(--pink-hot);
+  opacity: 0.85;
+  margin-bottom: var(--space-2);
+}
+
+.letter__meta {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--pink-deep);
+  opacity: 0.6;
+}
+
+.letter__body {
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 2.2vw, 1.15rem);
+  line-height: 1.7;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+.letter__body p {
+  margin: 0 0 1.35em;
+}
+
+.letter__body p:last-child {
+  margin-bottom: 0;
+}
+
+.letter__skeleton {
+  height: 1em;
+  margin-bottom: 0.85em;
+}
+
+.letter__skeleton--short {
+  width: 62%;
+}
+
+.letter__error {
+  padding: var(--space-6) 0;
+  text-align: center;
+  font-size: 0.98rem;
+  color: var(--text-muted);
+}
+
+/* ── Full view ── the letter takes the whole screen ── */
+body.letter-full {
+  overflow: hidden;
+}
+
+body.letter-full .site-nav,
+body.letter-full .site-footer,
+body.letter-full #siteMusic {
+  display: none !important;
+}
+
+.letters-reading.is-full {
+  position: fixed;
+  inset: 0;
+  z-index: 800;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  background: var(--pink-bg);
+}
+
+.letters-reading.is-full .letter__header {
+  display: none;
+}
+
+.letters-reading.is-full .letters-reading__bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  margin: 0;
+  padding: 0.4rem 0.6rem;
+  background: linear-gradient(180deg, var(--pink-bg) 0%, transparent 100%);
+}
+
+.letters-reading.is-full .letters-reading__bar .usm-btn {
+  background: var(--card-bg);
+  box-shadow: 0 2px 12px var(--shadow-soft);
+}
+
+.letters-reading.is-full .letter__body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.letters-reading.is-full .letter-stage {
+  flex: 1;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.letters-reading.is-full .letter-embed {
+  height: 100%;
+  min-height: 100%;
+  border-radius: 0;
+}
+
+.letters-reading.is-full .letter__body:not(:has(.letter-stage)) {
+  overflow: auto;
+  padding: 4.5rem clamp(1rem, 4vw, 2rem) 2rem;
+  max-width: 70ch;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .letter-card:hover .letter-card__open {
+    transform: none;
+  }
+}
+
+/* ── Mobile ── one hand, 375px, in bed */
+@media (max-width: 600px) {
+  .letters-locked {
+    padding: clamp(2.5rem, 12vh, 5rem) 0;
+  }
+
+  .letters-locked__form {
+    flex-direction: column;
+  }
+
+  .letters-list {
+    gap: 1.15rem;
+  }
+
+  .letter-card {
+    grid-template-columns: auto 1fr;
+    gap: 0.3rem 0.85rem;
+    padding: 1.15rem 1.05rem 1.05rem 1rem;
+  }
+
+  .letter-card__stamp {
+    min-width: 3.1rem;
+    padding: 0.45rem 0.35rem 0.4rem;
+  }
+
+  .letter-card__day {
+    font-size: 1.15rem;
+  }
+
+  .letter-item::before {
+    inset: 6px -3px -6px 3px;
+  }
+
+  .letter-item::after {
+    inset: 11px -6px -9px 6px;
+  }
+
+  .letters-reading__bar {
+    margin-left: 0;
+    flex-wrap: wrap;
+  }
+
+  .letter__body {
+    line-height: 1.75;
+  }
+}

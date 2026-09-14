@@ -314,7 +314,8 @@ Escape-to-close via `.usm-modal`'s `data-focus-trap` hook, everything legible an
 
 ## Technical Requirements
 
-- Vanilla ESM, plain CSS, existing tokens, `.usm-*` primitives. **No new runtime dependencies.**
+- Existing tokens and `.usm-*` primitives. TypeScript / one UI framework / justified
+  dependencies allowed per `RUN-SHEETS.md` Stack policy. Privacy rules are not relaxed.
 - One breakpoint: `@media (max-width: 600px)`. This page does not need a second one.
 - `rhythm.html` body contains `<nav id="siteNav"></nav>`, the page container, the music mount, and
   `<script type="module" src="/src/rhythm.js"></script>`. No inline script — CSP forbids it.

@@ -301,8 +301,9 @@ It should feel like a drawer of kept letters, not a PDF folder.
 
 ## Technical Requirements
 
-- Vanilla ESM. **No new dependencies** unless path (c) is explicitly approved; `package.json`
-  should not change.
+- TypeScript / one UI framework / justified dependencies allowed per `RUN-SHEETS.md` Stack
+  policy. Path (c) PDF viewer libraries still need explicit approval — CSP `frame-src 'none'`
+  is the real constraint, not stack purity.
 - Build DOM with `createElement` + `textContent`. If you render Markdown, escape HTML **before**
   converting (the LoveGPT chat path already does this — copy the approach, not the file). No
   `innerHTML` with letter content, ever. No `eval`, no inline `<script>` (CSP forbids both).

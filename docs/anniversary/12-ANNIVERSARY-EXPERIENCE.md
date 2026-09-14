@@ -29,7 +29,8 @@ them is thematically exact and costs almost no new code.
 
 Constraints from `01-REPOSITORY-AUDIT.md`:
 
-- Vanilla ESM, plain CSS, no framework, **no new dependencies**.
+- TypeScript / one UI framework / justified dependencies allowed per `RUN-SHEETS.md` Stack
+  policy. `celebrate.js` stays hand-rolled — do not add a confetti library.
 - **New page = `.html` at repo root + an entry in `rollupOptions.input`.** Both, every time. Missing
   the second means it works in `npm run dev` and 404s in production.
 - `base: '/lovesite/'`, so the page lives at `/lovesite/anniversary.html`.

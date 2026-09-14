@@ -336,6 +336,39 @@ function renderRow({ person, state }, index, { level, parked = false }) {
   return row;
 }
 
+function categoryRank(relationship) {
+  const i = store.PEOPLE_CATEGORIES.indexOf(relationship);
+  return i === -1 ? store.PEOPLE_CATEGORIES.length : i;
+}
+
+function renderGroupedList(entries, level) {
+  const groups = new Map();
+  for (const entry of entries) {
+    const key = entry.person.relationship || 'Others';
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(entry);
+  }
+  const keys = [...groups.keys()].sort((a, b) => {
+    const d = categoryRank(a) - categoryRank(b);
+    return d !== 0 ? d : a.localeCompare(b);
+  });
+
+  const wrap = el('div', { class: 'people-groups' });
+  let i = 0;
+  for (const key of keys) {
+    const list = el('ul', { class: 'people-list' });
+    groups.get(key).forEach((entry) => {
+      list.appendChild(renderRow(entry, i, { level }));
+      i += 1;
+    });
+    wrap.appendChild(el('section', { class: 'people-group', 'aria-label': key }, [
+      el('h2', { class: 'people-group__title', text: key }),
+      list,
+    ]));
+  }
+  return wrap;
+}
+
 function renderEmptyState() {
   const add = el('button', { type: 'button', class: 'usm-btn usm-btn--primary', text: '+ Add someone', onclick: () => openForm(null) });
   return el('div', { class: 'usm-empty people-empty' }, [
@@ -368,9 +401,7 @@ function renderList() {
       ? 'Nobody easy to reach in this list right now, and that’s fine.'
       : 'Everyone’s parked for now. Enjoy the quiet.' }));
   } else {
-    const list = el('ul', { class: 'people-list' });
-    view.active.forEach((entry, i) => list.appendChild(renderRow(entry, i, { level: view.level })));
-    children.push(list);
+    children.push(renderGroupedList(view.active, view.level));
   }
 
   if (view.hiddenByEnergy > 0) {
@@ -648,7 +679,9 @@ function buildForm(person) {
   form = el('form', { class: 'people-form', novalidate: true });
 
   const nameInput = el('input', { type: 'text', class: 'usm-input', name: 'name', required: true, maxlength: '80', autocomplete: 'off', placeholder: 'Their name', value: person?.name || '' });
-  const relInput = el('input', { type: 'text', class: 'usm-input', name: 'relationship', maxlength: '80', autocomplete: 'off', placeholder: 'Sister, church friend, old flatmate…', value: person?.relationship || '' });
+  const relInput = el('input', { type: 'text', class: 'usm-input', name: 'relationship', maxlength: '80', autocomplete: 'off', list: 'peopleRelHints', placeholder: 'Best friend, Family, Friend, Mentor…', value: person?.relationship || '' });
+  const relHints = el('datalist', { id: 'peopleRelHints' },
+    store.PEOPLE_CATEGORIES.map((label) => el('option', { value: label })));
 
   const cadence = el('select', { class: 'usm-select', name: 'preferredCadence', id: 'peopleCadence' },
     store.CADENCES.map((c) => el('option', { value: c.id, text: c.label })));
@@ -737,7 +770,7 @@ function buildForm(person) {
     el('h2', { class: 'people-form__title', text: isEdit ? 'Edit' : 'Someone new' }),
     el('div', { class: 'people-form__grid people-form__grid--basics' }, [
       el('div', { class: 'usm-field' }, [el('label', { class: 'usm-field__label', for: 'peopleName', text: 'Name' }), nameInput]),
-      el('div', { class: 'usm-field' }, [el('label', { class: 'usm-field__label', for: 'peopleRel', text: 'Who they are to you' }), relInput]),
+      el('div', { class: 'usm-field' }, [el('label', { class: 'usm-field__label', for: 'peopleRel', text: 'Who they are to you' }), relInput, relHints]),
     ]),
     more,
     el('div', { class: 'people-form__actions' }, [submit, cancel]),

@@ -5,6 +5,44 @@
 >
 > **The one rule that makes this work: commit before every batch.** Your review is then just
 > `git diff`, and a bad batch is `git reset --hard` instead of an evening of archaeology.
+>
+> A one-hour anniversary-night shortcut lives in `TODAY.md`. You are doing this full plan instead.
+
+---
+
+## Stack policy — owner override
+
+The original specs said vanilla JS only, no TypeScript, no framework, no new dependencies. **That
+ceiling is lifted.** If TypeScript, a framework, or a small library makes a page look better and
+work better, use it. Quality is the requirement. Stack purity is not.
+
+Paste the block below at the **top of every batch prompt**, before the batch-specific text. It
+supersedes any "Vanilla ESM / no TypeScript / package.json unchanged" line in `04`–`16`.
+
+```
+STACK POLICY (owner override — this beats any "vanilla only" line in the spec files):
+
+- TypeScript is welcome on new files. Vite already handles .ts with no extra config.
+  Do not mass-convert existing .js in the same batch unless you are already rewriting
+  that file.
+- A UI framework (React, Vue, Svelte, or Solid — pick one and keep it) is allowed on
+  NEW pages: foryou, letters, applications, people, rhythm, outfit, anniversary.
+  Use one if the page will genuinely look cleaner or be less buggy as a result.
+  Do not introduce a second framework later.
+- Do NOT rewrite index.html, timeline.html, memories.html, or lovegpt.html into a
+  framework. Those four pages already work. Extend them; do not convert them.
+- New dependencies are allowed when they earn their place. Still forbidden:
+  analytics on private pages, a browser LLM client, a confetti/particles library
+  (celebrate.js is hand-rolled), a background-removal model, anything that needs
+  a secret API key in frontend code.
+- Visual language is not negotiable: existing CSS tokens, the pink palette, both
+  themes, 600px as the primary breakpoint, no SaaS-dashboard look.
+- Privacy rules are not relaxed. Rhythm never imports firebase.js. Letters never
+  go in public/ or dist/. No passphrase in source.
+- Every new HTML page still needs a rollupOptions.input entry in vite.config.js.
+  Forgetting that is a silent production 404.
+- When done, say what you chose (plain JS / TS / which framework) and why.
+```
 
 ---
 
@@ -75,6 +113,10 @@ third of a long session where an agent starts "improving" files it was told not 
 and Batch 2 are half-day jobs. Batches 3a/3b/3c share no files, so you can run them concurrently in
 three terminals if you want everything in one afternoon.
 
+If Batch 1 introduces a framework, **3a / 3b / 3c / 4 / 5 must use that same framework.** Say so in
+the Batch 1 report so the later prompts know what to inherit. If Batch 1 stays vanilla, later
+batches may still pick TypeScript or a framework for their own page.
+
 ---
 
 ## Batch 1 — Foundations (Opus)
@@ -92,7 +134,8 @@ Follow those two files exactly, including their "Files You Must Not Touch" lists
 Acceptance Criteria. Do not implement any feature page beyond the For You hub.
 
 Hard constraints:
-- Vanilla JS ES modules. No framework, no TypeScript, no new dependencies.
+- Follow the STACK POLICY pasted above. TypeScript is fine. A framework is fine on
+  foryou.html. Do not convert the four existing pages into a framework.
 - Do not change the value of any existing CSS token.
 - The four existing pages (index, timeline, memories, lovegpt) must look and behave
   EXACTLY as they do now. That is the primary success test.
@@ -119,7 +162,8 @@ costs more than a day of delay.
 
 ## Batch 2 — Timeline (Opus)
 
-Requires the 🔴 items in `TIMELINE-CONTENT.md` answered.
+Requires the remaining 🔴 items in `TIMELINE-CONTENT.md` answered — questions 1, 2, 4, 6, the two
+missing dates in 5, and the §7 passphrase decision.
 
 ```
 Read docs/anniversary/01-REPOSITORY-AUDIT.md, then execute
@@ -131,8 +175,15 @@ of timeline entries. Transcribe it.
 ABSOLUTE RULE: do not invent, embellish, infer, or "improve" any relationship event, date,
 title, or description. Where TIMELINE-CONTENT.md marks a description with the pencil icon,
 create the entry with an empty description and a TODO(emmanuel) comment — leave it for the
-owner to write. Where it marks a red circle, stop and ask rather than guessing. A fabricated
-memory in this file is the worst possible failure of this task.
+owner to write. Where it marks a red circle, stop and ask rather than guessing. Omit the
+undated items in section 4 entirely. A fabricated memory in this file is the worst possible
+failure of this task.
+
+Pay particular attention to R7b — the one-year celebration. Fireworks and confetti on the
+one-year entry, fired ONCE, keyed to id === 'one-year' and never to type === 'anniversary'
+(otherwise every monthly milestone sets it off). Hand-rolled following the graffiti.js
+pattern already in the repo — do not add a confetti library. Build the static reduced-motion
+card treatment FIRST and confirm it stands on its own before you write a single particle.
 
 Also fix this bug while you are in the neighbourhood, since it is on the same page:
 The "No" button on index.html runs off-screen from about the 4th click. Root cause: #noBtn

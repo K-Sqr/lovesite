@@ -129,7 +129,7 @@ them to the new schema **without rewriting the prose.** Only `id`, `date` (ISO),
 | `his-first-car` | 2026-09-01 | ✍️ | PROPOSED ✅ | milestone | ✍️ Celebrated his first car. |
 | `touchdown-toronto` | 2026-09-04 | Touchdown Toronto | ✅ | trip | ✍️ Deliberately echoes `touchdown-winnipeg` — lovely bookend, keep the parallel title. Use `location`. |
 | `meeting-Sinam` | 🔴 undated (during the Toronto trip) | ✍️ | | memory | ✍️ She met "our lovely prince" Sinam in Toronto and stayed with Itunu. 🔴 spellings. **Consider making this `expandedBody` on `touchdown-toronto` instead of a separate entry.** |
-| `one-year` | **2026-09-13** | **One Year** | ✅ | anniversary | ✍️ To the one that holds my heart, Happy Anniverary baby girl, I love you. One year with the one, how wonderful`12-ANNIVERSARY-EXPERIENCE.md` reads this entry. |
+| `one-year` | **2026-09-13** | **One Year** | ✅ | anniversary | ✍️ *(your draft, cleaned:)* "To the one that holds my heart — happy anniversary, baby girl. I love you. One year with the one; how wonderful." ✅ cleared to publish, see §7. Fires the celebration in `05-TIMELINE.md` R7b. `12-ANNIVERSARY-EXPERIENCE.md` reads this entry. |
 
 ---
 
@@ -191,3 +191,25 @@ Practical suggestion: first names only for third parties, and for anything you w
 the two of you, put it in a **letter** (`06-LETTERS.md`, served from private Storage) rather than a
 timeline entry. The timeline is the public-facing story; the letters are the private one. That split
 is worth using deliberately.
+
+---
+
+## 7. ✅ Resolved — the `one-year` entry is safe to publish
+
+There was a collision: the closing line of the `one-year` draft was also the Rhythm unlock
+passphrase, which would have published AES-GCM key material in plain text on the same public origin
+as the ciphertext it unlocks.
+
+**The owner changed the passphrase instead of cutting the line.** The entry text is now unremarkable
+from a security standpoint and can ship as written.
+
+The new passphrase is deliberately recorded **nowhere** — not here, not in `09-PERIOD-TRACKER.md`,
+not in source, not in a comment. `09` takes it from the owner at runtime and stores no verification
+hash. If you find a literal passphrase written down anywhere in this repository, that is a bug: stop
+and report it.
+
+**Standing rule for this file:** timeline entries are published verbatim to a public site. Never put
+a passphrase, passcode, key, token, address, or phone number in one, however good the sentence is.
+
+Two small copy fixes still outstanding in the `one-year` row: "Anniverary" → "Anniversary", and the
+sentence lost its closing punctuation where it ran into the note text.

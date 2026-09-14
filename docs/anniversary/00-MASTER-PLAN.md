@@ -10,12 +10,15 @@ Target: **Sep 13, 2026** — one year.
 
 ## 1. Executive summary — what this application actually is
 
-Us Machina is a **four-page static website written in plain JavaScript**. No React, no
-TypeScript, no router, no state library. Vite bundles four separate HTML files; each one imports a
-small entry script that calls a handful of `initX()` functions from `src/modules/`. Those functions
-find an element by `id` and build DOM into it by hand. It is about 3,100 lines total, and the entire
-dependency list is `firebase`, plus `vite` and `gh-pages` for development. That smallness is the
-codebase's best quality and the plan protects it.
+Us Machina is a **four-page static website written in plain JavaScript**. Vite bundles four
+separate HTML files; each one imports a small entry script that calls a handful of `initX()`
+functions from `src/modules/`. Those functions find an element by `id` and build DOM into it by
+hand. It is about 3,100 lines total, and the entire dependency list is `firebase`, plus `vite` and
+`gh-pages` for development.
+
+**Owner override:** vanilla JS is the starting stack, not a ceiling. TypeScript, one UI framework
+on *new* pages, and justified dependencies are allowed if they make a page look better and work
+better. The four existing pages are not rewritten. See `RUN-SHEETS.md` → Stack policy.
 
 The frontend deploys to GitHub Pages by pushing `dist/` to a `gh-pages` branch. **The repository is
 public.** There is no server for the website itself.

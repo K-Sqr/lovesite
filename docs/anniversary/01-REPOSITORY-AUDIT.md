@@ -152,7 +152,7 @@ slightly different thresholds. `04-SHARED-FOUNDATIONS.md` consolidates this.
 
 | File | Exports | Notes |
 | --- | --- | --- |
-| `milestones.js` | `mainMilestones` (5), `fullMilestones` (18) | **Two hand-maintained arrays with duplicated content.** `mainMilestones` is a manually abridged copy of 5 `fullMilestones` entries. Editing one does not update the other. |
+| `timeline.js` | `timeline` (42) + helpers | **Replaced `milestones.js` (05-TIMELINE, Sep 2026).** One array, ISO `date`, `id`, `type`, `featured`; the home preview is a capped slice of `getFeatured()`. The rest of this section describes the pre-05 state. |
 | `verses.js` | `verses` (33), `graffitiTexts` | |
 | `noTexts.js` | `noTexts` (16) | |
 

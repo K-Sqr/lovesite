@@ -80,7 +80,7 @@ The original proposal page and current landing page. Features:
 - **Sparkle text reveal** — letter-by-letter animation asking the question, with a skip button
 - **Yes / No buttons** — "Yes" triggers a graffiti celebration; "No" bounces around the screen through 15 zones, showing playful messages, then fades and shows "I still love you"
 - **Response section** — appears after answering, shows a heartfelt message
-- **Timeline preview** — 5 key milestones rendered as an interactive timeline
+- **Timeline preview** — a capped slice of the `featured` timeline entries (first five + the most recent, max six) rendered as an interactive timeline
 - **Photo gallery preview** — latest 6 memories from Firestore in a grid with lightbox
 - **Bible verse carousel** — 33 curated verses with prev/next navigation
 - **Background music** — toggle play/pause for a love song
@@ -100,8 +100,8 @@ A dedicated page for browsing and uploading relationship photos.
 
 The full story of the relationship with stats and milestones.
 
-- **Stats bar** — live counters for days together, months, and total milestones
-- **Full timeline** — 18 detailed milestones from "The Sermon" through "Touchdown Winnipeg" with icons, dates, and descriptions
+- **Stats bar** — four cards derived from real data: days together, calendar duration (`1 yr 0 mo`), moments recorded, photos (or letters)
+- **Full timeline** — every entry in `src/data/timeline.js`, grouped under sticky year headings, with type accents, "Read more" disclosures, photo thumbnails + lightbox, a scroll-linked rail fill, and a one-off celebration on the `one-year` entry
 - **Dark mode support** — all cards respect the current theme
 
 ### `lovegpt.html` — LoveGPT Chat
@@ -197,6 +197,50 @@ exclusion of light items — and every line of explanation comes from the owner-
 block at the top of that file. Backup exports item metadata only; photos are not included and the
 UI says so. Reminder seam as in `peopleStore.js`, opt-in and off by default.
 
+### `letters.html` — Letters
+
+The reading room (`docs/anniversary/06-LETTERS.md`): a locked, session-authenticated archive of
+the letters he has written her. `src/letters.js`, `src/styles/letters.css`, metadata in
+`src/data/letters.js`, bytes through `src/modules/letterSource.js` only. Reached from the For You
+hub, never the nav (the card is still `comingSoon` until the Storage path below lands).
+
+**Locked state.** One sentence in his voice and an inline passcode control. Sign-in is the existing
+`authenticateWithPasscode()` path (Cloud Function → custom token, `browserSessionPersistence`);
+`onAuthStateChanged` unlocks, so a restored session and a fresh sign-in take the same route.
+A wrong passcode shows one generic line. Nothing about a letter is in the DOM until unlock.
+`getRole()` (`auth.js`) reads the signed-in UID (`owner` | `tolu`) for UI gating only.
+
+**Archive.** Newest first, undated last, year dividers only when there is more than one year. No
+search, no filters, no badges. Each card is a `<button>`; opening plays a 340ms fold-and-lift once
+(none under `prefers-reduced-motion`).
+
+**Reading view.** 66ch measure, `--font-body` at `clamp(1rem, 2.2vw, 1.15rem)` / 1.7; script for
+the title and occasion only. Escape or the close control returns to the archive, restores scroll,
+and puts focus back on the card. A text body (`text/*` blob — R3 path (a), transcribed) renders as
+plain paragraphs via text nodes only. A PDF-only letter shows "Open the original" (a `blob:` URL in
+a new tab — a navigation, not a frame, so `frame-src 'none'` is untouched: **R3 path (a), no CSP
+change**) plus "Download the original".
+
+**Bytes.** `getLetterBlob(id)` → `Blob` → `URL.createObjectURL`, held in a module variable for the
+open view and revoked on close, on switching letters, and on `pagehide`. Never a download URL,
+never any storage, never the URL bar.
+
+**Data path today (LOCAL DEV ONLY).** `letterSource.js` fetches from the gitignored
+`letters-source/` folder at the repo root, which only Vite's dev server serves
+(`${import.meta.env.BASE_URL}letters-source/<file>`). `npm run build` does not copy it, so the
+deployed page 404s on every letter by design. Swapping to authenticated Firebase Storage
+(`getBlob(ref(storage, 'letters/<file>'))`, rules per `03-SECURITY-REMEDIATION.md`) is a change
+to that one file. Owner upload/delete (06 R8) waits for the same swap.
+
+**MVP privacy vs real security.** The locked state, the hidden nav entry, the role check and the
+session persistence are a curtain — DevTools defeats each in a minute. The only real boundary is a
+Firebase Storage rule evaluated server-side against the signed-in UID, which is why bytes must only
+ever arrive through an authenticated `getBlob()`. And because GitHub Pages serves `dist/` publicly
+regardless of repo visibility, letter bodies can never live in `src/`, `public/`, or a `?raw`
+import — a private repo protects the source, not the build. Metadata in `src/data/letters.js` is
+bundled and therefore must stay innocuous (titles, dates, one-line teasers from *outside* the
+letter; no excerpts).
+
 ### Information architecture
 
 Top-level navigation (one list, `NAV_LINKS` in `src/modules/siteChrome.js`):
@@ -218,7 +262,8 @@ All modules live in `src/modules/`. Each page imports only the modules it needs.
 
 | Module | Purpose |
 |--------|---------|
-| `auth.js` | Passcode authentication for uploads. Hashes input with SHA-256 (Web Crypto API), compares against stored hash, persists auth state in `sessionStorage`. |
+| `auth.js` | Passcode → Cloud Function `verify-passcode` → Firebase custom token → `signInWithCustomToken` with `browserSessionPersistence`. `isAuthenticated()`, `authenticateWithPasscode()`, `showPasscodeModal()`, `ensureAuthenticated()`, and `getRole()` (`'owner'` \| `'tolu'` \| `null`, read from the signed-in UID). |
+| `letterSource.js` | The only module that touches letter bytes: `getLetterList()`, `getLetterBlob(id)` → `Blob`. **Local-dev implementation** reading the gitignored `letters-source/`; the authenticated Storage `getBlob()` version replaces this file and nothing else. |
 | `dates.js` | Real calendar math: `daysBetween` (DST-safe), `calendarDuration` (month-by-month, not `/30.44`), `addDays`, `addMonths`, `formatDateRange`, and `formatRelativeGentle` — relative wording that never says "overdue", "late" or "should". |
 | `modal.js` | `openModal()` / `closeModal()` for `.usm-modal`: focus trap (`data-focus-trap`), Escape-to-close, focus restore. |
 | `reveal.js` | The single scroll-reveal `IntersectionObserver` (`initReveal(root)`, `observeReveal(el)`). Marks everything visible immediately under `prefers-reduced-motion` or when the API is missing. |
@@ -238,7 +283,8 @@ All modules live in `src/modules/`. Each page imports only the modules it needs.
 | `musicPlayer.js` | Background music toggle for the hero section. Play/pause with loop. |
 | `textReveal.js` | Sparkle text reveal animation. Reveals text character-by-character with sparkle particle effects. Supports a skip button to complete instantly. |
 | `theme.js` | Light/dark theme toggle. Uses `data-theme` attribute on `<html>`, persists choice in `localStorage`. Defaults to light mode on first visit. |
-| `timeline.js` | Renders milestones from `milestones.js` data as a vertical timeline with icons, dates, titles, and descriptions. Supports both compact (5 items) and full (18 items) modes. |
+| `timeline.js` | Renders `src/data/timeline.js` as a vertical timeline via `initTimeline({ variant: 'preview' \| 'full', mount })`. Safe DOM construction (no `innerHTML`). `preview` = capped featured slice + "View full timeline →"; `full` = year chapters, explicit left/right classes, disclosures, photos. |
+| `celebrate.js` | The one-year burst: `celebrate(anchor)` (hand-rolled fireworks + confetti, CSS keyframes, full teardown) and `celebrateOnce(anchor)` (module flag + `sessionStorage` `usm.celebrate.one-year`). Creates nothing under `prefers-reduced-motion`. |
 | `upload.js` | Image upload to Firebase Storage. Compresses images client-side using Canvas API before uploading. Creates a Firestore document with URL, caption, timestamp, and the uploader's passcode hash. |
 | `verses.js` | Bible verse carousel with prev/next navigation and floating verse overlay. Sources verses from `src/data/verses.js`. |
 | `webhook.js` | Sends the Yes/No response to a configurable external URL (Formspree, Discord, etc.). |
@@ -252,7 +298,8 @@ All in `src/data/`:
 | File | Contents |
 |------|----------|
 | `verses.js` | 33 Bible verses (`{ text, ref }`) curated for the relationship — 1 Corinthians 13, Song of Solomon, Romans, Isaiah, etc. Also exports `graffitiTexts` — an array of hearts, emojis, and love phrases used by the graffiti rain animation. |
-| `milestones.js` | Two arrays: `mainMilestones` (5 key milestones for the home page preview) and `fullMilestones` (18 detailed milestones for the timeline page). Each entry has `date`, `title`, `desc`, and `icon`. Covers events from "The Sermon" (Sep 2025) to "Touchdown Winnipeg" (Feb 2026). |
+| `timeline.js` | The single source of truth for the story: one `timeline` array (`id`, ISO `date`, optional `dateDisplay`, `title`, `description`, optional `expandedBody`, `icon`, `type`, `featured`, optional `location`/`tags`/`photos`) plus pure helpers `sortedByDate`, `getFeatured`, `getById`, `groupByYear`, `countByType`, `photoCount`, `displayDate`. Every entry traces to `docs/anniversary/TIMELINE-CONTENT.md`; ends with an authoring stub for the owner. |
+| `letters.js` | Letter **metadata only** (`id`, `file`, `title`, `occasion`, ISO `date`, one-line `teaser`, `pages`) plus pure helpers `displayTitle`, `sortNewestFirst`, `groupByYear`, `letterCount`. Bundled into `dist/`, so nothing from inside a letter may appear here. Titles/dates/occasions are `TODO(emmanuel)`. |
 | `noTexts.js` | 16 playful messages shown sequentially when the "No" button is clicked, e.g. "Are you sure?", "Pretty please?", "Abeg na!", "God said to say yes". |
 
 ---
@@ -687,7 +734,7 @@ ahosite/
 │   ├── lovegpt.js               # LoveGPT page entry point
 │   ├── foryou.js                # For You hub entry point
 │   ├── data/
-│   │   ├── milestones.js        # Relationship milestones
+│   │   ├── timeline.js          # The story — single source of truth
 │   │   ├── noTexts.js           # No-button messages
 │   │   └── verses.js            # Bible verses & graffiti texts
 │   ├── modules/

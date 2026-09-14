@@ -51,7 +51,7 @@ export function renderMemoryCard(memory, { canDelete = false, onDelete = null } 
   return card;
 }
 
-export function setupLightbox(container) {
+export function setupLightbox(container, { selector = '.gallery-card:not(.placeholder)' } = {}) {
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightbox-img');
   const lightboxCaption = document.getElementById('lightbox-caption');
@@ -71,7 +71,7 @@ export function setupLightbox(container) {
   });
 
   container.addEventListener('click', (e) => {
-    const card = e.target.closest('.gallery-card:not(.placeholder)');
+    const card = e.target.closest(selector);
     if (!card) return;
     const img = card.querySelector('img');
     if (!img) return;

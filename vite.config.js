@@ -17,6 +17,7 @@ export default defineConfig({
         applications: resolve(__dirname, 'applications.html'),
         people: resolve(__dirname, 'people.html'),
         outfit: resolve(__dirname, 'outfit.html'),
+        letters: resolve(__dirname, 'letters.html'),
       },
     },
   },

@@ -286,7 +286,9 @@ Because forgetting step 2 costs a confusing production 404:
 
 ## Technical requirements
 
-- Vanilla ESM only. No new runtime dependencies. No framework, no TypeScript.
+- Start from the existing Vite MPA. TypeScript is welcome on new modules. A framework is
+  allowed on `foryou.html` only in this batch — do not convert the four existing pages.
+  New dependencies are allowed if they earn their place. See `RUN-SHEETS.md` Stack policy.
 - No inline `<script>` (CSP forbids it).
 - `siteChrome.js` must be safe to call on a page with no music element.
 - All new localStorage keys under `usm.`.

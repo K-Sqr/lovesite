@@ -66,7 +66,10 @@ src/styles/memories.css            .lightbox styles (already imported by timelin
 
 ## Files You Own (Create)
 
-`src/data/timeline.js` — the single source of truth plus its derived helpers. Nothing else.
+```
+src/data/timeline.js               the single source of truth plus its derived helpers
+src/modules/celebrate.js           the one-year burst (R7b). Shared with 12; do not fork it.
+```
 
 ## Files You May Modify
 
@@ -143,10 +146,19 @@ export function photoCount()                   // total photos across all entrie
 ```
 
 **Migration is lossless.** Port all 18 `fullMilestones` entries verbatim — same prose, same emoji,
-same escapes — adding `id`, ISO `date`, and `type`. Set `featured: true` on exactly the five
-moments `mainMilestones` promotes: The Confession, She Said Yes, First Virtual Date, the Feb 9 2026
-arrival, and the six-month mark. Where the two arrays disagree (Feb 9 and Mar 13), **keep the
-`fullMilestones` wording** — it is the longer, better-written one.
+same escapes — adding `id`, ISO `date`, and `type`. Where the two arrays disagree (Feb 9 and Mar 13),
+**keep the `fullMilestones` wording** — it is the longer, better-written one.
+
+`id`, `date`, `type` and `featured` for all entries come from
+**`docs/anniversary/TIMELINE-CONTENT.md`**, which the owner has authored. That file is the source of
+truth for which entries are `featured`; it is no longer the five that `mainMilestones` promoted, and
+you must not infer the set yourself.
+
+**The home page must stay simple as `featured` grows.** The owner's instruction is that the home page
+is the short version and the timeline page is the detailed one. `getFeatured()` returns the full
+curated set for the timeline page's emphasis treatment; the home-page preview takes a **capped
+slice** — the first five plus the most recent entry — so adding a twelfth featured moment never
+lengthens the home page. Put the cap in the preview call site, not in `getFeatured()`.
 
 Two entries share `date: '2025-11-14'` (His 23rd Birthday, The Love Journal), so the sort must be
 stable and keep their authored order. Do not invent times to disambiguate.
@@ -261,6 +273,10 @@ A progress line that fills the centre rail as you scroll the full page.
 - **This is the only scroll-linked effect on the page.** Everything else uses the existing
   `.reveal` / `.visible` contract via `initReveal()` from `04`. Do not animate every element; no
   parallax, no counters that tick up, no extra slide-ins beyond what `animations.css` already does.
+- The **one and only exception** is the one-year celebration in **R7b**, and it is not scroll-linked
+  either — it is fired once by a visibility threshold and then torn down. If R7b appears to conflict
+  with the restraint in this section, R7b wins for that single entry and this section governs
+  everything else.
 - Implement as a single absolutely-positioned `.timeline-progress` layered over `.timeline::before`,
   its `height` (or `scaleY`) set from one passive, rAF-throttled `scroll` handler — or from CSS
   `animation-timeline: scroll()` with the JS path as fallback.
@@ -271,6 +287,103 @@ Stagger discipline: `animations.css` defines only **four** `data-delay` steps, a
 `(i % 4) + 1` cycling is why long lists arrive in visible waves. Reset the counter **per year
 group** and cap it — `Math.min(indexWithinYear, 3) + 1` — so each chapter cascades once instead of
 pulsing four-at-a-time down 24 entries.
+
+### R7b — The one-year celebration (owner request)
+
+The `one-year` entry (`2026-09-13`) is the destination of the whole page. When she reaches it,
+**it should celebrate.** This is an explicit owner request and it is not optional.
+
+#### What fires
+
+When the `one-year` entry becomes visible, a burst of fireworks and confetti plays over and around
+that entry, and the card itself gets a distinct celebratory treatment.
+
+Reuse the pattern the site already has rather than inventing a new one. `src/modules/graffiti.js` is
+the reference implementation: absolutely-positioned DOM spans appended to a container, driven by a
+CSS keyframe, removed by `setTimeout` when the animation ends. `animations.css` already ships
+`@keyframes sparkle-anim` (line 74) and the `.sparkle.warm` radial-gradient. Extend that vocabulary.
+
+Create `src/modules/celebrate.js`:
+
+```js
+/**
+ * Fires once. Idempotent — a second call while running is a no-op.
+ * @param {HTMLElement} anchor  the element to centre the burst on
+ * @returns {() => void}        teardown, safe to call at any time
+ */
+export function celebrate(anchor, { particles = 90, duration = 3200 } = {})
+```
+
+#### Hard constraints
+
+1. **Fires once per page load.** Guard with a module-level flag *and* a `sessionStorage` key so
+   scrolling up and back down does not re-trigger it. Nothing is more deflating than confetti that
+   won't stop. Re-firing is available only through the deliberate replay control below.
+2. **Keyed to the entry `id === 'one-year'`, never to `type === 'anniversary'`.** Six months, three
+   months, ten months and New Year are all `anniversary` entries and **must not** fire. One
+   celebration per page, for one moment.
+3. **`pointer-events: none`** on the container and every particle. It must be impossible for this to
+   eat a tap on a phone.
+4. **Never full-screen, never blocking.** The container is positioned relative to the entry, not the
+   viewport, and does not cover the nav or the card text. She must be able to read the entry *while*
+   it plays — the words are the point and the confetti is the frame.
+5. **No layout shift.** The container is `position: absolute` inside a `position: relative` wrapper
+   with `overflow: visible`. It must not change the height of the rail or nudge a single entry.
+6. **Full teardown.** Every element removed and every timer/rAF cancelled when `duration` elapses.
+   Also tear down on `visibilitychange` to `hidden` and on page unload. A particle loop left running
+   in a background tab on a phone is a battery complaint.
+7. **`prefers-reduced-motion: reduce` ⇒ no particles at all.** Not fewer, none. Substitute the static
+   treatment described below, which carries the same "this one is different" meaning without motion.
+   This is a vestibular accessibility requirement, not a preference.
+8. **No new dependency.** Not `canvas-confetti`, not `party.js`, not `tsparticles`. This is roughly
+   sixty lines of DOM and one keyframe, and the project rule is no new runtime dependencies.
+
+#### Performance
+
+`particles = 90` is the desktop budget. Halve it at `max-width: 600px`, and halve it again if
+`navigator.hardwareConcurrency <= 4`. Prefer a small number of `transform`/`opacity` keyframes over
+per-frame JS positioning — animate with CSS and let the compositor do it. Never animate `top`,
+`left`, `width`, or `height`. Batch all appends in a single `DocumentFragment`.
+
+If you use a rAF loop instead of CSS keyframes, it must be a single loop for all particles, not one
+per particle.
+
+#### Visual direction
+
+- Draw colours from the existing tokens via `getComputedStyle` so it themes correctly in dark mode —
+  `--pink-deep`, `--pink-mid`, and the `02` accent tokens. **Add one warm gold** for the anniversary
+  only; that gold is what makes it read as a milestone rather than more pink. Do not hardcode a hex.
+- Fireworks: a few upward streaks that burst into radial sparks, staggered over ~800ms so they
+  arrive as several bursts, not one wall.
+- Confetti: small rectangles, mixed colours, tumbling as they fall. Vary `animation-duration` and
+  `animation-delay` per particle so the fall is uneven — uniform confetti reads as a loading spinner.
+- Total ~3.2s, ending calmly rather than cutting out.
+- **Restraint is what makes it feel expensive.** Reference point: a wedding sparkler, not a slot
+  machine. If a frame of it would look at home on a casino page, it is too much.
+
+#### The card treatment (this is the part that lasts)
+
+The confetti plays for three seconds; the card is there forever, so it carries more weight.
+
+- `timeline-entry--anniversary-year` on the entry: a gold-tinted border accent, slightly more
+  padding, and a marginally larger title than a standard entry.
+- A single quiet line above the title — **"One year."** — set in the display face.
+- Under `prefers-reduced-motion`, this treatment plus a static sparkle flourish **is** the
+  celebration, and it must be good enough to stand alone. Build it first and test it with motion
+  disabled before you write a single particle.
+
+#### Replay
+
+One small, quiet control on the entry — a 🎉 affordance with an accessible label like
+"Play the celebration again". Tapping it re-fires `celebrate()`. Hidden entirely under reduced
+motion. This is how she shows someone else, and how you demo it without reloading.
+
+#### Relationship to `12-ANNIVERSARY-EXPERIENCE.md`
+
+That file owns the dedicated anniversary page and its own, larger set-piece. **This is the smaller
+one.** The timeline's job is a moment of delight at the end of the story; the anniversary page is the
+main event. Keep this one lighter so the page still has somewhere to escalate to. `celebrate.js` is
+shared — `12` may import and configure it, and must not fork it.
 
 ### R8 — Honest statistics
 
@@ -294,22 +407,35 @@ Build the cards with `createElement`, not the current `innerHTML` block, and kee
 
 ### R9 — The content gap (READ THIS TWICE)
 
-The last recorded entry is **`Mar 13, 2026`**. The one-year anniversary is **`Sep 13, 2026`**.
-About six months is missing.
+**✅ UPDATE — the gap has been filled by the owner.** `src/data/milestones.js` stops at `Mar 13, 2026`,
+but the owner has since authored **`docs/anniversary/TIMELINE-CONTENT.md`**, which carries the whole
+Mar → Sep 2026 stretch as real, dated events, reconciled against the existing 18 entries.
 
-> 🔴 **THE AGENT MUST NOT WRITE THESE ENTRIES.**
+**Read `TIMELINE-CONTENT.md` and transcribe it. It is the only source of timeline content.** The rule
+below has not relaxed one bit — it has simply moved from "leave the gap empty" to "transcribe, never
+embellish".
+
+> 🔴 **THE AGENT MUST NOT WRITE ANY RELATIONSHIP PROSE.**
 > Fabricating a memory is the single worst failure possible in this project. A plausible invented
 > anniversary, an imagined trip, a made-up conversation — she will read it, know it never happened,
 > and every real entry on the page becomes suspect. There is no partial credit and no acceptable
-> "I marked it as a placeholder" version. If you are tempted to fill the gap with something
-> reasonable, stop: the correct output is an empty, clearly-labelled form.
+> "I marked it as a placeholder" version.
+>
+> Concretely, for every row in `TIMELINE-CONTENT.md`:
+> - **Dates, titles, and ids** — transcribe exactly.
+> - **Descriptions marked ✍️** — the owner has not written these yet. Ship the entry with
+>   `description: ''` and a `// TODO(emmanuel): description` comment. Do **not** draft one from the
+>   note text in the table; those notes are instructions to him, not copy.
+> - **Rows marked 🔴** — stop and ask. Do not resolve an ambiguity by picking the likelier option.
+> - **`TIMELINE-CONTENT.md` §4 (undated items)** — omit them entirely. A wrong date in a timeline of
+>   someone's own relationship is worse than an absent entry.
 
-> ⚠️ **Date discrepancy, to resolve before anyone authors anything.** The owner's brief describes
-> the timeline as stopping at *"May 13, 2026 — our 6 month anniversary."* The repository says the
-> six-month milestone is **Mar 13, 2026**, which is what `Sep 13, 2025 + 6 months` gives and is
-> consistent with `loveCounter.js` and `timeline-page.js`. Either the brief's month is wrong or the
-> start date is, and it shifts every anniversary on the page including the one-year mark. **The
-> owner must confirm which.** Do not guess, do not average the two. Ask.
+> ✅ **Date discrepancy — RESOLVED, no action needed.** The brief once described the timeline as
+> stopping at *"May 13, 2026 — our 6 month anniversary."* The owner's `timeline rough sheet.md`
+> independently records *"March 13 — Six Months! And happy 180 days"*, which matches the repository,
+> matches `Sep 13, 2025 + 6 months`, and is consistent with `loveCounter.js` and `timeline-page.js`.
+> **`Sep 13, 2025` is the start date and `Mar 13, 2026` is the six-month mark.** The brief's month was
+> a slip. Do not reopen this.
 
 Append this block, verbatim, at the end of `src/data/timeline.js`:
 
@@ -317,8 +443,16 @@ Append this block, verbatim, at the end of `src/data/timeline.js`:
 // ─────────────────────────────────────────────────────────────────────────────
 //  ✍️  AUTHORING STUB — Emmanuel fills this in. Nobody else. No AI.
 //
-//  Coverage today ends at 2026-03-13. The gap is Mar 2026 → Sep 13 2026.
-//  ⚠️ Confirm the six-month date first (repo says Mar 13, the brief says May 13).
+//  Two jobs for this block:
+//
+//  1. Finish the entries above that still have `description: ''` and a
+//     TODO(emmanuel). They are real moments with dates; only the words are
+//     missing. See docs/anniversary/TIMELINE-CONTENT.md.
+//
+//  2. Add future moments. Still undated, from the rough sheet:
+//       - finished conducting her research experiments, in record time
+//       - defended her thesis
+//     Date them and they can go in.
 //
 //  Copy the block below once per real moment, delete the placeholder text, and
 //  move the finished object up into the `timeline` array in date order.
@@ -343,12 +477,13 @@ Append this block, verbatim, at the end of `src/data/timeline.js`:
 //    photos: [],              // optional — { src, alt, caption }
 //  },
 //
-//  Reserved, do not write until the day: 2026-09-13, one year.
+//  The 2026-09-13 one-year entry is the one that matters. Write it last and
+//  write it longest — it is also what triggers the celebration in R7b.
 // ─────────────────────────────────────────────────────────────────────────────
 ```
 
-The renderer must handle the gap gracefully today: a year group with few entries is fine, and
-`2026` rendering with only three entries is the honest current state, not an error state.
+The renderer must handle uneven chapters gracefully: a year group with few entries is fine, and a
+`2026` group far denser than `2025` is the honest shape of this story, not something to balance.
 
 ### R10 — Cross-reference, out of scope here
 
@@ -375,7 +510,8 @@ description as a follow-up and move on.
 
 ## Technical Requirements
 
-- Vanilla ESM. **Zero new dependencies** — `package.json` must not change.
+- TypeScript is fine on new files. Do not convert this page into a framework — it already
+  works. `celebrate.js` stays hand-rolled; no confetti library. See `RUN-SHEETS.md` Stack policy.
 - No `innerHTML` anywhere in the new or modified render paths.
 - `src/timeline-page.js` must use `initReveal()` from `src/modules/reveal.js`; delete its local
   `setupScrollReveal()`. `04` requires `reveal.js` to be the only `IntersectionObserver` for
@@ -431,7 +567,9 @@ description as a follow-up and move on.
 1. `grep -rn "milestones" src/` returns nothing; `src/data/milestones.js` is deleted.
 2. `src/data/timeline.js` exports one array containing all 18 original entries with prose byte-identical
    to `fullMilestones`, each with a unique `id`, an ISO `date`, and a `type`.
-3. `getFeatured()` returns exactly 5 entries, matching the five moments `mainMilestones` promoted.
+3. `getFeatured()` returns exactly the entries marked `featured` in
+   `docs/anniversary/TIMELINE-CONTENT.md`, and the **home-page preview renders at most six cards**
+   regardless of how many are featured.
 4. `grep -rn "innerHTML" src/modules/timeline.js src/timeline-page.js` returns nothing.
 5. The home page timeline preview renders the same 5 moments with the same layout and the same
    "View full timeline →" link as before the change, in both themes, at 375px and 1440px.
@@ -446,9 +584,18 @@ description as a follow-up and move on.
 11. Stats show four cards, all verifiable by hand from the data; `30.44` appears nowhere in `src/`.
 12. `calendarDuration('2025-09-13', '2026-09-13')` drives a "1 yr 0 mo" display on Sep 13 2026.
 13. `grep -rn "IntersectionObserver" src/` matches only `src/modules/reveal.js`.
-14. The authoring stub is present in `src/data/timeline.js` and **no entry dated after 2026-03-13
-    exists in the array.**
-15. `npm run build` succeeds; `git diff package.json package-lock.json` is empty.
+14. **Every entry in the array traces to a row in `docs/anniversary/TIMELINE-CONTENT.md`.** Nothing
+    invented, nothing inferred, nothing "reasonable" added to smooth a gap. Any row whose description
+    is still marked ✍️ ships with an empty `description` and a `TODO(emmanuel)` comment.
+15. Entries the owner has not yet dated (`TIMELINE-CONTENT.md` §4) are **absent**, not guessed.
+16. The `one-year` celebration fires once on the `one-year` entry, does not fire on any other
+    `anniversary` entry, and does not fire twice on scroll-up-and-back.
+17. Under `prefers-reduced-motion: reduce` no particle element is ever created, and the static
+    anniversary card treatment is present instead.
+18. The celebration container is `pointer-events: none`, causes no layout shift, and every element
+    and timer is gone within 500ms of the animation ending.
+19. `npm run build` succeeds; `git diff package.json package-lock.json` is empty — in particular
+    **no confetti library was added.**
 
 ## Verification
 
@@ -458,7 +605,8 @@ grep -rn "milestones" src/                    # → empty
 grep -rn "innerHTML" src/modules/timeline.js src/timeline-page.js   # → empty
 grep -rn "30.44" src/                         # → only loveCounter.js (untouched, by design)
 grep -rn "IntersectionObserver" src/          # → only src/modules/reveal.js
-grep -rn "2026-0[4-9]\|2026-1[0-2]" src/data/timeline.js  # → only inside the authoring stub comment
+grep -c "id:" src/data/timeline.js            # → matches the count in TIMELINE-CONTENT.md §5
+grep -rn "confetti\|tsparticles\|party.js" package.json   # → empty. Hand-rolled, per R7b.
 npm run build && npm run preview              # load /lovesite/timeline.html from dist
 git diff --stat src/styles/sections.css       # → no change
 ```
@@ -484,8 +632,16 @@ Manual:
 - [ ] Exactly one scroll-linked effect, absent under reduced motion
 - [ ] `calculateStats()` on `dates.js`; four honest stats; `30.44` gone from the timeline path
 - [ ] `src/timeline-page.js` uses `initReveal()`; its local observer deleted
-- [ ] Zero new dependencies; `npm run build` clean
-- [ ] Six-month date discrepancy raised with the owner **in writing** (unresolved-but-flagged is
-      acceptable; silently picking one is not)
-- [ ] **No invented entries.** The Mar → Sep 2026 gap is empty and the stub is waiting.
+- [ ] `celebrate.js` hand-rolled (no confetti library); `npm run build` clean
+- [ ] ✅ **Six-month date discrepancy RESOLVED** — the owner's `timeline rough sheet.md` independently
+      records "March 13 — Six Months! And happy 180 days", confirming the repository (`Mar 13, 2026`)
+      and the `Sep 13, 2025` start date. The brief's "May 13" was a slip. No action needed.
+- [ ] **No invented entries.** Every entry traces to `TIMELINE-CONTENT.md`; undated items are absent
+      rather than guessed; ✍️ descriptions ship empty with `TODO(emmanuel)`.
+- [ ] `src/modules/celebrate.js`: fires once, `one-year` only, no dependency, full teardown
+- [ ] Anniversary card treatment stands alone under reduced motion, with no particles created
+- [ ] Replay control present, labelled, and hidden under reduced motion
+- [ ] No entry contains a passphrase, passcode, key, token, address, or phone number. Timeline data
+      is published verbatim to a public origin. (`TIMELINE-CONTENT.md` §7 — the one-year entry was
+      audited and cleared.)
 - [ ] PR description notes the `chunks.json` RAG follow-up as out of scope

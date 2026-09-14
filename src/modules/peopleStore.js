@@ -42,6 +42,9 @@
 import { createStore } from './storage.js';
 import { parseISO, toISO, addDays, daysBetween, startOfDay } from './dates.js';
 import { defaultMessageTemplates } from '../data/messageTemplates.js';
+import { peopleSeed, PEOPLE_CATEGORIES } from '../data/peopleSeed.js';
+
+export { PEOPLE_CATEGORIES };
 
 /** The only console output in this module. Never pass it a person or a template. */
 function warn(message, err) {
@@ -106,7 +109,41 @@ const DEFAULT_ENERGY = 'normal';
 
 /* ─────────────────────────────── stores ─────────────────────────────── */
 
-const peopleStore = createStore('people', { version: 1, initial: { items: [] } });
+/** Stable starter records so a re-seed never duplicates or reshuffles ids. */
+function seededItems() {
+  const ts = '2026-09-13T12:00:00.000Z';
+  return peopleSeed.map((p) => ({
+    id: `per_seed_${p.slug}`,
+    name: p.name,
+    relationship: p.relationship,
+    lastContactAt: null,
+    preferredCadence: p.preferredCadence,
+    birthday: null,
+    importantDates: [],
+    notes: '',
+    isSnoozedUntil: null,
+    energyCost: p.energyCost,
+    createdAt: ts,
+    updatedAt: ts,
+  }));
+}
+
+function mergeSeed(existing) {
+  const have = new Set(
+    existing.map((p) => String(p?.name || '').trim().toLowerCase()).filter(Boolean),
+  );
+  const extra = seededItems().filter((p) => !have.has(p.name.toLowerCase()));
+  return [...existing, ...extra];
+}
+
+const peopleStore = createStore('people', {
+  version: 2,
+  initial: { items: seededItems() },
+  migrate(oldData) {
+    const existing = Array.isArray(oldData?.items) ? oldData.items : [];
+    return { items: mergeSeed(existing) };
+  },
+});
 const templatesStore = createStore('messageTemplates', { version: 1, initial: { customTemplates: [] } });
 
 export const storeKeys = { people: peopleStore.key, messageTemplates: templatesStore.key };

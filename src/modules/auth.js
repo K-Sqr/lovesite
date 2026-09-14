@@ -9,6 +9,16 @@ export function isAuthenticated() {
   return !!auth.currentUser;
 }
 
+/**
+ * Which identity is signed in: 'owner' | 'tolu' | null.
+ * Read from the UID of the server-minted custom token, never from anything
+ * the client stored. Gates UI only — Storage rules gate the data.
+ */
+export function getRole() {
+  const uid = auth.currentUser ? auth.currentUser.uid : null;
+  return uid === 'owner' || uid === 'tolu' ? uid : null;
+}
+
 export async function authenticateWithPasscode(passcode) {
   const res = await fetch(FUNCTION_URL, {
     method: 'POST',

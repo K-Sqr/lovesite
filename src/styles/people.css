@@ -99,6 +99,21 @@
   padding: var(--space-3) 0 var(--space-5);
 }
 
+.people-groups {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.people-group__title {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 var(--space-2);
+}
+
 /* ── List ── */
 .people-list {
   list-style: none;

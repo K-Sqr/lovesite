@@ -34,6 +34,39 @@ function pickZone() {
   return ZONES[idx];
 }
 
+/**
+ * Turn a zone's percentage into a pixel centre that keeps the whole button on
+ * screen. The button is position: fixed with translate(-50%, -50%), so its
+ * centre must stay at least half its size (plus a margin) from every edge —
+ * and clear of the fixed top nav and the ≤600px bottom tab bar.
+ */
+function clampToViewport(btn, zone) {
+  const EDGE = 12;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const halfW = btn.offsetWidth / 2;
+  const halfH = btn.offsetHeight / 2;
+
+  const nav = document.querySelector('.site-nav');
+  const tabs = document.querySelector('.site-tabs');
+  const topInset = nav ? nav.getBoundingClientRect().height : 0;
+  const bottomInset = tabs ? tabs.getBoundingClientRect().height : 0;
+
+  const minX = halfW + EDGE;
+  const maxX = vw - halfW - EDGE;
+  const minY = topInset + halfH + EDGE;
+  const maxY = vh - bottomInset - halfH - EDGE;
+
+  const wantX = (parseFloat(zone.left) / 100) * vw;
+  const wantY = (parseFloat(zone.top) / 100) * vh;
+
+  return {
+    // If the button is wider than the room available, centre it rather than clip it.
+    x: minX > maxX ? vw / 2 : Math.min(maxX, Math.max(minX, wantX)),
+    y: minY > maxY ? vh / 2 : Math.min(maxY, Math.max(minY, wantY)),
+  };
+}
+
 function showLoveMessage() {
   const msg = document.createElement('div');
   msg.className = 'love-message-overlay';
@@ -97,7 +130,8 @@ export function initButtons(onYes) {
     }
 
     const zone = pickZone();
-    noBtn.style.left = zone.left;
-    noBtn.style.top = zone.top;
+    const { x, y } = clampToViewport(noBtn, zone);
+    noBtn.style.left = `${Math.round(x)}px`;
+    noBtn.style.top = `${Math.round(y)}px`;
   });
 }

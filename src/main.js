@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
   revealTextWithSparkles(MESSAGE, mainMessage, onRevealComplete);
 
   initButtons(unlockSections);
-  initTimeline();
+  initTimeline({ variant: 'preview' });
   initGallery();
   initVerseCarousel();
 });

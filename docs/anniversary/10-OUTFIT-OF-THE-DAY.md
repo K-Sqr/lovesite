@@ -507,8 +507,8 @@ that took effort to build.
   feature belongs to is soaked in that language. Hold it.
 - Do not call an LLM for recommendations.
 - Do not generate clothing images.
-- Do not add a runtime dependency. No date library, no `idb`, no background-removal model, no CSS
-  framework.
+- TypeScript / one UI framework / justified dependencies allowed per `RUN-SHEETS.md` Stack
+  policy. Still forbidden: a background-removal model, generated clothing images, an LLM call.
 - Do not import `upload.js`, `firebase.js`, or `auth.js`.
 - Do not enforce no-repeat.
 - Do not gate the page behind a minimum item count.

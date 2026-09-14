@@ -367,8 +367,8 @@ all caught up!" card. Absence is the correct calm state.
 
 ## Technical Requirements
 
-- Vanilla ESM. **Zero new dependencies** — the whole `package.json` surface is `firebase`, `vite`,
-  `gh-pages`, and that is a deliberate property of this repo.
+- TypeScript / one UI framework / justified dependencies allowed per `RUN-SHEETS.md` Stack
+  policy. Still no service worker and no permission prompt on load.
 - No new network host, therefore **no CSP edit**. If you think you need one you have drifted into
   Level 3.
 - All persistence through `storage.js`; no direct `localStorage` in your files. All date maths

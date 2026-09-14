@@ -96,7 +96,10 @@
   cursor: pointer;
   min-width: 44px;
   min-height: 44px;
-  white-space: nowrap;
+  max-width: min(80vw, 22rem);
+  white-space: normal;
+  line-height: 1.3;
+  text-align: center;
 }
 
 .heart {

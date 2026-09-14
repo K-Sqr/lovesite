@@ -434,7 +434,8 @@ typed.**
 
 ## Technical Requirements
 
-- Vanilla ESM. No framework, no TypeScript, no JSX, no new dependency; `package.json` unchanged.
+- Start from the existing Vite MPA. TypeScript, one UI framework, and justified dependencies
+  are allowed per `RUN-SHEETS.md` Stack policy. Do not rewrite the four existing pages.
 - No inline `<script>` (the CSP forbids it) and no new `connect-src` host — **this page makes zero
   network requests.**
 - `createStore('applications', { version: 1 })` and `createStore('materials', { version: 1 })` →

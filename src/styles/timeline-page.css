@@ -109,3 +109,342 @@
     padding: 0.8rem 1rem;
   }
 }
+
+/* ══ 05-TIMELINE: full-page affordances (never applied to the home preview) ══ */
+
+/* One warm gold, for the one-year entry only. Lives here because base.css is
+   frozen; read at runtime by celebrate.js via getComputedStyle. */
+.timeline-page {
+  --gold-anniversary: #c9962b;
+  --gold-anniversary-soft: rgba(201, 150, 43, 0.14);
+}
+
+[data-theme="dark"] .timeline-page {
+  --gold-anniversary: #e6b95a;
+  --gold-anniversary-soft: rgba(230, 185, 90, 0.16);
+}
+
+/* ── Year chapters ── (data, so body face; micro-label scale from 02 §2) */
+.timeline-page .timeline-year {
+  position: sticky;
+  top: 52px; /* body padding-top — the fixed nav height */
+  z-index: 2;
+  display: table;
+  margin: 0 auto 2rem;
+  padding: 0.4rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--pink-hot);
+  background: var(--card-bg);
+  border-radius: 999px;
+  box-shadow: 0 2px 12px var(--shadow-soft);
+}
+
+/* Deep links land below the nav and the sticky chapter heading. */
+.timeline-page .timeline-entry {
+  scroll-margin-top: 110px;
+}
+
+/* ── Left/right alternation by explicit class ──
+   sections.css alternates with :nth-child, which the year headings would
+   scramble. Higher specificity here; the ≤600px block at the end still wins. */
+.timeline-page .timeline-entry.timeline-entry--left  { margin-left: 0; margin-right: auto; }
+.timeline-page .timeline-entry.timeline-entry--right { margin-left: auto; margin-right: 0; }
+.timeline-page .timeline-entry--left::after  { right: -32px; left: auto; }
+.timeline-page .timeline-entry--right::after { left: -32px; right: auto; }
+
+/* animations.css slides entries in from the rail side by :nth-child too. */
+.timeline-page .timeline-entry--left:not(.visible)  { transform: translateX(-30px); }
+.timeline-page .timeline-entry--right:not(.visible) { transform: translateX(30px); }
+
+/* ── Type accents ── a border-left tone and nothing else */
+.timeline-page .timeline-entry {
+  border-left: 3px solid transparent;
+}
+.timeline-page .timeline-entry--milestone    { border-left-color: var(--pink-hot); }
+.timeline-page .timeline-entry--trip         { border-left-color: var(--tone-calm); }
+.timeline-page .timeline-entry--anniversary  { border-left-color: var(--pink-deep); }
+.timeline-page .timeline-entry--letter       { border-left-color: var(--tone-warm); }
+.timeline-page .timeline-entry--conversation { border-left-color: var(--tone-waiting); }
+.timeline-page .timeline-entry--funny        { border-left-color: var(--tone-soon); }
+.timeline-page .timeline-entry--event        { border-left-color: var(--pink-light); }
+.timeline-page .timeline-entry--memory       { border-left-color: var(--tone-quiet); }
+
+.timeline-page .timeline-location {
+  font-weight: 500;
+  opacity: 0.75;
+}
+
+/* ── Disclosure ── */
+.timeline-page .timeline-more {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  min-width: 44px;
+  margin-top: 0.4rem;
+  padding: 0 0.6rem 0 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pink-hot);
+}
+
+.timeline-page .timeline-more:hover {
+  color: var(--pink-deep);
+}
+
+.timeline-page .timeline-body {
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  line-height: 1.6;
+  opacity: 0.85;
+  padding-bottom: 0.4rem;
+}
+
+.timeline-page .timeline-body[hidden] {
+  display: none;
+}
+
+/* ── Photos ── fixed boxes so nothing shifts as images arrive */
+.timeline-page .timeline-photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
+.timeline-page .timeline-photo {
+  width: 88px;
+  height: 88px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--surface-sunken);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.timeline-page .timeline-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.timeline-page .timeline-photo:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px var(--shadow-pink);
+}
+
+/* ── The rail fill ── the ONE scroll-linked effect (R7). Not rendered under reduced motion. */
+.timeline-page .timeline-progress {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background: var(--pink-hot);
+  border-radius: 2px;
+  transform: translateX(-50%) scaleY(0);
+  transform-origin: top;
+  will-change: transform;
+  pointer-events: none;
+}
+
+/* ── The one-year card (R7b) ── this is the part that lasts.
+   With reduced motion this treatment IS the celebration, so it stands alone. */
+.timeline-page .timeline-entry--anniversary-year {
+  border-left: 3px solid var(--gold-anniversary);
+  padding: 1.9rem 1.9rem 1.7rem;
+  box-shadow:
+    0 2px 12px var(--shadow-soft),
+    0 0 0 1px var(--gold-anniversary-soft);
+}
+
+.timeline-page .timeline-entry--anniversary-year h3 {
+  font-size: clamp(1.35rem, 3.2vw, 1.7rem);
+}
+
+.timeline-page .timeline-entry--anniversary-year .timeline-date {
+  color: var(--gold-anniversary);
+}
+
+.timeline-page .timeline-entry--anniversary-year::after {
+  background: var(--gold-anniversary);
+  box-shadow: 0 0 0 3px var(--gold-anniversary-soft);
+}
+
+/* the single quiet line above the title */
+.timeline-page .timeline-eyebrow {
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.6vw, 1.3rem);
+  color: var(--gold-anniversary);
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+/* static sparkle flourish — three glyphs in the corner, no motion */
+.timeline-page .timeline-entry--anniversary-year::before {
+  content: '\2726 \2727 \2726';
+  position: absolute;
+  top: 0.9rem;
+  right: 1.1rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.25em;
+  color: var(--gold-anniversary);
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+/* replay control — hidden entirely under reduced motion */
+.timeline-page .timeline-replay {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.5rem;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.15rem;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s ease, background 0.2s ease;
+}
+
+.timeline-page .timeline-replay:hover {
+  opacity: 1;
+  background: var(--gold-anniversary-soft);
+}
+
+/* ── Celebration particles (celebrate.js) ──
+   Compositor-only: transform + opacity, per-particle vars set inline. */
+.celebrate {
+  position: absolute;
+  inset: -45% -25%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.celebrate.celebrate--page {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+}
+
+.celebrate--page .celebrate__streak {
+  width: 3px;
+  height: 34px;
+}
+
+.celebrate--page .celebrate__spark {
+  width: 8px;
+  height: 8px;
+  box-shadow: 0 0 14px var(--celebrate-colour, var(--pink-hot));
+}
+
+.celebrate--page .celebrate__confetti {
+  width: 9px;
+  height: 14px;
+}
+
+.celebrate > * {
+  position: absolute;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.celebrate__streak {
+  width: 2px;
+  height: 22px;
+  border-radius: 2px;
+  background: var(--celebrate-colour, var(--pink-hot));
+  opacity: 0;
+  transform-origin: center bottom;
+  animation: celebrate-streak var(--celebrate-duration, 520ms) cubic-bezier(0.2, 0.7, 0.3, 1) var(--celebrate-delay, 0ms) both;
+}
+
+.celebrate__spark {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--celebrate-colour, var(--pink-hot));
+  box-shadow: 0 0 6px var(--celebrate-colour, var(--pink-hot));
+  opacity: 0;
+  animation: celebrate-spark var(--celebrate-duration, 1100ms) cubic-bezier(0.1, 0.8, 0.3, 1) var(--celebrate-delay, 0ms) both;
+}
+
+.celebrate__confetti {
+  width: 7px;
+  height: 11px;
+  border-radius: 1px;
+  background: var(--celebrate-colour, var(--pink-hot));
+  opacity: 0;
+  animation: celebrate-confetti var(--celebrate-duration, 2200ms) cubic-bezier(0.25, 0.6, 0.45, 1) var(--celebrate-delay, 0ms) both;
+}
+
+@keyframes celebrate-streak {
+  0%   { opacity: 0.9; transform: translate3d(0, 0, 0) scaleY(1); }
+  80%  { opacity: 0.8; }
+  100% { opacity: 0;   transform: translate3d(0, var(--celebrate-rise), 0) scaleY(0.4); }
+}
+
+@keyframes celebrate-spark {
+  0%   { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+  60%  { opacity: 0.9; }
+  100% { opacity: 0; transform: translate3d(var(--celebrate-dx), var(--celebrate-dy), 0) scale(0.15); }
+}
+
+@keyframes celebrate-confetti {
+  0%   { opacity: 1; transform: translate3d(0, 0, 0) rotate(0deg) rotateX(0deg); }
+  25%  { transform: translate3d(calc(var(--celebrate-dx) * 0.35), calc(var(--celebrate-dy) * 0.2), 0) rotate(calc(var(--celebrate-rot) * 0.3)) rotateX(180deg); }
+  60%  { opacity: 1; }
+  100% { opacity: 0; transform: translate3d(var(--celebrate-dx), var(--celebrate-dy), 0) rotate(var(--celebrate-rot)) rotateX(720deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timeline-page .timeline-progress,
+  .timeline-page .timeline-replay,
+  .celebrate {
+    display: none;
+  }
+}
+
+/* ── Mobile ── extend the single-rail override to the explicit-side classes */
+@media (max-width: 600px) {
+  .timeline-page .timeline-entry--left::after,
+  .timeline-page .timeline-entry--right::after {
+    left: -37px;
+    right: auto;
+  }
+
+  /* Slide in from the rail (leftwards) so an unrevealed card never widens the page. */
+  .timeline-page .timeline-entry--left:not(.visible),
+  .timeline-page .timeline-entry--right:not(.visible) {
+    transform: translateX(-30px);
+  }
+
+  .timeline-page .timeline-progress {
+    left: 20px;
+  }
+
+  .timeline-page .timeline-entry {
+    scroll-margin-top: 100px;
+  }
+
+  .timeline-page .timeline-entry--anniversary-year {
+    padding: 1.6rem 1.3rem 1.5rem;
+  }
+}

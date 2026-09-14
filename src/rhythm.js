@@ -508,7 +508,7 @@ function buildRow(record, lengthToNext, index) {
   if (record.mood) extras.push(record.mood);
   if (record.note) extras.push(record.note);
 
-  row.append(
+  row.append(...[
     el('div', { class: 'rhythm-row__head' }, [
       el('span', { class: 'rhythm-row__date', text: formatLongDate(record.startDate) }),
       el('div', { class: 'rhythm-row__actions' }, [
@@ -518,7 +518,7 @@ function buildRow(record, lengthToNext, index) {
     ]),
     meta ? el('p', { class: 'rhythm-row__meta', text: meta }) : null,
     extras.length ? el('p', { class: 'rhythm-row__extra', text: extras.join(' — ') }) : null,
-  );
+  ].filter(Boolean));
   return row;
 }
 

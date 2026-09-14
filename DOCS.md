@@ -118,6 +118,13 @@ The entrance to the personal tools. One sentence of writing, then a card per too
 rendered from the `TOOLS` list in `src/foryou.js`; a tool that has not shipped yet renders as a
 plain card marked "Coming soon" (`comingSoon: true`) — flip it when the page lands.
 
+### `rhythm.html` — Rhythm
+
+A private, local-only page. Its data lives in `localStorage` under `usm.rhythm.v1` as AES-GCM
+ciphertext (key derived from a passphrase the owner supplies at runtime and never stored); it imports
+no Firebase module and makes no network requests. Entry `src/rhythm.js`; prediction maths in
+`src/modules/cyclePredict.js`; storage in `src/modules/rhythmStore.js`.
+
 ### Information architecture
 
 Top-level navigation (one list, `NAV_LINKS` in `src/modules/siteChrome.js`):

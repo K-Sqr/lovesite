@@ -22,15 +22,15 @@ export const letters = [
     title: 'First of many',
     occasion: 'The first letter',
     date: '2025-10-02',
-    teaser: 'The first letter he ever wrote to her.',
+    teaser: 'The first letter I ever wrote to you.',
   },
   {
     id: 'first-birthday',
     file: 'First Birthday.pdf',
     title: 'First Birthday',
-    occasion: 'Her birthday',
+    occasion: 'Your birthday',
     date: '2025-10-26',
-    teaser: 'A prayer for her, on the first birthday they celebrated while dating.',
+    teaser: 'A prayer for you, on the first birthday we celebrated while dating.',
   },
   {
     id: 'random-thought',
@@ -38,15 +38,15 @@ export const letters = [
     title: 'Random thought',
     occasion: 'A thought',
     date: '2025-11-02',
-    teaser: 'Literally a random thought he had, written down and sent.',
+    teaser: 'Literally a random thought I had, written down and sent.',
   },
   {
     id: 'build-up',
     file: 'Build up.pdf',
     title: 'Build up',
-    occasion: 'When she needed steadying',
+    occasion: 'When you needed steadying',
     date: '2025-11-28',
-    teaser: 'Written to comfort and reassure her after a panic attack.',
+    teaser: 'Written to comfort and reassure you after a panic attack.',
   },
   {
     id: '92dn',
@@ -62,7 +62,7 @@ export const letters = [
     title: 'Valentines',
     occasion: 'Valentine’s Day',
     date: '2026-01-13',
-    teaser: 'A poem he wrote for her for Valentine’s.',
+    teaser: 'A poem I wrote for you for Valentine’s.',
   },
   {
     id: 'happy-180-days',
@@ -70,7 +70,7 @@ export const letters = [
     title: 'Happy 180 days',
     occasion: 'Six months',
     date: '2026-03-12',
-    teaser: 'The letter for their six months.',
+    teaser: 'The letter for our six months.',
   },
   {
     id: '7',
@@ -78,15 +78,15 @@ export const letters = [
     title: '7',
     occasion: 'Seven months',
     date: '2026-03-20',
-    teaser: 'Happy seven months — and a surprise portfolio site he built for her.',
+    teaser: 'Happy seven months — and a surprise portfolio site I built for you.',
   },
   {
     id: 'blazing-hot',
     file: 'Blazing Hot (1).pdf',
     title: 'Blazing Hot',
-    occasion: 'Her excellence',
+    occasion: 'Your excellence',
     date: '2026-06-01',
-    teaser: 'A letter of acknowledgement — written because of how she shines.',
+    teaser: 'A letter of acknowledgement — written because of how you shine.',
   },
   {
     id: 'one-year-with-the-one',
@@ -94,7 +94,7 @@ export const letters = [
     title: 'One year with the one',
     occasion: 'One year',
     date: '2026-09-13',
-    teaser: 'The letter for their first year.',
+    teaser: 'The letter for our first year.',
   },
 ];
 

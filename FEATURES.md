@@ -25,4 +25,5 @@
 - Also from on the memories page, I want to be able to delete memories from the website, so I dont have to go do it manually on fire base. Add an option to inlcude captions when an image is uploaded.
 
 - On the first page after yes is clicked, I want the page to smoothly navigate to our story so far.
+- Fix the promt for peter vasko and real madrid
 

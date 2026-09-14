@@ -38,6 +38,8 @@ Use this list to capture details over time. Answers can be folded into `function
 - A trip you both want to take before kids (or before the next big life step).
 - Indoor vs. outdoor: what recharges each of you?
 
+i dont know yet
+
 ## Health & care
 
 - How do you each like to be cared for when sick or stressed (space, food, words, presence)?

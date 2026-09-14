@@ -71,7 +71,7 @@ After a successful proposal, the site was upgraded from a one-time artifact into
 
 ---
 
-## Pages
+## Pages ane skeleton
 
 ### `index.html` — Home / Proposal
 

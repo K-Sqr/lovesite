@@ -22,8 +22,9 @@
  * ── Reminder seam (for 11-NOTIFICATIONS.md) ─────────────────────────────────
  * Same pattern as peopleStore.js: a defensive dynamic import() in try/catch,
  * a stable deterministic id (`outfit-<ISO date>`) so re-running never
- * duplicates, and full functionality when the module is absent. Opt-in, off by
- * default (settings.morningReminder).
+ * duplicates, and full functionality if the engine chunk fails to load.
+ * Opt-in twice over: settings.morningReminder here, and the 'What to Wear'
+ * type in the engine's preferences (default off).
  */
 
 import { createStore, createBlobStore } from './storage.js';
@@ -393,15 +394,13 @@ export function importJSON(json) {
 /* ─────────────────────────────── reminder seam ─────────────────────────────── */
 
 let reminders = null;
-// The path is a variable (with @vite-ignore) so a missing file is a runtime
-// rejection, not a build error. When 11 ships reminders.js, change this to a
-// literal `import('./reminders.js')` so Vite bundles it with the page.
-const REMINDERS_MODULE = './reminders.js';
+// A literal path so Vite bundles the engine (11-NOTIFICATIONS) with this page.
+// Still wrapped: if the chunk ever fails to load, every call below is a no-op.
 const remindersReady = (async () => {
   try {
-    reminders = await import(/* @vite-ignore */ REMINDERS_MODULE);
+    reminders = await import('./reminders.js');
   } catch {
-    reminders = null; // not built yet; every call below becomes a no-op
+    reminders = null;
   }
 })();
 
@@ -437,7 +436,7 @@ function morningOf(date) {
 /**
  * Keep (or drop) the optional "here's today's outfit" morning reminder for
  * tomorrow. Deterministic id `outfit-<ISO date>`, so calling this on every
- * page open replaces rather than duplicates. A no-op until reminders.js exists.
+ * page open replaces rather than duplicates.
  * @param {Date} [now]
  */
 export async function syncMorningReminder(now = new Date()) {

@@ -29,10 +29,9 @@
  *
  * ── Reminder seam (for 11-NOTIFICATIONS.md) ─────────────────────────────────
  * This page emits reminder records; it does not schedule, prompt, or poll.
- * `src/modules/reminders.js` is OWNED BY 11-NOTIFICATIONS.md and does not exist
- * yet. It is loaded lazily via `import.meta.glob`, which resolves to nothing
- * at build time while the file is absent and to a lazy loader once it lands —
- * so no edit here is needed when it ships. Every call is a no-op until then.
+ * `src/modules/reminders.js` is OWNED BY 11-NOTIFICATIONS.md. It is loaded
+ * lazily via `import.meta.glob`, so the desk still works if that chunk ever
+ * fails to load — every call below simply becomes a no-op.
  *
  * Emitted record (the id is stable and deterministic, so re-emitting REPLACES,
  * never duplicates):
@@ -48,8 +47,8 @@
  *   }
  *
  * Consumed as:  reminders.upsertReminder(record)   and   reminders.cancelReminder(id)
- * If reminders.js instead exposes the 11-NOTIFICATIONS engine API
- * (registerReminder / cancelBySource), the seam maps onto it — see emitReminder().
+ * The engine maps `kind` deadline/interview/followup → type 'application' and
+ * stores `id` as the opaque sourceId; cancelReminder() accepts that same id.
  *
  * When each fires: a deadline the morning before it closes; an interview the
  * morning before; a follow-up the morning of. Cleared fields drop their record;

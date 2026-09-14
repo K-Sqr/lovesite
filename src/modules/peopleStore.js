@@ -18,9 +18,9 @@
  * output and it must never be handed a record.
  *
  * ── Reminder seam (08 R7 → 11-NOTIFICATIONS) ─────────────────────────────
- * `src/modules/reminders.js` is owned by 11-NOTIFICATIONS.md and may not
- * exist. It is loaded with a dynamic import inside try/catch; when it is
- * absent every emit/drop below is a no-op and the page works exactly the same.
+ * `src/modules/reminders.js` is owned by 11-NOTIFICATIONS.md. It is loaded
+ * with a dynamic import inside try/catch; if that chunk ever fails to load,
+ * every emit/drop below is a no-op and the page works exactly the same.
  *
  * Emitted record (ids are deterministic, so re-emitting REPLACES, never duplicates):
  *   {
@@ -33,8 +33,8 @@
  *     href: '/lovesite/people.html#per_k3n8v',
  *   }
  * Calls: `reminders.upsertReminder(rec)` and `reminders.cancelReminder(id)`.
- * If the engine only exposes `registerReminder({ type, sourceId, title, body, scheduledAt })`
- * (the shape 11 sketches), the wrapper maps to it. Emitted on save and on page
+ * The engine maps kind birthday → 'birthday', checkin → 'checkin',
+ * importantDate → 'birthday' ("Birthdays & dates"). Emitted on save and on page
  * load; dropped on snooze, on "Said hi" (then re-emitted with the new date),
  * and on removal. No reminder body ever contains a day count or "overdue".
  */
@@ -607,15 +607,13 @@ export function importBackup(json) {
 /* ─────────────────────────────── reminder seam ─────────────────────────────── */
 
 let reminders = null;
-// The path is a variable (with @vite-ignore) so a missing file is a runtime
-// rejection, not a build error. When 11 ships reminders.js, change this to a
-// literal `import('./reminders.js')` so Vite bundles it with the page.
-const REMINDERS_MODULE = './reminders.js';
+// A literal path so Vite bundles the engine (11-NOTIFICATIONS) with this page.
+// Still wrapped: if the chunk ever fails to load, every call below is a no-op.
 const remindersReady = (async () => {
   try {
-    reminders = await import(/* @vite-ignore */ REMINDERS_MODULE);
+    reminders = await import('./reminders.js');
   } catch {
-    reminders = null; // not built yet; every call below becomes a no-op
+    reminders = null;
   }
 })();
 

@@ -18,6 +18,7 @@ import {
   subscribeApplications, subscribeMaterials, onSaveFailure,
 } from './modules/applicationsStore.js';
 import { promptTemplates, getTemplate, DEFAULT_KINDS_BY_TEMPLATE, TONES } from './data/promptTemplates.js';
+import { mountReminderStrip } from './modules/reminderUI.js';
 
 /**
  * The Application Desk — page entry.
@@ -76,6 +77,8 @@ document.addEventListener('DOMContentLoaded', () => {
   } catch (err) {
     warn('site chrome failed to initialise; continuing without it', err);
   }
+
+  mountReminderStrip('#deskReminders', { types: ['application'] });
 
   /* ─────────────────────────────── state ─────────────────────────────── */
 

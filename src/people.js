@@ -9,6 +9,7 @@ import { initReveal, observeReveal } from './modules/reveal.js';
 import { openModal, closeModal } from './modules/modal.js';
 import { formatRelativeGentle, toISO, addDays } from './modules/dates.js';
 import * as store from './modules/peopleStore.js';
+import { mountReminderStrip } from './modules/reminderUI.js';
 
 /**
  * people.js — renders people.html and wires its events. All data goes
@@ -922,6 +923,8 @@ document.addEventListener('DOMContentLoaded', () => {
   } catch (err) {
     warn('site chrome failed to initialise', err);
   }
+
+  mountReminderStrip('#peopleReminders', { types: ['checkin', 'birthday'] });
 
   mounts = {
     energy: document.getElementById('peopleEnergy'),

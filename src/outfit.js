@@ -9,6 +9,7 @@ import { initReveal } from './modules/reveal.js';
 import { openModal, closeModal } from './modules/modal.js';
 import { toISO, formatRelativeGentle } from './modules/dates.js';
 import * as store from './modules/wardrobeStore.js';
+import { mountReminderStrip } from './modules/reminderUI.js';
 import * as weatherApi from './modules/weather.js';
 import { suggestOutfit, rankSlot, explainOutfit, SPARSE_CLOSET_LINE } from './modules/outfitEngine.js';
 
@@ -1056,6 +1057,7 @@ function afterClosetChange(message) {
 
 document.addEventListener('DOMContentLoaded', async () => {
   initSiteChrome({ active: 'foryou' });
+  mountReminderStrip('#outfitReminders', { types: ['outfit'] });
 
   mounts = {
     weather: document.getElementById('outfitWeather'),

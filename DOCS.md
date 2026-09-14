@@ -125,6 +125,26 @@ ciphertext (key derived from a passphrase the owner supplies at runtime and neve
 no Firebase module and makes no network requests. Entry `src/rhythm.js`; prediction maths in
 `src/modules/cyclePredict.js`; storage in `src/modules/rhythmStore.js`.
 
+### `people.html` — People
+
+Who she might want to say hi to, without ever being told she has failed anyone. Local-only
+(`src/people.js`, `src/modules/peopleStore.js`, `src/data/messageTemplates.js`): no Firebase, no
+network, nothing sent to LoveGPT or analytics. Two stores — `usm.people.v1` →
+`{ items: Person[] }` and `usm.messageTemplates.v1` → `{ customTemplates: CustomTemplate[] }` — each
+in the `{ v, updatedAt, data }` envelope. `Person` is `{ id, name, relationship, lastContactAt
+(date-only ISO | null), preferredCadence ('none' | 'weekly' | 'few-weeks' | 'monthly' |
+'seasonally'), birthday ({ month, day, year: null } | null), importantDates [{ label, month,
+day }], notes, isSnoozedUntil (date-only ISO | null), energyCost ('low' | 'medium' | 'high' |
+null), createdAt, updatedAt }`; a name alone is a complete record. `CustomTemplate` is `{ id,
+categoryId, text, overrides (default item id like 'thinking-2', or null), createdAt, updatedAt }`
+— the defaults stay in the data file and her edits are overrides or additions. Exactly five
+derived states (Birthday coming up · It's been a little while · Might be nice soon · Recently caught
+up · Snoozed) and nothing escalates past "a little while" — see the comment on `deriveState()`.
+The energy selector (Low · A little · Normal · Social today) is a view filter held in
+`sessionStorage` as `usm.people.energy`, never a history. Reminders are emitted through a
+defensive dynamic import of `src/modules/reminders.js` (owned by 11-NOTIFICATIONS) and are no-ops
+until it exists. Backup/Import wrap both stores in one `people-backup-YYYY-MM-DD.json`.
+
 ### Information architecture
 
 Top-level navigation (one list, `NAV_LINKS` in `src/modules/siteChrome.js`):
@@ -213,6 +233,8 @@ The site lives at `k-sqr.github.io/lovesite/`; localStorage is scoped to the who
 | `aho_theme` | localStorage | `theme.js` |
 | `usm.<name>.v<version>` | localStorage | `storage.js` — one per `createStore()`; encrypted stores hold ciphertext only |
 | `usm.<name>` | IndexedDB database | `storage.js` — `createBlobStore()` |
+| `usm.people.v1`, `usm.messageTemplates.v1` | localStorage | `peopleStore.js` — see `people.html` above |
+| `usm.people.energy` | sessionStorage | `peopleStore.js` — the current energy selection only; never a history |
 | `music_should_play`, `music_muted`, `music_popup_shown` | sessionStorage | `musicPlayer.js` |
 
 ---

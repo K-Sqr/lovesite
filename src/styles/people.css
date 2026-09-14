@@ -1,1 +1,613 @@
-/* people.css */
+/* ══════════════════════════════════════════════════════════════════════════
+   people.css — the People page (08-FRIENDS-FAMILY)
+
+   Phone-first, one-handed, often at night. Every colour is a token from
+   base.css; there is no red anywhere on this page and nothing numeric is set
+   larger than body text. Script type (--font-display) is for the writing —
+   the h1, the lede, the section line, the empty state — never inside a row.
+
+   Specificity note: the production build emits ui.css as a shared chunk that
+   loads AFTER this file, so every override of a .usm-* primitive here uses two
+   classes (or the primitive class itself) — never rely on source order.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* `hidden` must win over any display: flex/grid set by a class below */
+.people-page [hidden],
+.people-sheet [hidden] {
+  display: none !important;
+}
+
+.people-page {
+  min-height: 70vh;
+  padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem);
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+/* ── Header ── */
+.people-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.people-header h1 {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  color: var(--pink-deep);
+  margin-bottom: var(--space-1);
+}
+
+.people-lede {
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.8vw, 1.3rem);
+  color: var(--pink-hot);
+  opacity: 0.85;
+  line-height: 1.45;
+  max-width: 34ch;
+}
+
+.people-header__actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* ── Energy selector ── a filter for right now; nothing about it is stored */
+.people-energy {
+  margin-bottom: var(--space-5);
+}
+
+.people-energy__label {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.people-energy__group {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-2);
+}
+
+.people-energy__group .people-energy__pill {
+  justify-content: center;
+  min-height: 44px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: normal;
+  text-align: center;
+}
+
+/* the one line under the selector, in his handwriting */
+.people-line {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--pink-deep);
+  margin-bottom: var(--space-3);
+}
+
+.people-quiet {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  padding: var(--space-3) 0 var(--space-5);
+}
+
+/* ── List ── */
+.people-list {
+  list-style: none;
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.usm-card.person-row {
+  padding: var(--space-4) var(--space-4) var(--space-3);
+  display: grid;
+  gap: var(--space-3);
+  scroll-margin-top: 70px;
+}
+
+.person-row.is-highlighted {
+  box-shadow: 0 0 0 2px var(--pink-hot), 0 2px 12px var(--shadow-soft);
+}
+
+.person-row__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.person-row__who {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.person-row__name {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--pink-deep);
+  overflow-wrap: anywhere;
+}
+
+.person-row__rel {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.person-row__top .person-row__more {
+  flex: 0 0 auto;
+  font-size: 1.3rem;
+  margin: -0.4rem -0.4rem 0 0;
+}
+
+.person-row__state {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+}
+
+.person-row__meta {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* two actions, one size, side by side — snoozing is as legitimate as saying hi */
+.person-row__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.person-row__actions .person-row__btn {
+  width: 100%;
+  min-height: 44px;
+  padding-left: var(--space-3);
+  padding-right: var(--space-3);
+  font-size: 0.9rem;
+}
+
+/* Low: the quick hello takes the whole first row, the pair sits underneath */
+.person-row__actions.is-low .person-row__quick {
+  grid-column: 1 / -1;
+}
+
+.usm-btn.is-copied,
+.people-tpl.is-copied {
+  background: var(--tone-calm-soft);
+  color: var(--tone-calm);
+}
+
+/* folded groups: "Everyone else", "Parked for now (n)" */
+.people-fold {
+  margin: var(--space-2) 0 var(--space-4);
+}
+
+.people-fold__summary,
+.people-messages__summary,
+.people-tpl-cat__summary,
+.people-form__more-summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--pink-deep);
+  padding: var(--space-2) 0;
+}
+
+.people-fold__summary::-webkit-details-marker,
+.people-messages__summary::-webkit-details-marker,
+.people-tpl-cat__summary::-webkit-details-marker,
+.people-form__more-summary::-webkit-details-marker {
+  display: none;
+}
+
+.people-fold__summary::before,
+.people-messages__summary::before,
+.people-tpl-cat__summary::before,
+.people-form__more-summary::before {
+  content: '';
+  width: 0.45em;
+  height: 0.45em;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.2s ease;
+  flex: 0 0 auto;
+  margin-left: 0.15em;
+}
+
+details[open] > .people-fold__summary::before,
+details[open] > .people-messages__summary::before,
+details[open] > .people-tpl-cat__summary::before,
+details[open] > .people-form__more-summary::before {
+  transform: rotate(45deg);
+}
+
+.people-fold .people-list {
+  margin-top: var(--space-2);
+}
+
+/* ── Empty state ── an invitation, one button */
+.usm-empty.people-empty {
+  padding: 3rem 1rem 2.5rem;
+}
+
+.people-empty__line {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 4vw, 1.7rem);
+  color: var(--pink-deep);
+  margin-bottom: var(--space-3);
+}
+
+.people-empty__text {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 40ch;
+  margin: 0 auto var(--space-5);
+}
+
+/* ── Skeleton ── one frame while the store is read */
+.person-row--skeleton {
+  min-height: 132px;
+}
+
+.people-skel--name { width: 40%; height: 1.1rem; }
+.people-skel--line { width: 60%; height: 0.8rem; }
+.people-skel--btn  { width: 100%; height: 44px; border-radius: var(--radius-md); }
+
+/* ── Messages ── */
+.people-messages {
+  margin: var(--space-5) 0 var(--space-5);
+}
+
+.people-messages__summary {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.people-messages__hint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: var(--space-3);
+}
+
+.people-tpl-for-wrap {
+  margin-bottom: var(--space-3);
+  max-width: 320px;
+}
+
+.people-tpl-cat {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.people-tpl-cat__add {
+  margin: var(--space-1) 0 var(--space-3);
+}
+
+.people-tpl-list {
+  list-style: none;
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.people-tpl__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* a tappable line: full width, wraps, reads like a message bubble */
+.people-tpl {
+  flex: 1 1 auto;
+  min-height: 44px;
+  text-align: left;
+  padding: 0.6rem 1rem;
+  border: 1.5px solid var(--pink-light);
+  border-radius: var(--radius-md);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  line-height: 1.45;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.people-tpl:hover {
+  background: var(--tone-warm-soft);
+  border-color: var(--pink-hot);
+}
+
+.people-tpl.people-tpl.is-copied {
+  border-color: var(--tone-calm);
+}
+
+.people-tpl__item .people-tpl__edit {
+  flex: 0 0 auto;
+  font-size: 1rem;
+  box-shadow: none;
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.people-tpl__item .people-tpl__edit:hover {
+  background: var(--surface-sunken);
+  color: var(--pink-deep);
+}
+
+/* ── Add / edit ── */
+.people-add-wrap {
+  margin-bottom: var(--space-5);
+}
+
+.people-panel {
+  margin-top: var(--space-3);
+}
+
+.people-form__title {
+  font-size: 1.4rem;
+  color: var(--pink-deep);
+  margin-bottom: var(--space-4);
+}
+
+.people-form__grid {
+  display: grid;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.people-form__grid--basics {
+  grid-template-columns: 1fr 1fr;
+}
+
+.people-form__more {
+  margin-bottom: var(--space-4);
+}
+
+.people-form__more > .people-form__grid {
+  margin-top: var(--space-3);
+}
+
+.people-form__monthday,
+.people-form__date {
+  display: grid;
+  grid-template-columns: 1fr 100px;
+  gap: var(--space-2);
+}
+
+.people-form__date {
+  grid-template-columns: 1fr 1fr 80px 44px;
+  align-items: center;
+  margin-bottom: var(--space-2);
+}
+
+.people-form__date .people-form__date-remove {
+  box-shadow: none;
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.people-form__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.people-form__pills .usm-pill {
+  min-height: 44px;
+}
+
+.people-form__actions {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* ── Sheet ── the reusable dialog; a bottom sheet on phones */
+.people-sheet .people-sheet__card {
+  max-width: 420px;
+  text-align: left;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+}
+
+.people-sheet__grip {
+  display: none;
+}
+
+.people-sheet .people-sheet__title {
+  font-size: 1.35rem;
+  color: var(--pink-deep);
+  margin-bottom: var(--space-3);
+  overflow-wrap: anywhere;
+}
+
+.people-sheet .people-sheet__text {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: var(--space-3);
+}
+
+/* the snooze framing line, in his voice */
+.people-sheet .people-sheet__framing {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--pink-deep);
+  line-height: 1.4;
+  margin-bottom: var(--space-4);
+}
+
+.people-sheet__options {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.people-sheet .people-sheet__option {
+  width: 100%;
+  justify-content: flex-start;
+  min-height: 48px;
+}
+
+.people-sheet__custom {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.people-sheet__scroll {
+  max-height: 55vh;
+  overflow-y: auto;
+  margin: 0 calc(-1 * var(--space-2));
+  padding: 0 var(--space-2);
+}
+
+.people-sheet .usm-modal__actions {
+  justify-content: flex-start;
+}
+
+.people-sheet .people-manual-copy {
+  min-height: 5rem;
+  margin-bottom: var(--space-2);
+}
+
+/* fallback clipboard shim: present in the DOM for a moment, never seen */
+.people-copy-shim {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Footer line ── the honest one */
+.people-note {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: var(--space-4);
+}
+
+/* ── Reduced motion ── nothing here may hide content; only transitions go */
+@media (prefers-reduced-motion: reduce) {
+  .people-fold__summary::before,
+  .people-messages__summary::before,
+  .people-tpl-cat__summary::before,
+  .people-form__more-summary::before,
+  .people-tpl {
+    transition: none;
+  }
+}
+
+/* ── Mobile ── single column, full-bleed rows, sheets from the bottom */
+@media (max-width: 600px) {
+  .people-page {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: var(--space-4);
+  }
+
+  .people-header,
+  .people-energy,
+  .people-line,
+  .people-quiet,
+  .people-fold__summary,
+  .people-messages,
+  .people-add-wrap,
+  .people-note,
+  .people-empty {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+
+  .people-header {
+    margin-bottom: var(--space-4);
+    gap: var(--space-3);
+  }
+
+  .people-header__actions .usm-btn {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .people-energy__group {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .people-list {
+    gap: var(--space-2);
+  }
+
+  .person-row {
+    border-radius: 0;
+    box-shadow: none;
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: -1px;
+  }
+
+  .people-form__grid--basics,
+  .people-form__monthday {
+    grid-template-columns: 1fr;
+  }
+
+  .people-form__date {
+    grid-template-columns: 1fr 44px;
+  }
+
+  .people-form__date > .usm-select,
+  .people-form__date > input[type="number"] {
+    grid-column: 1 / -1;
+  }
+
+  .usm-modal.people-sheet {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .people-sheet .people-sheet__card {
+    max-width: none;
+    width: 100%;
+    max-height: 88vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: var(--space-3) var(--space-4) calc(var(--space-5) + env(safe-area-inset-bottom));
+    transform: translateY(24px);
+  }
+
+  .people-sheet.is-open .people-sheet__card {
+    transform: translateY(0);
+  }
+
+  .people-sheet__grip {
+    display: block;
+    width: 40px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--border-subtle);
+    margin: 0 auto var(--space-3);
+  }
+}

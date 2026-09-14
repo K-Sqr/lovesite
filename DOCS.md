@@ -11,6 +11,7 @@
 - [JavaScript Modules](#javascript-modules)
 - [Data Files](#data-files)
 - [Styling Architecture](#styling-architecture)
+- [Reminders](#reminders)
 - [Firebase Setup](#firebase-setup)
 - [LoveGPT — RAG Pipeline](#lovegpt--rag-pipeline)
 - [Security](#security)
@@ -118,12 +119,21 @@ The entrance to the personal tools. One sentence of writing, then a card per too
 rendered from the `TOOLS` list in `src/foryou.js`; a tool that has not shipped yet renders as a
 plain card marked "Coming soon" (`comingSoon: true`) — flip it when the page lands.
 
+Above the grid sits the one reminder card (`#reminderStrip`) and below it the closed-by-default
+"Reminders" preferences panel (`#reminderPrefs`), both mounted by `initReminders()` from
+`src/modules/reminderUI.js`. Nothing from Rhythm ever appears here — see [Reminders](#reminders).
+
 ### `rhythm.html` — Rhythm
 
 A private, local-only page. Its data lives in `localStorage` under `usm.rhythm.v1` as AES-GCM
 ciphertext (key derived from a passphrase the owner supplies at runtime and never stored); it imports
 no Firebase module and makes no network requests. Entry `src/rhythm.js`; prediction maths in
 `src/modules/cyclePredict.js`; storage in `src/modules/rhythmStore.js`.
+
+Its one reminder ("Something to keep an eye on this week.", three days before the predicted
+window) is registered in memory at unlock via `registerEphemeral()` and shown only inside this page;
+"Got it" / "Later" are saved inside the `usm.rhythm.v1` ciphertext (`reminders` field). It never
+reaches `usm.reminders.v1`, the hub, or a browser notification — see [Reminders](#reminders).
 
 ### `people.html` — People
 
@@ -212,6 +222,11 @@ All modules live in `src/modules/`. Each page imports only the modules it needs.
 | `dates.js` | Real calendar math: `daysBetween` (DST-safe), `calendarDuration` (month-by-month, not `/30.44`), `addDays`, `addMonths`, `formatDateRange`, and `formatRelativeGentle` — relative wording that never says "overdue", "late" or "should". |
 | `modal.js` | `openModal()` / `closeModal()` for `.usm-modal`: focus trap (`data-focus-trap`), Escape-to-close, focus restore. |
 | `reveal.js` | The single scroll-reveal `IntersectionObserver` (`initReveal(root)`, `observeReveal(el)`). Marks everything visible immediately under `prefers-reduced-motion` or when the API is missing. |
+| `reminders.js` | The reminder engine: `registerReminder` / `upsertReminder` (upsert by type + sourceId + local day), `cancelReminder`, `cancelBySource`, `evaluateReminders({ now })`, `listActionable`, `snoozeReminder`, `dismissReminder`, `getPrefs` / `setPrefs`, `subscribeReminders`, `registerEphemeral` / `clearEphemeral` (Rhythm), `REMINDER_TYPES` (the per-type channel allow-list). Stores `usm.reminders.v1` + `usm.reminderPrefs.v1`. No network, no timers, no direct `localStorage`. |
+| `notifiers/index.js` | Delivery-adapter registry and the `Notifier` contract (`id`, `label`, `isAvailable()`, `requestPermission()`, `deliver(reminder)`). Adding a channel = new file + `registerNotifier()` + an id in `REMINDER_TYPES[…].channels`; no feature file changes. |
+| `notifiers/inApp.js` | Level 1, the only adapter on by default. `attachSurface({ types })` registers a place on the current page; `deliver()` is true when a surface exists for the reminder's type. |
+| `notifiers/browser.js` | Level 2, registered, **default off**. Notification API; `isAvailable()` is honestly `false` in a normal iOS Safari tab (needs Home Screen install). Permission is requested only from the preferences panel's click handler. |
+| `reminderUI.js` | `initReminders({ strip, prefs })` for the hub; `mountReminderStrip(el, { types, max })` for tool pages. One `.usm-card`, at most two items, "Got it" / "Later", an overflow sentence; renders nothing when nothing is due. |
 | `siteChrome.js` | Renders the nav (top bar + mobile tab bar), music toggle/`<audio>`, and footer into mount points, then calls `initTheme()` and `initMusicPlayer()`. `NAV_LINKS` is the only place links are defined. |
 | `storage.js` | Local persistence. `createStore(name, { version, migrate, initial })` → sync localStorage store with `{ v, updatedAt, data }` envelope, migrations, export/import, cross-tab `subscribe`, fail-soft in-memory fallback + one calm banner. `encrypted: true` → async AES-GCM store (PBKDF2-SHA256, 310k iterations, non-extractable key held in memory only, wrong passphrase = clean failure). `createBlobStore(name)` → IndexedDB for photos. Never touches the network. |
 | `buttons.js` | Yes/No button behavior. "Yes" triggers celebration (graffiti rain, verse reveal, webhook). "No" detaches from its parent on first click, becomes `position: fixed` on `document.body`, bounces through 15 predefined zones (percentage-based), shows messages from `noTexts.js`, fades out after 15 clicks with a love message. |
@@ -255,6 +270,7 @@ CSS uses custom properties for theming, `clamp()` for responsive typography, and
 | `timeline-page.css` | Timeline page: stats bar with stat cards, extended timeline layout, responsive breakpoints. |
 | `ui.css` | Shared primitives for the tool pages (`.usm-card`, `.usm-btn--*`, `.usm-pill`, `.usm-input`, `.usm-panel`, `.usm-modal`, `.usm-empty`, `.usm-toast`, `.usm-tone--*`, `.usm-skeleton`). Each is extracted from an existing class — the header comment names which. Imported only by new pages. |
 | `foryou.css` | For You hub: header, lede, centred card wrap. |
+| `reminders.css` | The reminder card and the "Reminders" panel, built only from `ui.css` primitives and `base.css` tokens (no red/amber, no badges). Imported by `reminderUI.js`. |
 | `lovegpt.css` | LoveGPT page: subtle gradient background, sparkly header, starter pills, chat area, message bubbles (user: pink gradient, AI: glass card with `backdrop-filter`), typing dots animation, input area, custom scrollbar. |
 
 ### Theming
@@ -279,7 +295,109 @@ The site lives at `k-sqr.github.io/lovesite/`; localStorage is scoped to the who
 | `usm.people.energy` | sessionStorage | `peopleStore.js` — the current energy selection only; never a history |
 | `usm.wardrobe.v1`, `usm.weather-cache.v1`, `usm.weather-location.v1` | localStorage | `wardrobeStore.js` / `weather.js` — see `outfit.html` above |
 | `usm.wardrobe-photos` | IndexedDB database | `wardrobeStore.js` — compressed item photos as Blobs |
+| `usm.reminders.v1`, `usm.reminderPrefs.v1` | localStorage | `reminders.js` — `{ items: Reminder[] }` and the preferences; never a `rhythm` row |
 | `music_should_play`, `music_muted`, `music_popup_shown` | sessionStorage | `musicPlayer.js` |
+
+---
+
+## Reminders
+
+A cross-feature system, not a page (`docs/anniversary/11-NOTIFICATIONS.md`). One engine
+(`src/modules/reminders.js`), an adapter registry (`src/modules/notifiers/`), one visible surface
+(`src/modules/reminderUI.js` + `src/styles/reminders.css`). It exists to reduce mental load, so it is
+built to be suspicious of itself: defaults are "nearly everything off", there is never a list, a
+count, a badge, a bell, or a red dot, and a page with nothing due shows nothing at all.
+
+### Delivery levels — the decision
+
+| Level | What | Verdict |
+|-------|------|---------|
+| **1 — In-app** | Queue in `localStorage`, evaluated on page load and on `visibilitychange`, shown as a calm inline card on the hub and the relevant tool page. No permission, no server, no CSP change, works in every browser. | ✅ **Built.** Honest limit: it only works when she opens the site. |
+| **2 — Browser Notification API** | `Notification.requestPermission()` + `new Notification()`. No server. Fires only while a page is open; **absent in a normal iOS Safari tab** (needs Add to Home Screen, which needs a manifest this project does not ship). | ⚙️ **Shipped, registered, default off.** Turn on only after checking her actual device. |
+| **3 — Email** | Scheduled Function (Blaze + Cloud Scheduler) + email provider + reminder data persisted server-side. | ❌ **Not built.** The server-side copy means reminder data leaves her device, which inverts the local-only model. **Rule: email may never carry Rhythm data in any form, not even a bare date.** If ever built, content-free nudges only ("a reminder from Us Machina"). |
+| **4 — Web Push** | Service worker + Push/FCM + VAPID + server subscriptions + scheduler + the iOS install requirement. | ❌ **Deferred, in writing.** The largest infrastructure jump in the project; nothing about "he knows me" is delivered by a push. |
+
+Adding a channel later must not touch a feature file: write `notifiers/<id>.js`, `registerNotifier()`
+it, add the id to the relevant `REMINDER_TYPES[type].channels`. If Rhythm or People had to change,
+the abstraction has failed. No service worker and no PWA manifest exist; if a future task adds a
+manifest, `scope` and `start_url` must both be `/lovesite/`.
+
+### The record
+
+```js
+{ id: 'rmd_7f3a91', type, sourceId,          // sourceId is opaque: never a name, email, or free text
+  title, body, href,                          // title/body are lock-screen-visible: public strings
+  scheduledAt, createdAt, status,             // pending → due → delivered → dismissed; due ⇄ snoozed; * → cancelled
+  deliveryMethod, deliveredAt, snoozedUntil, dismissedAt, cancelledAt }
+```
+
+Engine rules: upsert by `(type, sourceId, local day of scheduledAt)` — features re-register on every
+page load without creating duplicates, and a moved date cancels the old day's row; a dismissed row is
+never re-raised; a `(type, sourceId)` pair is surfaced at most once per 20 h; dismissed/cancelled rows
+are pruned after 30 days; anything nobody saw within 7 days ages out; at most 3 deliveries per day
+and 2 visible at once (the rest sit behind one sentence); quiet hours default 21:30–08:00 and hold
+every channel except the site itself. `enabled: false` means no evaluation and no DOM, and turning it
+back on discards what came due while off. The only producer the engine owns is the anniversary
+("Tomorrow makes a year. ❤️", the morning before, from `RELATIONSHIP_START = '2025-09-13'`).
+
+### Types and channels
+
+```js
+rhythm      → ['in-app']              default on   (never persisted — see below)
+checkin     → ['in-app', 'browser']   default on   People
+birthday    → ['in-app', 'browser']   default on   People (birthdays + important dates)
+application → ['in-app', 'browser']   default on   The Application Desk
+outfit      → ['in-app']              default OFF  What to Wear (also opt-in on that page)
+date        → ['in-app', 'browser']   default on   the anniversary
+```
+
+`channels` is enforced in the engine, not the adapter: a `rhythm` reminder offered to any channel
+but `in-app` is refused with a warning.
+
+### The Rhythm exception
+
+A `type: 'rhythm'` row with a real `scheduledAt` in plaintext `localStorage` would hand her cycle
+dates to anyone with her unlocked laptop and DevTools — the exact threat the passphrase exists for.
+So Rhythm reminders **never enter `usm.reminders.v1`**. `rhythm.js` computes one content-free
+reminder from the prediction at unlock and hands it to `registerEphemeral()`, which the engine holds
+in memory only; "Got it" / "Later" come back through `onChange` and `rhythmStore.setReminderState()`
+saves them inside the encrypted `usm.rhythm.v1` payload (one passphrase, one unlock). Locking clears
+the memory copy and the card. **Consequence, stated honestly:** Rhythm reminders appear only inside
+`rhythm.html` after the passphrase is entered — never on the For You hub, never as a browser
+notification. No reminder title or body may ever match `/period|cycle|ovulat|flow|symptom|fertile/i`.
+
+### Wiring a feature (the seam 07, 08 and 10 use)
+
+A store module emits a deterministic record and never touches the engine's storage:
+
+```js
+reminders.upsertReminder({ id: 'people:per_x:checkin',   // stable → re-emitting replaces
+  source: 'people', kind: 'checkin',                     // mapped to REMINDER_TYPES in the engine
+  dueAt: '2026-09-20T18:00:00.000Z', title, body, href: '/lovesite/people.html#per_x' });
+reminders.cancelReminder('people:per_x:checkin');       // accepts the feature's own id
+```
+
+Loaded with a guarded dynamic `import('./reminders.js')` (People, Wardrobe) or `import.meta.glob`
+(Applications) so a page keeps working if the chunk fails. The page then mounts its own surface:
+
+```js
+import { mountReminderStrip } from './modules/reminderUI.js';
+mountReminderStrip('#peopleReminders', { types: ['checkin', 'birthday'] });   // → { refresh, unmount }
+```
+
+Mounts today: `#reminderStrip` (hub, every persisted type), `#deskReminders` (`application`),
+`#peopleReminders` (`checkin`, `birthday`), `#outfitReminders` (`outfit`), and `.rhythm-reminders`
+(`rhythm`, created inside the unlocked view only).
+
+### Preferences
+
+`usm.reminderPrefs.v1`, written with defaults on first visit: `enabled: true`, channels
+`{ 'in-app': true, browser: false, email: false, push: false }`, per-type switches as above,
+`quietHours { '21:30', '08:00' }`, `maxPerDay: 3`. Edited from the "Reminders" `.usm-panel`
+disclosure at the bottom of the hub (Escape closes it and returns focus). **Nothing asks for
+notification permission on load**; the only `requestPermission()` call is inside the click handler
+of the "Browser notifications" switch, which first checks `isAvailable()` and explains the iPhone
+Home-Screen requirement instead of prompting when the API is absent.
 
 ---
 

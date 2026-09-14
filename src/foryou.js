@@ -6,6 +6,7 @@ import './styles/foryou.css';
 
 import { initSiteChrome } from './modules/siteChrome.js';
 import { initReveal } from './modules/reveal.js';
+import { initReminders } from './modules/reminderUI.js';
 
 /**
  * The tools behind the For You hub. When a feature lands, flip `comingSoon`
@@ -70,6 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (grid) {
     TOOLS.forEach((tool, i) => grid.appendChild(renderCard(tool, i)));
   }
+
+  initReminders({ strip: '#reminderStrip', prefs: '#reminderPrefs' });
 
   requestAnimationFrame(() => setTimeout(() => initReveal(), 50));
 });

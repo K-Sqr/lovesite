@@ -1,0 +1,208 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   reminders.css — the reminder card and the "Reminders" preferences panel.
+
+   Built only from ui.css primitives (.usm-card, .usm-btn--*, .usm-panel,
+   .usm-tone--*, .usm-input) and base.css tokens. No new colours, no red or
+   amber, no badges, no rings. Inline in the page flow: the music popup owns
+   the bottom of the screen at z-index 999 and this never competes with it.
+   Imported by reminderUI.js, so any page that mounts a strip gets it.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── The card ── */
+.reminder-card {
+  margin-bottom: var(--space-5);
+  animation: reminder-in 0.35s ease both;
+}
+
+@keyframes reminder-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.reminder-card__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 3vw, 1.4rem);
+  color: var(--pink-deep);
+  margin-bottom: var(--space-3);
+}
+
+.reminder-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.reminder-item {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: flex-start;
+}
+
+.reminder-item:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.reminder-item__title {
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.45;
+}
+
+.reminder-item__body {
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.reminder-item__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.reminder-item__open {
+  margin-right: auto;
+}
+
+/* the overflow line: a sentence she can tap, never a count */
+.reminder-card__more {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  margin-top: var(--space-3);
+  padding: var(--space-2) 0;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  text-align: left;
+  cursor: pointer;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.reminder-card__more:hover {
+  color: var(--pink-hot);
+}
+
+/* ── Preferences ── a closed disclosure at the bottom of the hub */
+.reminder-prefs {
+  margin-top: var(--space-7);
+  text-align: center;
+}
+
+.reminder-prefs__panel {
+  margin-top: var(--space-3);
+  margin-bottom: 0;
+  text-align: left;
+}
+
+.reminder-prefs__title {
+  font-size: clamp(1.15rem, 3vw, 1.4rem);
+  color: var(--pink-deep);
+  margin-bottom: var(--space-2);
+}
+
+.reminder-prefs__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.reminder-prefs__group {
+  border: none;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.reminder-prefs__group legend {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--pink-hot);
+  padding: 0;
+  margin-bottom: var(--space-1);
+}
+
+.reminder-switch {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-height: 44px;
+  padding: var(--space-1) 0;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.reminder-switch input {
+  width: 20px;
+  height: 20px;
+  margin-top: 3px;
+  accent-color: var(--pink-hot);
+  flex: 0 0 auto;
+}
+
+.reminder-switch input:disabled {
+  cursor: default;
+}
+
+.reminder-switch__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.reminder-switch__note,
+.reminder-prefs__note {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.reminder-quiet {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.reminder-quiet__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  flex: 1 1 140px;
+  max-width: 200px;
+}
+
+.reminder-time {
+  max-width: 100%;
+}
+
+/* ── Reduced motion: the card is simply there ── */
+@media (prefers-reduced-motion: reduce) {
+  .reminder-card { animation: none; }
+}
+
+/* ── Mobile ── */
+@media (max-width: 600px) {
+  .reminder-card { padding: 1rem 1.1rem; }
+  .reminder-item__actions .usm-btn { flex: 1 1 auto; }
+  .reminder-item__open { flex-basis: 100%; margin-right: 0; }
+}

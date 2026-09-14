@@ -170,6 +170,23 @@ invent experience); her edits are `templateOverrides`. Reminder records
 contract is documented at the top of `applicationsStore.js`. Export/Import wrap both stores in one
 `application-desk-backup-YYYY-MM-DD.json`.
 
+### `outfit.html` — What to Wear
+
+Today's weather and a complete outfit from the clothes she actually owns, above the fold with no
+taps. Local-only (`src/outfit.js`, `src/modules/wardrobeStore.js`, `src/modules/weather.js`,
+`src/modules/outfitEngine.js`, `src/styles/outfit.css`): no Firebase import, nothing sent to
+LoveGPT or analytics. The only network request is the forecast from `https://api.open-meteo.com`
+(coordinates rounded to 2 dp, no key, no identifier), cached 60 minutes in `usm.weather-cache.v1`;
+location resolves saved (`usm.weather-location.v1`) → geolocation only if already granted →
+Winnipeg, and the browser is never asked on page load. Wardrobe metadata lives in
+`usm.wardrobe.v1` → `{ items: WardrobeItem[], settings }`; photos are compressed to 640px and
+stored as Blobs in the IndexedDB database `usm.wardrobe-photos` (never localStorage). The
+recommendation is deterministic rule-based scoring in `outfitEngine.js` (pure: imports only
+`dates.js`) — warmth against apparent temperature dominates, extreme cold (≤ −20°C) is a hard
+exclusion of light items — and every line of explanation comes from the owner-written template
+block at the top of that file. Backup exports item metadata only; photos are not included and the
+UI says so. Reminder seam as in `peopleStore.js`, opt-in and off by default.
+
 ### Information architecture
 
 Top-level navigation (one list, `NAV_LINKS` in `src/modules/siteChrome.js`):
@@ -260,6 +277,8 @@ The site lives at `k-sqr.github.io/lovesite/`; localStorage is scoped to the who
 | `usm.<name>` | IndexedDB database | `storage.js` — `createBlobStore()` |
 | `usm.people.v1`, `usm.messageTemplates.v1` | localStorage | `peopleStore.js` — see `people.html` above |
 | `usm.people.energy` | sessionStorage | `peopleStore.js` — the current energy selection only; never a history |
+| `usm.wardrobe.v1`, `usm.weather-cache.v1`, `usm.weather-location.v1` | localStorage | `wardrobeStore.js` / `weather.js` — see `outfit.html` above |
+| `usm.wardrobe-photos` | IndexedDB database | `wardrobeStore.js` — compressed item photos as Blobs |
 | `music_should_play`, `music_muted`, `music_popup_shown` | sessionStorage | `musicPlayer.js` |
 
 ---
@@ -394,7 +413,7 @@ All 4 HTML pages include a `<meta>` CSP tag that restricts:
 - **Scripts**: self only (no inline, no eval)
 - **Styles**: self + unsafe-inline (needed for Vite-injected styles)
 - **Images**: self + Firebase Storage
-- **Connections**: self + Firebase APIs + Cloud Function endpoint + Google Analytics
+- **Connections**: self + Firebase APIs + Cloud Function endpoint + Google Analytics + `https://api.open-meteo.com` (weather for `outfit.html`)
 - **Frames**: none
 
 ### CORS

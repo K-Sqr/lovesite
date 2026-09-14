@@ -18,7 +18,7 @@ const TOOLS = [
   { id: 'applications', emoji: '\u{1F4BC}', name: 'The Application Desk', purpose: 'One application at a time.',           href: './applications.html', comingSoon: false },
   { id: 'people',       emoji: '\u{1FAF6}', name: 'People',               purpose: 'Who you might want to say hi to.',     href: './people.html',       comingSoon: false },
   { id: 'rhythm',       emoji: '\u{1F337}', name: 'Rhythm',               purpose: 'Your month, kept quietly.',            href: './rhythm.html',       comingSoon: false },
-  { id: 'outfit',       emoji: '\u{1F457}', name: 'What to Wear',         purpose: 'For the mornings the wardrobe says nothing.', href: './outfit.html', comingSoon: true },
+  { id: 'outfit',       emoji: '\u{1F457}', name: 'What to Wear',         purpose: 'For the mornings the wardrobe says nothing.', href: './outfit.html', comingSoon: false },
 ];
 
 function renderCard(tool, index) {

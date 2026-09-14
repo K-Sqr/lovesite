@@ -16,6 +16,7 @@ export default defineConfig({
         rhythm: resolve(__dirname, 'rhythm.html'),
         applications: resolve(__dirname, 'applications.html'),
         people: resolve(__dirname, 'people.html'),
+        outfit: resolve(__dirname, 'outfit.html'),
       },
     },
   },

@@ -1,1 +1,808 @@
-/* ── The Application Desk ── */
+/* ══════════════════════════════════════════════════════════════════════════
+   applications.css — The Application Desk
+
+   Built only from base.css tokens and ui.css primitives. No hex, no hearts,
+   no gradient beyond the one Copy button (.usm-btn--primary). One breakpoint.
+   Inter (--font-body) for everything functional; Dancing Script only on the
+   h1, the lede, and empty-state lines.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.applications-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem) 3rem;
+  text-align: left;
+  font-family: var(--font-body);
+}
+
+/* ── Header ── */
+.desk-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-5);
+}
+
+.desk-header h1 {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  color: var(--pink-deep);
+  margin-bottom: var(--space-1);
+}
+
+/* the subtitle, in his voice */
+.desk-lede {
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.8vw, 1.35rem);
+  color: var(--pink-hot);
+  opacity: 0.85;
+  line-height: 1.4;
+}
+
+.desk-header__actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* ── Segmented control ── 44px tall, full width, arrow keys wired in JS */
+.desk-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: var(--space-5);
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.desk-tab {
+  flex: 1 1 0;
+  min-height: 44px;
+  border-radius: calc(var(--radius-md) - 4px);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background 0.2s, color 0.2s;
+}
+
+.desk-tab:hover {
+  color: var(--pink-hot);
+}
+
+.desk-tab[aria-selected="true"] {
+  background: var(--card-bg);
+  color: var(--pink-hot);
+  box-shadow: 0 2px 8px var(--shadow-soft);
+}
+
+/* the UA's [hidden] rule loses to any display: flex/grid below; make it win */
+.applications-page [hidden] {
+  display: none !important;
+}
+
+/* ── Shared bits ── */
+.usm-empty p {
+  margin-bottom: var(--space-4);
+}
+
+.usm-empty .usm-btn {
+  font-family: var(--font-body);
+}
+
+.kind-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-sunken);
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.is-muted {
+  color: var(--text-muted);
+}
+
+fieldset {
+  border: none;
+  min-width: 0;
+}
+
+legend {
+  padding: 0;
+  margin-bottom: var(--space-2);
+}
+
+/* ═══ PREPARE ═══ */
+.prepare-empty {
+  padding: 2rem 1rem 1.5rem;
+}
+
+.prepare-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* the primary field: biggest type on the page after the h1 */
+.prepare-jd .usm-textarea {
+  font-size: 1.05rem;
+  min-height: 12rem;
+}
+
+.prepare-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.prepare-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.pill-row .usm-pill {
+  min-height: 44px;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.prepare-length {
+  max-width: 260px;
+}
+
+/* materials checklist, grouped by kind */
+.materials-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.picker-skeleton {
+  height: 44px;
+}
+
+.picker-group__kind {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.picker-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 44px;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.picker-item:hover {
+  background: var(--surface-sunken);
+}
+
+.picker-item input {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  accent-color: var(--pink-hot);
+  cursor: pointer;
+}
+
+.picker-item__label {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.picker-empty {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* template editor disclosure */
+.template-editor {
+  border-top: 1px solid var(--border-subtle);
+  padding-top: var(--space-3);
+}
+
+.template-editor summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.template-editor summary:hover {
+  color: var(--pink-hot);
+}
+
+.template-editor[open] summary {
+  margin-bottom: var(--space-3);
+}
+
+.template-editor__body {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.template-editor__actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-top: var(--space-3);
+}
+
+/* ── the output: sunken well + the page's largest control ── */
+.prompt-output {
+  margin-top: var(--space-6);
+}
+
+.prompt-output__heading {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--pink-hot);
+  margin-bottom: var(--space-2);
+}
+
+.prompt-preview {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 45vh;
+  overflow: auto;
+  padding: var(--space-4);
+  -webkit-overflow-scrolling: touch;
+}
+
+.prompt-count {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-top: var(--space-2);
+}
+
+.copy-bar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "copy save"
+    "hint hint";
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+  margin-top: var(--space-4);
+}
+
+.copy-btn {
+  grid-area: copy;
+  min-height: 52px;
+  font-size: 1.05rem;
+}
+
+.copy-bar .usm-btn--secondary {
+  grid-area: save;
+}
+
+.copy-bar__hint {
+  grid-area: hint;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--pink-hot);
+  opacity: 0.85;
+}
+
+/* off-screen scratch textarea for the execCommand fallback (must not be display:none) */
+.copy-scratch {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: none;
+  opacity: 0;
+  font-size: 16px; /* keeps iOS from zooming */
+}
+
+/* ═══ MATERIALS ═══ */
+.view-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
+}
+
+.view-toolbar__text {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  flex: 1 1 260px;
+}
+
+.material-form {
+  margin-bottom: var(--space-5);
+}
+
+.material-form.is-open {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.material-form__row {
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 200px);
+  gap: var(--space-4);
+}
+
+.material-form__actions,
+.material-row__actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.material-list,
+.app-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.row-skeleton {
+  height: 72px;
+}
+
+.material-row {
+  padding: 0;
+  overflow: hidden;
+}
+
+.material-row__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 60px;
+  padding: 0.9rem 1.2rem;
+  background: transparent;
+  color: var(--text-primary);
+  text-align: left;
+  transition: background 0.2s;
+}
+
+.material-row__head:hover {
+  background: var(--surface-sunken);
+}
+
+.material-row__label {
+  font-size: 0.98rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.material-row__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 0 0 auto;
+}
+
+.material-row__time {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.material-row__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: 0 1.2rem 1.2rem;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: var(--space-4);
+}
+
+.material-row__text {
+  min-height: 14rem;
+}
+
+/* ═══ APPLICATIONS ═══ */
+.app-row {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-3);
+  padding: 0;
+  overflow: hidden;
+}
+
+.app-row__main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.9rem 0 0.9rem 1.2rem;
+  background: transparent;
+  color: var(--text-primary);
+  text-align: left;
+  transition: background 0.2s;
+}
+
+.app-row:hover {
+  box-shadow: 0 4px 16px var(--shadow-pink);
+}
+
+.app-row__title {
+  font-size: 0.98rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.app-row__org {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.app-row__line {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-top: 0.25rem;
+  font-size: 0.82rem;
+}
+
+.app-row__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.6rem 0.8rem 0.6rem 0;
+  flex: 0 0 auto;
+}
+
+.app-row__primary {
+  white-space: nowrap;
+}
+
+.app-row__more {
+  box-shadow: none;
+  background: transparent;
+  font-size: 1.3rem;
+  letter-spacing: 0.05em;
+}
+
+.app-row__more:hover {
+  background: var(--surface-sunken);
+}
+
+/* archived disclosure — never a count */
+.archived {
+  margin-top: var(--space-5);
+}
+
+.archived summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.archived summary:hover {
+  color: var(--pink-hot);
+}
+
+.archived[open] summary {
+  margin-bottom: var(--space-3);
+}
+
+.app-list--archived .app-row {
+  opacity: 0.8;
+}
+
+/* honest line about where this lives */
+.storage-note {
+  margin-top: var(--space-6);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ── overflow menu: anchored on desktop, a bottom sheet on phones ── */
+.row-menu[hidden] {
+  display: none;
+}
+
+.row-menu__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+}
+
+.row-menu__sheet {
+  position: absolute;
+  z-index: 510;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-2);
+  background: var(--white);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 8px 32px var(--shadow-pink);
+}
+
+.row-menu__item {
+  min-height: 44px;
+  padding: 0.5rem 0.9rem;
+  border-radius: calc(var(--radius-sm) - 4px);
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.92rem;
+  text-align: left;
+  transition: background 0.2s;
+}
+
+.row-menu__item:hover {
+  background: var(--surface-sunken);
+}
+
+.row-menu__item.is-danger {
+  color: var(--error);
+}
+
+/* ── detail panel: in place, not a modal ── */
+.app-detail {
+  margin-bottom: var(--space-5);
+  scroll-margin-top: 64px; /* clear the fixed top bar when scrolled into view */
+}
+
+.app-detail.is-open {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.app-detail__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.app-detail__title {
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--pink-deep);
+  overflow-wrap: anywhere;
+}
+
+.app-detail__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.detail-link a {
+  color: var(--pink-hot);
+  font-weight: 500;
+}
+
+.detail-link:empty {
+  display: none;
+}
+
+.detail-jd {
+  font-size: 0.9rem;
+}
+
+.detail-jd__toggle {
+  align-self: flex-start;
+}
+
+.app-detail__actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  padding-top: var(--space-2);
+}
+
+/* the one line a rejection gets */
+.rejection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--tone-quiet-soft);
+}
+
+.rejection__line {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--tone-quiet);
+}
+
+/* ── Mobile ── one breakpoint. Thumb reach first, widen upward. */
+@media (max-width: 600px) {
+  .applications-page {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+
+  .desk-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .desk-header__actions .usm-btn {
+    flex: 1 1 auto;
+  }
+
+  .prepare-meta,
+  .detail-grid,
+  .material-form__row {
+    grid-template-columns: 1fr;
+  }
+
+  .prepare-jd .usm-textarea {
+    min-height: 10rem;
+  }
+
+  /* Copy stays under her thumb: stuck to the bottom of the assembler, above the tab bar */
+  .copy-bar {
+    position: sticky;
+    bottom: calc(var(--site-tabs-height) + env(safe-area-inset-bottom));
+    z-index: 350;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "copy"
+      "hint"
+      "save";
+    margin: var(--space-4) calc(-1 * var(--space-4)) 0;
+    padding: var(--space-3) var(--space-4);
+    padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
+    background: var(--pink-bg); /* solid: content scrolls underneath it */
+    border-top: 1px solid var(--border-subtle);
+    box-shadow: 0 -4px 16px var(--shadow-soft);
+  }
+
+  .copy-bar .usm-btn {
+    width: 100%;
+  }
+
+  .copy-bar__hint {
+    text-align: center;
+  }
+
+  .prompt-preview {
+    max-height: 40vh;
+  }
+
+  .material-row__head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .app-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .app-row__main {
+    padding: 0.9rem 1rem 0.6rem;
+  }
+
+  .app-row__actions {
+    padding: 0 0.6rem 0.6rem 1rem;
+    justify-content: space-between;
+  }
+
+  .app-row__primary {
+    flex: 1 1 auto;
+  }
+
+  /* overflow menu becomes a bottom sheet */
+  .row-menu__scrim {
+    background: rgba(0, 0, 0, 0.35);
+  }
+
+  .row-menu__sheet {
+    position: fixed;
+    top: auto !important;
+    left: 0 !important;
+    right: 0;
+    bottom: 0;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: var(--space-3) var(--space-3) calc(var(--space-3) + var(--site-tabs-height) + env(safe-area-inset-bottom));
+  }
+
+  .row-menu__item {
+    min-height: 48px;
+    font-size: 1rem;
+  }
+
+  /* full-bleed detail panel */
+  .app-detail.is-open {
+    position: fixed;
+    inset: 0;
+    z-index: 450;
+    margin: 0;
+    border-radius: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    background: var(--pink-bg);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    /* runs under the translucent tab bar; the bottom padding keeps the last field above it */
+    padding: var(--space-4) var(--space-4) calc(var(--space-6) + var(--site-tabs-height) + env(safe-area-inset-bottom));
+  }
+
+  .app-detail__top {
+    position: sticky;
+    top: calc(-1 * var(--space-4));
+    z-index: 1;
+    margin: calc(-1 * var(--space-4)) calc(-1 * var(--space-4)) 0;
+    padding: var(--space-3) var(--space-4);
+    background: var(--pink-bg);
+  }
+
+  body.has-open-detail {
+    overflow: hidden;
+  }
+}
+
+/* ── Reduced motion ── the shared rule in animations.css already kills transitions;
+   this just makes sure nothing here relies on a hover lift. */
+@media (prefers-reduced-motion: reduce) {
+  .app-row:hover,
+  .material-row__head:hover {
+    transform: none;
+  }
+}

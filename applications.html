@@ -113,12 +113,15 @@
         <h2 class="prompt-output__heading" id="promptHeading">Your prompt</h2>
         <pre class="prompt-preview usm-well" id="promptPreview" tabindex="0" aria-label="Prompt preview"></pre>
         <p class="prompt-count" id="promptCount"></p>
-        <div class="copy-bar" id="copyBar">
-          <button type="button" class="usm-btn usm-btn--primary copy-btn" id="copyBtn">Copy prompt</button>
-          <p class="copy-bar__hint" id="copyHint">Ready when you are.</p>
-          <button type="button" class="usm-btn usm-btn--secondary" id="saveToAppsBtn">Save to applications</button>
-        </div>
       </section>
+
+      <!-- last child of the Prepare panel on purpose: on phones it is sticky to the
+           bottom of the viewport for as long as the panel is on screen -->
+      <div class="copy-bar" id="copyBar">
+        <button type="button" class="usm-btn usm-btn--primary copy-btn" id="copyBtn">Copy prompt</button>
+        <p class="copy-bar__hint" id="copyHint">Ready when you are.</p>
+        <button type="button" class="usm-btn usm-btn--secondary" id="saveToAppsBtn">Save to applications</button>
+      </div>
     </section>
 
     <!-- ═══ MATERIALS — the library ═══ -->

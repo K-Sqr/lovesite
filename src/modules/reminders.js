@@ -115,7 +115,7 @@ let prefStore = null;
 let storesOk = false;
 try {
   itemStore = createStore('reminders', { version: 1, initial: { items: [] } });
-  prefStore = createStore('reminderPrefs', { version: 1, initial: DEFAULT_PREFS });
+  prefStore = createStore('reminderPrefs', { version: 1, initial: null }); // null = never written; getPrefs() fills defaults
   storesOk = true;
 } catch (err) {
   // Never block a page on this system. Every export below becomes a calm no-op.
@@ -606,6 +606,10 @@ function requestEvaluate() {
  * The UI calls this after a surface exists, so the first pass has somewhere to deliver.
  */
 export function startEvaluating({ now = new Date() } = {}) {
+  // First visit: write the defaults so the on-disk record shows what is (and is not) on.
+  if (storesOk) {
+    try { if (prefStore.read() === null) prefStore.write(DEFAULT_PREFS); } catch (err) { warn('prefs init failed', err); }
+  }
   seedDateReminders(now);
   if (!autoWired && typeof document !== 'undefined') {
     autoWired = true;

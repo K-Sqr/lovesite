@@ -145,6 +145,31 @@ The energy selector (Low · A little · Normal · Social today) is a view filter
 defensive dynamic import of `src/modules/reminders.js` (owned by 11-NOTIFICATIONS) and are no-ops
 until it exists. Backup/Import wrap both stores in one `people-backup-YYYY-MM-DD.json`.
 
+### `applications.html` — The Application Desk
+
+Her job-application prep, made into one tap. Local-only (`src/applications.js`,
+`src/modules/applicationsStore.js`, `src/data/promptTemplates.js`, `src/styles/applications.css`):
+no Firebase import, no network requests, nothing sent to LoveGPT or analytics, no passcode. Three
+views behind a segmented control — **Prepare** (paste a job description, tick materials, pick tone
+and length → one structured Claude prompt with a Copy button that falls back from
+`clipboard.writeText` to `execCommand('copy')` to select-the-text), **Materials** (reusable text
+blocks), and **Applications** (a calm list ordered by nearest upcoming interview / deadline /
+follow-up, dateless records by `updatedAt`, `Rejected`/`Closed` under an "Archived" disclosure and
+never counted). Two stores, each in the `{ v, updatedAt, data }` envelope: `usm.materials.v1` →
+`{ items: Material[], templateOverrides: { [templateId]: body } }` where `Material` is `{ id
+('mat_…'), label, kind ('resume' | 'coverLetter' | 'blurb' | 'references' | 'other'), body,
+updatedAt }`; and `usm.applications.v1` → `{ items: Application[] }` where `Application` is `{ id
+('app_…'), organization, position, url, jobDescription, deadline (date-only ISO | null),
+discoveredAt, appliedAt (| null), status (Saved · Preparing · Ready · Applied · Interview ·
+Follow-up · Offer · Rejected · Closed), resumeUsed / coverLetter / referencesUsed (material id |
+null), interviewAt (full ISO | null), followUpAt (date-only | null), notes, outcome (| null),
+updatedAt }`. Prompt defaults live in `promptTemplates.js` (every template tells Claude not to
+invent experience); her edits are `templateOverrides`. Reminder records
+(`applications:<id>:deadline|interview|followup`) go through a lazy `import.meta.glob` of
+`src/modules/reminders.js` (owned by 11-NOTIFICATIONS) and are no-ops until it exists — the
+contract is documented at the top of `applicationsStore.js`. Export/Import wrap both stores in one
+`application-desk-backup-YYYY-MM-DD.json`.
+
 ### Information architecture
 
 Top-level navigation (one list, `NAV_LINKS` in `src/modules/siteChrome.js`):

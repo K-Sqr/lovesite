@@ -2,7 +2,7 @@
  * rhythm.js — page entry for rhythm.html.
  *
  * Local-only by construction: this file and everything it imports touch no
- * network. No firebase.js (it fires analytics on import), no fetch, no beacon.
+ * network. Not the Firebase SDK module (it reports a page view on import), no fetch, no beacon.
  * Nothing here writes to the console either — every error becomes a calm
  * sentence on the page, and record contents never leave the DOM/module state.
  *

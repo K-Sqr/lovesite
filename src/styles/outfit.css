@@ -1,0 +1,759 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   outfit.css — What to Wear (10-OUTFIT-OF-THE-DAY)
+
+   Phone-first, one-handed, half-awake. The weather line and today's outfit
+   are the landing content; the closet manager is a disclosure below them.
+   Every colour is a token from base.css. Script type (--font-display) is for
+   the writing — the lede, the headline, the empty state — never inside a tile.
+
+   Specificity note: the production build emits ui.css as a shared chunk that
+   loads AFTER this file, so overrides of a .usm-* primitive here use two
+   classes (or the primitive class itself) — never rely on source order.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* `hidden` must win over any display: flex/grid set by a class below */
+.outfit-page [hidden],
+.outfit-sheet [hidden] {
+  display: none !important;
+}
+
+.outfit-page {
+  min-height: 70vh;
+  padding: clamp(1.25rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem);
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+/* ── Header ── */
+.outfit-header {
+  margin-bottom: var(--space-4);
+}
+
+.outfit-header h1 {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  color: var(--pink-deep);
+  margin-bottom: var(--space-1);
+}
+
+.outfit-lede {
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.8vw, 1.3rem);
+  color: var(--pink-hot);
+  opacity: 0.85;
+  line-height: 1.45;
+  max-width: 34ch;
+}
+
+/* ── Weather line ── plain, trusted, one glance */
+.outfit-weather {
+  margin-bottom: var(--space-3);
+}
+
+.outfit-weather__line {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  min-height: 2.4rem;
+}
+
+.outfit-weather__emoji {
+  font-size: 1.6rem;
+  line-height: 1;
+  align-self: center;
+}
+
+.outfit-weather__temp {
+  font-family: var(--font-body);
+  font-size: clamp(1.6rem, 5vw, 2.1rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.outfit-weather__feels {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0;
+}
+
+.outfit-weather__desc {
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.outfit-weather__line--none .outfit-weather__temp {
+  color: var(--text-muted);
+}
+
+.outfit-weather__skeleton {
+  width: 14rem;
+  height: 2rem;
+}
+
+.outfit-weather__bits,
+.outfit-weather__where {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-top: var(--space-1);
+}
+
+.outfit-linkbtn {
+  background: none;
+  border: none;
+  padding: 0.35rem 0.2rem;
+  margin: -0.35rem -0.2rem;
+  font: inherit;
+  color: var(--pink-hot);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ── Banner ── one honest sentence, never alarming */
+.outfit-banner {
+  background: var(--tone-quiet-soft);
+  color: var(--tone-quiet);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin-bottom: var(--space-4);
+}
+
+/* ── Occasion chips ── the only thing she should touch before an answer */
+.outfit-occasions {
+  margin-bottom: var(--space-4);
+}
+
+.outfit-occasions__label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--pink-hot);
+  margin-bottom: var(--space-2);
+}
+
+.outfit-occasions__row {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding: 2px 2px 6px;
+  margin: 0 -2px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.outfit-occasions__row::-webkit-scrollbar {
+  display: none;
+}
+
+.usm-pill.outfit-chip {
+  min-height: 44px;
+  flex: 0 0 auto;
+}
+
+.usm-pill.outfit-chip--small {
+  min-height: 36px;
+  padding: 6px 12px;
+}
+
+/* ── Today's outfit ── */
+.outfit-today {
+  margin-bottom: var(--space-6);
+}
+
+.outfit-headline {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 4vw, 1.7rem);
+  color: var(--pink-deep);
+  line-height: 1.4;
+  margin-bottom: var(--space-4);
+  transition: opacity 0.3s ease;
+}
+
+.outfit-headline.is-fresh {
+  animation: outfit-fresh 0.6s ease;
+}
+
+@keyframes outfit-fresh {
+  0% { opacity: 0.3; transform: translateY(4px); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* the collage: a clean grid of the actual pieces. A composited flat-lay could
+   replace this block later without touching the engine. */
+.outfit-collage {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--space-3);
+  margin: 0 0 var(--space-4);
+  padding: 0;
+}
+
+.outfit-collage__cell,
+.outfit-grid__cell {
+  display: block;
+}
+
+.outfit-tile {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 0 var(--space-3);
+  background: var(--card-bg);
+  border: none;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 2px 12px var(--shadow-soft);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.outfit-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--shadow-pink);
+}
+
+.outfit-tile:active {
+  transform: translateY(0);
+}
+
+.outfit-tile__photo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  background: var(--surface-sunken);
+  overflow: hidden;
+}
+
+.outfit-tile__emoji {
+  font-size: 2.6rem;
+  line-height: 1;
+  opacity: 0.85;
+}
+
+.outfit-tile__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.outfit-tile__slot {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--pink-hot);
+  padding: var(--space-2) var(--space-3) 0;
+}
+
+.outfit-tile__name {
+  font-size: 0.92rem;
+  font-weight: 500;
+  padding: 0 var(--space-3);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.outfit-tile__meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  padding: var(--space-1) var(--space-3) 0;
+  line-height: 1.4;
+}
+
+.outfit-tile--closet .outfit-tile__name {
+  padding-top: var(--space-2);
+}
+
+.outfit-why {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-3);
+  display: grid;
+  gap: var(--space-2);
+}
+
+.outfit-why li {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+  padding-left: 1.1rem;
+  position: relative;
+}
+
+.outfit-why li::before {
+  content: '♥';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--pink-light);
+  font-size: 0.8rem;
+}
+
+.outfit-warnings {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-3);
+}
+
+.outfit-warnings li {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--tone-quiet);
+  background: var(--tone-quiet-soft);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.outfit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.outfit-sparse {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  margin-top: var(--space-4);
+}
+
+/* ── Empty closet ── warm, not a form */
+.usm-empty.outfit-empty {
+  padding: 2.5rem 1rem;
+  color: var(--pink-deep);
+}
+
+.outfit-empty__line {
+  font-size: clamp(1.25rem, 4vw, 1.5rem);
+  line-height: 1.4;
+  max-width: 30ch;
+  margin: 0 auto var(--space-3);
+}
+
+.outfit-empty__sub {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.outfit-empty .outfit-actions {
+  justify-content: center;
+}
+
+/* ── Closet disclosure ── */
+.outfit-closet,
+.outfit-about {
+  border-top: 1px solid var(--border-subtle);
+  padding-top: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.outfit-closet__summary,
+.outfit-about__summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--pink-deep);
+  font-weight: 600;
+  font-size: 1.05rem;
+  list-style: none;
+}
+
+.outfit-closet__summary::-webkit-details-marker,
+.outfit-about__summary::-webkit-details-marker {
+  display: none;
+}
+
+.outfit-closet__summary::before,
+.outfit-about__summary::before {
+  content: '▸';
+  font-size: 0.9rem;
+  color: var(--pink-hot);
+  transition: transform 0.2s ease;
+}
+
+.outfit-closet[open] > .outfit-closet__summary::before,
+.outfit-about[open] > .outfit-about__summary::before {
+  transform: rotate(90deg);
+}
+
+.outfit-closet__count {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.outfit-closet__body {
+  padding-top: var(--space-3);
+}
+
+.outfit-closet__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.outfit-closet__filters {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding: 2px 2px 6px;
+  margin: 0 -2px var(--space-3);
+  scrollbar-width: none;
+}
+
+.outfit-closet__filters::-webkit-scrollbar {
+  display: none;
+}
+
+/* sibling of .memories-grid */
+.outfit-grid {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--space-3);
+  margin: 0 0 var(--space-4);
+  padding: 0;
+}
+
+.outfit-closet__none {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  padding: var(--space-4) 0;
+}
+
+.outfit-closet__archived {
+  margin-bottom: var(--space-4);
+}
+
+.outfit-closet__archived > summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.outfit-closet__toggle,
+.outfit-form__check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.outfit-closet__toggle input,
+.outfit-form__check input {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  accent-color: var(--pink-hot);
+  flex: 0 0 auto;
+}
+
+.outfit-closet__note,
+.outfit-about__body p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.outfit-about__body {
+  padding-top: var(--space-3);
+  display: grid;
+  gap: var(--space-3);
+}
+
+/* ── Sheet ── the reusable dialog; a bottom sheet on phones */
+.outfit-sheet .outfit-sheet__card {
+  max-width: 460px;
+  text-align: left;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+}
+
+.outfit-sheet__grip {
+  display: none;
+}
+
+.outfit-sheet .outfit-sheet__title {
+  font-size: 1.35rem;
+  color: var(--pink-deep);
+  margin-bottom: var(--space-3);
+  overflow-wrap: anywhere;
+}
+
+.outfit-sheet .outfit-sheet__text {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: var(--space-3);
+}
+
+.outfit-sheet__options {
+  display: grid;
+  gap: var(--space-2);
+  max-height: 50vh;
+  overflow-y: auto;
+  padding: 2px;
+}
+
+.outfit-sheet .outfit-sheet__option {
+  width: 100%;
+  justify-content: space-between;
+  min-height: 48px;
+  text-align: left;
+}
+
+.outfit-sheet__optname {
+  overflow-wrap: anywhere;
+}
+
+.outfit-sheet .usm-modal__actions {
+  justify-content: flex-start;
+}
+
+/* ── Item form ── */
+.outfit-form {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.outfit-form__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.outfit-form__pair {
+  display: grid;
+  grid-template-columns: 1fr 9rem;
+  gap: var(--space-2);
+}
+
+.outfit-form__photo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.outfit-form__preview {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 84px;
+  flex: 0 0 auto;
+  border-radius: var(--radius-sm);
+  background: var(--surface-sunken);
+  overflow: hidden;
+}
+
+.outfit-form__preview .outfit-tile__emoji {
+  font-size: 2rem;
+}
+
+.outfit-form__preview-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.outfit-form__photo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.outfit-form__set {
+  border: none;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.outfit-form__set legend {
+  margin-bottom: var(--space-2);
+}
+
+.outfit-form__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* checkbox styled as a pill; the real input stays focusable for keyboards */
+.outfit-chipcheck {
+  position: relative;
+  display: inline-flex;
+}
+
+.outfit-chipcheck__input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.outfit-chipcheck__input:focus-visible + .outfit-chip {
+  outline: 2px solid var(--pink-hot);
+  outline-offset: 2px;
+}
+
+.outfit-form .outfit-form__delete {
+  margin-left: auto;
+  color: var(--text-muted);
+}
+
+.outfit-batch__text {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  min-height: 10rem;
+}
+
+/* ── Reduced motion ── nothing here may hide content; only transitions go */
+@media (prefers-reduced-motion: reduce) {
+  .outfit-headline.is-fresh { animation: none; }
+  .outfit-tile:hover { transform: none; }
+  .outfit-closet__summary::before,
+  .outfit-about__summary::before { transition: none; }
+}
+
+/* ── Tablet ── the wardrobe grid only */
+@media (max-width: 900px) {
+  .outfit-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  }
+}
+
+/* ── Mobile ── single column-ish, sheets from the bottom */
+@media (max-width: 600px) {
+  .outfit-page {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+    padding-top: var(--space-4);
+  }
+
+  .outfit-header {
+    margin-bottom: var(--space-3);
+  }
+
+  .outfit-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .outfit-lede {
+    font-size: 1rem;
+  }
+
+  .outfit-headline {
+    font-size: 1.2rem;
+    margin-bottom: var(--space-3);
+  }
+
+  /* three across so a five-piece outfit is two short rows, not a scroll */
+  .outfit-collage {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+  }
+
+  .outfit-collage .outfit-tile {
+    padding-bottom: var(--space-2);
+  }
+
+  .outfit-collage .outfit-tile__emoji {
+    font-size: 2rem;
+  }
+
+  .outfit-collage .outfit-tile__slot {
+    font-size: 0.62rem;
+    padding: var(--space-1) var(--space-2) 0;
+  }
+
+  .outfit-collage .outfit-tile__name {
+    font-size: 0.8rem;
+    padding: 0 var(--space-2);
+  }
+
+  .outfit-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2);
+  }
+
+  .outfit-actions .usm-btn--primary {
+    flex: 1 1 100%;
+  }
+
+  .outfit-form__grid,
+  .outfit-form__pair {
+    grid-template-columns: 1fr;
+  }
+
+  .usm-modal.outfit-sheet {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .outfit-sheet .outfit-sheet__card {
+    max-width: none;
+    width: 100%;
+    max-height: 88vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: var(--space-3) var(--space-4) calc(var(--space-5) + env(safe-area-inset-bottom));
+    transform: translateY(24px);
+  }
+
+  .outfit-sheet.is-open .outfit-sheet__card {
+    transform: translateY(0);
+  }
+
+  .outfit-sheet__grip {
+    display: block;
+    width: 40px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--border-subtle);
+    margin: 0 auto var(--space-3);
+  }
+
+  .outfit-sheet__options {
+    max-height: 45vh;
+  }
+}

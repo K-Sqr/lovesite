@@ -12,9 +12,10 @@ service firebase.storage {
       allow delete: if request.auth != null && request.auth.uid == 'owner';
     }
 
+    // Public read on purpose: the Letters page still has a passcode curtain,
+    // but multi-MB PDFs must stream without an authenticated getBlob round-trip.
     match /letters/{fileName} {
-      allow read:   if request.auth != null
-                    && (request.auth.uid == 'owner' || request.auth.uid == 'tolu');
+      allow read:   if true;
       allow create: if request.auth != null && request.auth.uid == 'owner'
                     && request.resource.size < 25 * 1024 * 1024
                     && request.resource.contentType == 'application/pdf';

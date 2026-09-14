@@ -22,7 +22,7 @@ import { authenticateWithPasscode, getRole } from './modules/auth.js';
 import { initSiteChrome } from './modules/siteChrome.js';
 import { initReveal } from './modules/reveal.js';
 import { formatLongDate } from './modules/dates.js';
-import { getLetterList, getLetterBlob } from './modules/letterSource.js';
+import { getLetterList, getLetterBlob, letterPublicUrl } from './modules/letterSource.js';
 import { displayTitle, sortOldestFirst, groupByYear } from './data/letters.js';
 
 const COPY = {
@@ -322,6 +322,18 @@ async function openLetter(letter, ui = getUI()) {
   ui.reading.replaceChildren(bar, header, body);
   window.scrollTo(0, 0);
 
+  // PDFs stream from a public URL so the viewer can paint before the whole
+  // file finishes downloading. Text bodies still come through getLetterBlob.
+  const looksLikeText = /\.(md|txt)$/i.test(letter.file || '');
+  if (!looksLikeText) {
+    if (state.open !== open) return;
+    body.replaceChildren();
+    const stage = el('div', 'letter-stage');
+    stage.appendChild(embedFrame(letterPublicUrl(letter.file), displayTitle(letter)));
+    body.appendChild(stage);
+    return;
+  }
+
   let blob;
   try {
     blob = await getLetterBlob(letter.id);
@@ -335,13 +347,7 @@ async function openLetter(letter, ui = getUI()) {
 
   open.blobUrl = URL.createObjectURL(blob);
   body.replaceChildren();
-  if (blob.type.startsWith('text/')) {
-    renderTextBody(await blob.text(), body);
-  } else {
-    const stage = el('div', 'letter-stage');
-    stage.appendChild(embedFrame(open.blobUrl, displayTitle(letter)));
-    body.appendChild(stage);
-  }
+  renderTextBody(await blob.text(), body);
 }
 
 function closeLetter(ui = getUI(), { restore = true } = {}) {

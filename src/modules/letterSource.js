@@ -1,42 +1,35 @@
 /**
- * letterSource.js — the ONLY module that touches letter bytes.
+ * letterSource.js — the ONLY module that touches letter bytes / letter URLs.
  *
- * Production: authenticated Firebase Storage via getBlob(). The Storage rule
- * (storage.rules, letters/{fileName}) is evaluated server-side against the
- * signed-in UID (owner | tolu). Nothing is readable without that.
+ * The archive page is still passcode-gated. The PDF bytes themselves are public
+ * on purpose: authenticated getBlob() was too slow/fragile for multi-MB letters
+ * on her phone. A guessable URL is an acceptable trade for a drawer that opens.
  *
- * Local dev: Vite serves the gitignored letters-source/ folder so the reading
- * room can be built without a Storage round-trip. That folder is never copied
- * into dist/ or public/ — GitHub Pages cannot authenticate a byte, so anything
- * reachable by the built site is public. Never move, copy, or symlink it there.
+ * Production: Firebase Storage `letters/<file>` with public read.
+ * Local dev: Vite serves the gitignored `letters-source/` folder.
  *
- * Rules (06-LETTERS R6):
- *   • never mint a download URL (the SDK's getDownload… helper) — its output
- *     is a bearer token that bypasses the Storage rule forever
- *   • return a Blob, never a URL; the caller creates and revokes blob:
- *   • fetch on demand, one letter at a time; never prefetch the archive
+ * Prefer `letterPublicUrl()` for PDFs so the browser can stream into an iframe
+ * instead of waiting for the whole file to download into a Blob first.
  */
 
-import { getBlob, ref } from 'firebase/storage';
-import { storage } from './firebase.js';
 import { letters } from '../data/letters.js';
 
-// Vite base is required: without it the dev URL resolves to /letters-source/… and 404s.
-const SOURCE_DIR = `${import.meta.env.BASE_URL}letters-source/`;
+const BUCKET = 'lovesite-1540e.firebasestorage.app';
+const DEV_DIR = `${import.meta.env.BASE_URL}letters-source/`;
 
-function storagePath(file) {
-  return `letters/${file}`;
-}
-
-async function blobFromDevServer(file) {
-  const res = await fetch(SOURCE_DIR + encodeURIComponent(file), { cache: 'no-store' });
-  if (!res.ok) throw new Error(`Letter fetch failed (${res.status})`);
-  return res.blob();
+/**
+ * @param {string} file
+ * @returns {string}
+ */
+export function letterPublicUrl(file) {
+  if (import.meta.env.DEV) {
+    return DEV_DIR + encodeURIComponent(file);
+  }
+  return `https://firebasestorage.googleapis.com/v0/b/${BUCKET}/o/${encodeURIComponent(`letters/${file}`)}?alt=media`;
 }
 
 /**
- * Metadata for every letter. Async so a Storage-backed list can land later
- * without the page changing.
+ * Metadata for every letter.
  * @returns {Promise<import('../data/letters.js').Letter[]>}
  */
 export async function getLetterList() {
@@ -44,7 +37,8 @@ export async function getLetterList() {
 }
 
 /**
- * The bytes of one letter, fetched now, for this view only.
+ * The bytes of one letter (text bodies / rare cases). PDFs should use
+ * letterPublicUrl() so the viewer can stream.
  * @param {string} id
  * @returns {Promise<Blob>}
  */
@@ -52,9 +46,7 @@ export async function getLetterBlob(id) {
   const letter = letters.find((l) => l.id === id);
   if (!letter || !letter.file) throw new Error('Unknown letter');
 
-  if (import.meta.env.DEV) {
-    return blobFromDevServer(letter.file);
-  }
-
-  return getBlob(ref(storage, storagePath(letter.file)));
+  const res = await fetch(letterPublicUrl(letter.file), { cache: 'force-cache' });
+  if (!res.ok) throw new Error(`Letter fetch failed (${res.status})`);
+  return res.blob();
 }

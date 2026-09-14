@@ -158,22 +158,24 @@ until it exists. Backup/Import wrap both stores in one `people-backup-YYYY-MM-DD
 ### `applications.html` — The Application Desk
 
 Her job-application prep, made into one tap. Local-only (`src/applications.js`,
-`src/modules/applicationsStore.js`, `src/data/promptTemplates.js`, `src/styles/applications.css`):
+`src/modules/applicationsStore.js`, `src/data/applicationsSeed.js`, `src/data/promptTemplates.js`, `src/styles/applications.css`):
 no Firebase import, no network requests, nothing sent to LoveGPT or analytics, no passcode. Three
 views behind a segmented control — **Prepare** (paste a job description, tick materials, pick tone
 and length → one structured Claude prompt with a Copy button that falls back from
 `clipboard.writeText` to `execCommand('copy')` to select-the-text), **Materials** (reusable text
 blocks), and **Applications** (a calm list ordered by nearest upcoming interview / deadline /
 follow-up, dateless records by `updatedAt`, `Rejected`/`Closed` under an "Archived" disclosure and
-never counted). Two stores, each in the `{ v, updatedAt, data }` envelope: `usm.materials.v1` →
+never counted). Two stores, each in the `{ v, updatedAt, data }` envelope: `usm.materials.v2` →
 `{ items: Material[], templateOverrides: { [templateId]: body } }` where `Material` is `{ id
-('mat_…'), label, kind ('resume' | 'coverLetter' | 'blurb' | 'references' | 'other'), body,
-updatedAt }`; and `usm.applications.v1` → `{ items: Application[] }` where `Application` is `{ id
-('app_…'), organization, position, url, jobDescription, deadline (date-only ISO | null),
+('mat_…' or 'mat_seed_…'), label, kind ('resume' | 'coverLetter' | 'blurb' | 'references' | 'other'), body,
+updatedAt }`; and `usm.applications.v2` → `{ items: Application[] }` where `Application` is `{ id
+('app_…' or 'app_seed_…'), organization, position, url, jobDescription, deadline (date-only ISO | null),
 discoveredAt, appliedAt (| null), status (Saved · Preparing · Ready · Applied · Interview ·
 Follow-up · Offer · Rejected · Closed), resumeUsed / coverLetter / referencesUsed (material id |
 null), interviewAt (full ISO | null), followUpAt (date-only | null), notes, outcome (| null),
-updatedAt }`. Prompt defaults live in `promptTemplates.js` (every template tells Claude not to
+updatedAt }`. First visit is seeded from `src/data/applicationsSeed.js` (her resumes, cover letters,
+and a few real postings) so the desk is not empty; a migrate from v1 merges those records by id and
+does not duplicate. Prompt defaults live in `promptTemplates.js` (every template tells Claude not to
 invent experience); her edits are `templateOverrides`. Reminder records
 (`applications:<id>:deadline|interview|followup`) go through a lazy `import.meta.glob` of
 `src/modules/reminders.js` (owned by 11-NOTIFICATIONS) and are no-ops until it exists — the
@@ -225,21 +227,16 @@ change**) plus "Download the original".
 open view and revoked on close, on switching letters, and on `pagehide`. Never a download URL,
 never any storage, never the URL bar.
 
-**Data path.** Production `letterSource.js` fetches bytes with authenticated
-`getBlob(ref(storage, 'letters/<file>'))`. Storage rules (`letters/{fileName}`) allow read only
-for the signed-in `owner` or `tolu` UID — that is the real boundary. Local `npm run dev` still
-reads the gitignored `letters-source/` folder so the reading room can be worked on without a
-Storage round-trip; that folder is never copied into `dist/` or `public/`. Owner upload/delete
-(06 R8) is still unbuilt.
+**Data path.** Letter PDFs live in Firebase Storage under `letters/` with **public read** so the
+browser can stream them into the viewer without an authenticated download. The page passcode is
+still the curtain for the archive UI; a guessed object URL can reach a PDF, and that trade is
+accepted so she can actually open them. Local `npm run dev` reads the gitignored
+`letters-source/` folder. Owner upload/delete (06 R8) is still unbuilt.
 
 **MVP privacy vs real security.** The locked state, the hidden nav entry, the role check and the
-session persistence are a curtain — DevTools defeats each in a minute. The only real boundary is a
-Firebase Storage rule evaluated server-side against the signed-in UID, which is why bytes must only
-ever arrive through an authenticated `getBlob()`. And because GitHub Pages serves `dist/` publicly
-regardless of repo visibility, letter bodies can never live in `src/`, `public/`, or a `?raw`
-import — a private repo protects the source, not the build. Metadata in `src/data/letters.js` is
-bundled and therefore must stay innocuous (titles, dates, one-line teasers from *outside* the
-letter; no excerpts).
+session persistence are a curtain — DevTools defeats each in a minute. Letter PDFs are deliberately
+public on Storage so the viewer can stream; the passcode is what keeps the archive from being
+browsable by a casual passer-by, not a hard lock on the bytes.
 
 ### Information architecture
 
@@ -263,7 +260,7 @@ All modules live in `src/modules/`. Each page imports only the modules it needs.
 | Module | Purpose |
 |--------|---------|
 | `auth.js` | Passcode → Cloud Function `verify-passcode` → Firebase custom token → `signInWithCustomToken` with `browserSessionPersistence`. `isAuthenticated()`, `authenticateWithPasscode()`, `showPasscodeModal()`, `ensureAuthenticated()`, and `getRole()` (`'owner'` \| `'tolu'` \| `null`, read from the signed-in UID). |
-| `letterSource.js` | The only module that touches letter bytes: `getLetterList()`, `getLetterBlob(id)` → `Blob`. Production uses authenticated Storage `getBlob()` (`letters/<file>`); local `npm run dev` reads the gitignored `letters-source/` folder. Never `getDownloadURL`. |
+| `letterSource.js` | Letter bytes/URLs only: `getLetterList()`, `letterPublicUrl(file)`, `getLetterBlob(id)`. Production streams public Storage `letters/<file>`; local `npm run dev` uses `letters-source/`. Passcode gates the page, not the object URL. |
 | `dates.js` | Real calendar math: `daysBetween` (DST-safe), `calendarDuration` (month-by-month, not `/30.44`), `addDays`, `addMonths`, `formatDateRange`, and `formatRelativeGentle` — relative wording that never says "overdue", "late" or "should". |
 | `modal.js` | `openModal()` / `closeModal()` for `.usm-modal`: focus trap (`data-focus-trap`), Escape-to-close, focus restore. |
 | `reveal.js` | The single scroll-reveal `IntersectionObserver` (`initReveal(root)`, `observeReveal(el)`). Marks everything visible immediately under `prefers-reduced-motion` or when the API is missing. |

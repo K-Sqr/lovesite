@@ -22,9 +22,10 @@
 
 const SESSION_KEY = 'usm.celebrate.one-year';
 
-/** Official day-of-month — she said yes on the 13th. */
+/** The 13th, and the day after — she said yes on the 13th. */
 export function isAnniversaryDay(now = new Date()) {
-  return now.getDate() === 13;
+  const day = now.getDate();
+  return day === 13 || day === 14;
 }
 
 let running = false;

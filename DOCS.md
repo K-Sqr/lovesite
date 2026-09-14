@@ -225,12 +225,12 @@ change**) plus "Download the original".
 open view and revoked on close, on switching letters, and on `pagehide`. Never a download URL,
 never any storage, never the URL bar.
 
-**Data path today (LOCAL DEV ONLY).** `letterSource.js` fetches from the gitignored
-`letters-source/` folder at the repo root, which only Vite's dev server serves
-(`${import.meta.env.BASE_URL}letters-source/<file>`). `npm run build` does not copy it, so the
-deployed page 404s on every letter by design. Swapping to authenticated Firebase Storage
-(`getBlob(ref(storage, 'letters/<file>'))`, rules per `03-SECURITY-REMEDIATION.md`) is a change
-to that one file. Owner upload/delete (06 R8) waits for the same swap.
+**Data path.** Production `letterSource.js` fetches bytes with authenticated
+`getBlob(ref(storage, 'letters/<file>'))`. Storage rules (`letters/{fileName}`) allow read only
+for the signed-in `owner` or `tolu` UID — that is the real boundary. Local `npm run dev` still
+reads the gitignored `letters-source/` folder so the reading room can be worked on without a
+Storage round-trip; that folder is never copied into `dist/` or `public/`. Owner upload/delete
+(06 R8) is still unbuilt.
 
 **MVP privacy vs real security.** The locked state, the hidden nav entry, the role check and the
 session persistence are a curtain — DevTools defeats each in a minute. The only real boundary is a
@@ -263,7 +263,7 @@ All modules live in `src/modules/`. Each page imports only the modules it needs.
 | Module | Purpose |
 |--------|---------|
 | `auth.js` | Passcode → Cloud Function `verify-passcode` → Firebase custom token → `signInWithCustomToken` with `browserSessionPersistence`. `isAuthenticated()`, `authenticateWithPasscode()`, `showPasscodeModal()`, `ensureAuthenticated()`, and `getRole()` (`'owner'` \| `'tolu'` \| `null`, read from the signed-in UID). |
-| `letterSource.js` | The only module that touches letter bytes: `getLetterList()`, `getLetterBlob(id)` → `Blob`. **Local-dev implementation** reading the gitignored `letters-source/`; the authenticated Storage `getBlob()` version replaces this file and nothing else. |
+| `letterSource.js` | The only module that touches letter bytes: `getLetterList()`, `getLetterBlob(id)` → `Blob`. Production uses authenticated Storage `getBlob()` (`letters/<file>`); local `npm run dev` reads the gitignored `letters-source/` folder. Never `getDownloadURL`. |
 | `dates.js` | Real calendar math: `daysBetween` (DST-safe), `calendarDuration` (month-by-month, not `/30.44`), `addDays`, `addMonths`, `formatDateRange`, and `formatRelativeGentle` — relative wording that never says "overdue", "late" or "should". |
 | `modal.js` | `openModal()` / `closeModal()` for `.usm-modal`: focus trap (`data-focus-trap`), Escape-to-close, focus restore. |
 | `reveal.js` | The single scroll-reveal `IntersectionObserver` (`initReveal(root)`, `observeReveal(el)`). Marks everything visible immediately under `prefers-reduced-motion` or when the API is missing. |

@@ -12,6 +12,15 @@ service firebase.storage {
       allow delete: if request.auth != null && request.auth.uid == 'owner';
     }
 
+    match /letters/{fileName} {
+      allow read:   if request.auth != null
+                    && (request.auth.uid == 'owner' || request.auth.uid == 'tolu');
+      allow create: if request.auth != null && request.auth.uid == 'owner'
+                    && request.resource.size < 25 * 1024 * 1024
+                    && request.resource.contentType == 'application/pdf';
+      allow update, delete: if request.auth != null && request.auth.uid == 'owner';
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }

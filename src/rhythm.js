@@ -22,6 +22,8 @@ import { openModal, closeModal } from './modules/modal.js';
 import * as store from './modules/rhythmStore.js';
 import { predictNextWindow, cycleLengthByRecord, MIN_CYCLE_DAYS, MAX_CYCLE_DAYS } from './modules/cyclePredict.js';
 import { toISO, addDays, daysBetween, parseISO, formatDateRange, formatLongDate } from './modules/dates.js';
+import { registerEphemeral, clearEphemeral } from './modules/reminders.js';
+import { mountReminderStrip } from './modules/reminderUI.js';
 
 /* ────────────────────────────────── copy ────────────────────────────────── */
 // Gentle, factual, second person. No streaks, no nagging, no single certain date.
@@ -58,6 +60,8 @@ const state = {
   lockTimer: null,
   undoTimer: null,
   historyAnimated: false,
+  /** @type {{ unmount: () => void } | null} the in-page reminder card while unlocked */
+  reminderStrip: null,
 };
 
 /** @type {HTMLElement} */ let content;
@@ -133,6 +137,9 @@ function clearTimers() {
  */
 function lock({ prompt = true } = {}) {
   clearTimers();
+  // The reminder lives only in memory and only while unlocked: drop it before the key.
+  clearEphemeral('rhythm');
+  if (state.reminderStrip) { state.reminderStrip.unmount(); state.reminderStrip = null; }
   store.lock();
   state.records = null;
   state.settings = null;
@@ -394,6 +401,54 @@ async function refresh() {
   }
   if (answerEl) answerEl.replaceChildren(buildAnswer(state.records));
   if (historyEl) renderHistory();
+  syncReminder();
+}
+
+/* ─────────────────────────── unlocked: reminder ─────────────────────────── */
+
+const REMINDER_LEAD_DAYS = 3;
+const REMINDER_HOUR = 9; // local; after the engine's default quiet hours end
+
+/**
+ * The Rhythm half of the 11-NOTIFICATIONS privacy boundary. Nothing about the
+ * window is ever written by the reminder engine: the reminder is registered
+ * in memory at unlock, shown only on this page, and "got it" / "later" go back
+ * into the encrypted store via rhythmStore.setReminderState(). The wording is
+ * deliberately content-free — it must read as nothing to anyone else.
+ */
+async function syncReminder() {
+  clearEphemeral('rhythm');
+  if (!state.records || !store.isUnlocked()) return;
+  const p = predictNextWindow(state.records, new Date());
+  if (p.state !== 'estimate' || p.isPastWindow) return;
+
+  const sourceId = `window-${p.windowStart}`;
+  const when = addDays(p.windowStart, -REMINDER_LEAD_DAYS);
+  when.setHours(REMINDER_HOUR, 0, 0, 0);
+
+  let saved = null;
+  try {
+    saved = (await store.getReminderStates())[sourceId] || null;
+  } catch {
+    saved = null; // no saved state is fine; it just starts fresh
+  }
+  if (!store.isUnlocked()) return; // locked while we were reading
+
+  registerEphemeral({
+    type: 'rhythm',
+    sourceId,
+    title: 'Something to keep an eye on this week.',
+    body: 'Just a heads-up.',
+    scheduledAt: when,
+    status: saved ? saved.status : 'pending',
+    snoozedUntil: saved ? saved.snoozedUntil : null,
+    dismissedAt: saved ? saved.dismissedAt : null,
+    deliveredAt: saved ? saved.deliveredAt : null,
+    onChange: (snap) => {
+      if (!store.isUnlocked()) return;
+      store.setReminderState(sourceId, snap).catch(() => { /* saving failed; the page's own status line covers writes she makes */ });
+    },
+  });
 }
 
 /* ─────────────────────────── unlocked: logging ─────────────────────────── */
@@ -714,10 +769,14 @@ function buildSettings() {
 /* ──────────────────────────── unlocked: page ──────────────────────────── */
 
 function renderUnlocked() {
+  const reminderEl = el('div', { class: 'rhythm-reminders' });
   answerEl = el('div', { class: 'rhythm-answer-wrap' }, [buildAnswer(state.records)]);
   historyEl = el('section', { class: 'rhythm-history', 'aria-label': 'Recorded' });
-  content.replaceChildren(answerEl, ...buildLogging(), historyEl, buildSettings());
+  content.replaceChildren(reminderEl, answerEl, ...buildLogging(), historyEl, buildSettings());
   renderHistory();
+  if (state.reminderStrip) state.reminderStrip.unmount();
+  state.reminderStrip = mountReminderStrip(reminderEl, { types: ['rhythm'] });
+  syncReminder();
 }
 
 /* ───────────────────────────────── boot ───────────────────────────────── */

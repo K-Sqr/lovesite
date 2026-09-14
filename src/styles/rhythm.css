@@ -29,6 +29,15 @@
   margin: 0;
 }
 
+/* the reminder mount is a flex child: hide it entirely when there is nothing to show */
+.rhythm-reminders:empty {
+  display: none;
+}
+
+.rhythm-reminders .reminder-card {
+  margin-bottom: 0;
+}
+
 /* the flex primitives below would otherwise outrank the UA [hidden] rule */
 .rhythm-page [hidden],
 .rhythm-unlock [hidden] {

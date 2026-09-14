@@ -11,8 +11,16 @@
  * module state, never stored, never logged.
  *
  * Decrypted payload:
- *   { version: 1, records: [Record], settings: { autoLockMinutes: 5 } }
+ *   { version: 1, records: [Record], settings: { autoLockMinutes: 5 }, reminders: { [sourceId]: State } }
  * `records` is kept sorted newest-first on every write, so rendering never sorts.
+ *
+ * `reminders` is the Rhythm half of 11-NOTIFICATIONS' privacy boundary. The
+ * reminder engine never writes a rhythm row to its plaintext store; instead
+ * rhythm.js registers an in-memory ("ephemeral") reminder at unlock and the
+ * engine hands status changes ("got it", "later") back here, where they are
+ * saved INSIDE this ciphertext — same passphrase, same key, one unlock.
+ *   State: { status: 'delivered'|'snoozed'|'dismissed', snoozedUntil, dismissedAt, deliveredAt, updatedAt }
+ * Entries older than REMINDER_STATE_DAYS are dropped on read, so nothing accumulates.
  */
 
 import { createStore, StorageError } from './storage.js';
@@ -29,11 +37,13 @@ export const MOOD_MAX = 80;
 export const MAX_DURATION_DAYS = 14;
 export const DUPLICATE_WINDOW_DAYS = 3;
 export const DEFAULT_AUTO_LOCK_MINUTES = 5;
+export const REMINDER_STATE_DAYS = 30;
+const REMINDER_STATUSES = ['delivered', 'snoozed', 'dismissed'];
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 function initialData() {
-  return { version: STORE_VERSION, records: [], settings: { autoLockMinutes: DEFAULT_AUTO_LOCK_MINUTES } };
+  return { version: STORE_VERSION, records: [], settings: { autoLockMinutes: DEFAULT_AUTO_LOCK_MINUTES }, reminders: {} };
 }
 
 /** @type {ReturnType<typeof createStore> | null} */
@@ -101,13 +111,36 @@ function sortNewestFirst(records) {
   return records.slice().sort((a, b) => (a.startDate < b.startDate ? 1 : a.startDate > b.startDate ? -1 : 0));
 }
 
+function isIsoInstant(s) {
+  return typeof s === 'string' && !Number.isNaN(new Date(s).getTime());
+}
+
+/** Keep only well-formed, recent reminder states. */
+function coerceReminders(raw, now = new Date()) {
+  const out = {};
+  if (!raw || typeof raw !== 'object') return out;
+  for (const [sourceId, st] of Object.entries(raw)) {
+    if (!st || typeof st !== 'object' || !REMINDER_STATUSES.includes(st.status)) continue;
+    const updatedAt = isIsoInstant(st.updatedAt) ? st.updatedAt : null;
+    if (!updatedAt || daysBetween(new Date(updatedAt), now) > REMINDER_STATE_DAYS) continue;
+    out[sourceId] = {
+      status: st.status,
+      snoozedUntil: isIsoInstant(st.snoozedUntil) ? st.snoozedUntil : null,
+      dismissedAt: isIsoInstant(st.dismissedAt) ? st.dismissedAt : null,
+      deliveredAt: isIsoInstant(st.deliveredAt) ? st.deliveredAt : null,
+      updatedAt,
+    };
+  }
+  return out;
+}
+
 /** Make sure whatever was decrypted has the shape the page expects. */
 function coerceData(data) {
   const base = initialData();
   if (!data || typeof data !== 'object') return base;
   const records = Array.isArray(data.records) ? data.records.filter((r) => r && typeof r.id === 'string' && isIsoDate(r.startDate)) : [];
   const minutes = data.settings && Number.isFinite(data.settings.autoLockMinutes) ? data.settings.autoLockMinutes : base.settings.autoLockMinutes;
-  return { version: STORE_VERSION, records: sortNewestFirst(records), settings: { autoLockMinutes: minutes } };
+  return { version: STORE_VERSION, records: sortNewestFirst(records), settings: { autoLockMinutes: minutes }, reminders: coerceReminders(data.reminders) };
 }
 
 /* ─────────────────────────────── lifecycle ─────────────────────────────── */
@@ -247,6 +280,40 @@ export async function updateSettings(patch) {
   }
   await writeData(data);
   return { ...data.settings };
+}
+
+/* ─────────────────────────────── reminder state ─────────────────────────────── */
+
+/**
+ * Saved status of the ephemeral reminders, keyed by the engine's sourceId.
+ * Read once at unlock so rhythm.js can re-register with the status she left it in.
+ * @returns {Promise<Record<string, object>>}
+ */
+export async function getReminderStates() {
+  return { ...(await readData()).reminders };
+}
+
+/**
+ * Persist a status change the engine reported through onChange. Cancelled or
+ * pending states are simply forgotten — only "she acted on it" is worth keeping.
+ * @param {string} sourceId
+ * @param {{ status: string, snoozedUntil?: string|null, dismissedAt?: string|null, deliveredAt?: string|null }} snap
+ */
+export async function setReminderState(sourceId, snap) {
+  if (typeof sourceId !== 'string' || !sourceId) return;
+  const data = await readData();
+  if (!snap || !REMINDER_STATUSES.includes(snap.status)) {
+    delete data.reminders[sourceId];
+  } else {
+    data.reminders[sourceId] = {
+      status: snap.status,
+      snoozedUntil: isIsoInstant(snap.snoozedUntil) ? snap.snoozedUntil : null,
+      dismissedAt: isIsoInstant(snap.dismissedAt) ? snap.dismissedAt : null,
+      deliveredAt: isIsoInstant(snap.deliveredAt) ? snap.deliveredAt : null,
+      updatedAt: new Date().toISOString(),
+    };
+  }
+  await writeData(data);
 }
 
 /**

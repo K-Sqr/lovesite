@@ -1,9 +1,70 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import { readdir } from 'fs/promises';
+
+const MUSIC_DIR = resolve(__dirname, 'public/music');
+const DEFAULT_TRACK = 'Outgun Onkar - Wind II feat. The Good Wine, Anendlessocean (Official Visualizer).mp3';
+const AUDIO_EXTENSIONS = new Set(['.mp3', '.wav', '.ogg', '.m4a', '.aac', '.webm', '.opus']);
+
+function trackTitle(filename) {
+  return filename
+    .replace(/\.[^.]+$/, '')
+    .replace(/\s*\((official (music )?video|official visualizer|audio)\)\s*$/i, '')
+    .replace(/_/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+async function scanMusicFolder() {
+  const entries = await readdir(MUSIC_DIR, { withFileTypes: true });
+  const filenames = entries
+    .filter((entry) => entry.isFile())
+    .map((entry) => entry.name)
+    .filter((filename) => AUDIO_EXTENSIONS.has(filename.slice(filename.lastIndexOf('.')).toLowerCase()))
+    .sort((a, b) => a.localeCompare(b));
+
+  const defaultIndex = filenames.indexOf(DEFAULT_TRACK);
+  if (defaultIndex > 0) filenames.unshift(...filenames.splice(defaultIndex, 1));
+
+  return filenames.map((filename) => ({
+    title: trackTitle(filename),
+    src: `./music/${filename.split('/').map(encodeURIComponent).join('/')}`,
+  }));
+}
+
+function automaticMusicPlaylist() {
+  const playlistJson = async () => JSON.stringify({ tracks: await scanMusicFolder() }, null, 2);
+
+  return {
+    name: 'automatic-music-playlist',
+    configureServer(server) {
+      server.middlewares.use(async (request, response, next) => {
+        const pathname = request.url?.split('?')[0] || '';
+        if (!pathname.endsWith('/music/playlist.json')) return next();
+
+        try {
+          response.setHeader('Content-Type', 'application/json; charset=utf-8');
+          response.setHeader('Cache-Control', 'no-store');
+          response.end(await playlistJson());
+        } catch (error) {
+          next(error);
+        }
+      });
+    },
+    async generateBundle() {
+      this.emitFile({
+        type: 'asset',
+        fileName: 'music/playlist.json',
+        source: await playlistJson(),
+      });
+    },
+  };
+}
 
 export default defineConfig({
   root: '.',
   base: '/lovesite/',
+  plugins: [automaticMusicPlaylist()],
   build: {
     outDir: 'dist',
     rollupOptions: {

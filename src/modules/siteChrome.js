@@ -26,8 +26,6 @@ export const NAV_LINKS = [
 ];
 
 const BRAND = { label: '♥ Us Machina', href: './index.html' }; // ♥
-const MUSIC_SRC = './music/Venus (Bass Version).mp3';
-
 function el(tag, attrs = {}, children = []) {
   const node = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {
@@ -75,19 +73,66 @@ function renderTabs(active) {
 function renderMusic() {
   const mount = document.getElementById('siteMusic');
   if (!mount || document.getElementById('bgMusic')) return;
-  const source = el('source', { src: MUSIC_SRC, type: 'audio/mpeg' });
+
+  const control = (id, label, icon, extraClass = '') => el('button', {
+    type: 'button',
+    id,
+    class: `music-player__control ${extraClass}`.trim(),
+    'aria-label': label,
+    title: label,
+    text: icon,
+  });
+
+  const player = el('aside', {
+    class: 'music-player',
+    id: 'musicPlayer',
+    'aria-label': 'Mini music player',
+  }, [
+    el('div', { class: 'music-player__top' }, [
+      el('span', { class: 'music-player__note', 'aria-hidden': 'true', text: '♫' }),
+      el('div', { class: 'music-player__track' }, [
+        el('span', { class: 'music-player__eyebrow', text: 'Now playing' }),
+        el('span', { class: 'music-player__title', id: 'musicTrackTitle', text: 'Wind II' }),
+      ]),
+      control('musicClose', 'Remove music player', '×', 'music-player__close'),
+    ]),
+    el('div', { class: 'music-player__controls' }, [
+      control('musicShuffle', 'Shuffle off', '↝'),
+      control('musicPrev', 'Previous song', '◀'),
+      control('musicPlay', 'Play', '▶', 'music-player__play'),
+      control('musicStop', 'Stop', '■'),
+      control('musicNext', 'Next song', '▶'),
+      control('musicMute', 'Mute', '🔊'),
+    ]),
+  ]);
+
   mount.replaceChildren(
-    el('button', { type: 'button', class: 'music-toggle', id: 'musicToggle', 'aria-label': 'Toggle music', text: '\u{1F507}' }),
-    el('audio', { id: 'bgMusic', preload: 'none' }, [source]),
+    player,
+    el('audio', { id: 'bgMusic', preload: 'metadata' }),
   );
+
+  let footer = document.querySelector('.site-footer');
+  if (!footer) {
+    footer = el('footer', { class: 'site-footer site-footer--music-only', id: 'siteFooter' });
+    mount.before(footer);
+  }
+  if (!footer.querySelector('#musicRestore')) {
+    footer.appendChild(el('button', {
+      type: 'button',
+      class: 'music-restore',
+      id: 'musicRestore',
+      text: '♫ music',
+      'aria-label': 'Show music player',
+    }));
+  }
 }
 
 function renderFooter() {
   const footer = document.getElementById('siteFooter');
-  if (!footer || footer.childElementCount) return;
-  const p = el('p');
+  if (!footer || footer.querySelector('.site-footer__credit')) return;
+  const p = el('p', { class: 'site-footer__credit' });
   p.append('Made with ', el('span', { class: 'heart-icon', text: '♥' }), ' and a little bit of code');
-  footer.appendChild(p);
+  footer.prepend(p);
 }
 
 /**

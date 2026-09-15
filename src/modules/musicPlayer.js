@@ -1,9 +1,24 @@
 const SESSION_SHOULD_PLAY = 'music_should_play';
 const SESSION_MUTED = 'music_muted';
+const SESSION_TRACK = 'music_track';
+const SESSION_TRACK_SRC = 'music_track_src';
+const SESSION_TIME = 'music_time';
+const SESSION_SHUFFLE = 'music_shuffle';
+const SESSION_HIDDEN = 'music_player_hidden';
 
-const POPUP_ID = 'music-popup';
-const POPUP_DISMISS_MS = 8000;
-const POPUP_SHOWN_KEY = 'music_popup_shown';
+async function loadPlaylist() {
+  try {
+    const response = await fetch('./music/playlist.json', { cache: 'no-store' });
+    if (!response.ok) throw new Error(`Playlist request failed: ${response.status}`);
+    const data = await response.json();
+    return Array.isArray(data.tracks)
+      ? data.tracks.filter((track) => track?.title && track?.src)
+      : [];
+  } catch (error) {
+    console.warn('The music folder could not be read.', error);
+    return [];
+  }
+}
 
 function ensureSessionDefaults() {
   if (!sessionStorage.getItem(SESSION_SHOULD_PLAY)) {
@@ -30,110 +45,108 @@ function setShouldPlay(shouldPlay) {
   sessionStorage.setItem(SESSION_SHOULD_PLAY, String(!!shouldPlay));
 }
 
-function updateToggleUI(toggle, audio) {
-  if (!toggle) return;
-  const isMuted = !!audio.muted;
-  toggle.textContent = isMuted ? '\u{1F507}' : '\u{1F3B5}'; // 🔇 vs 🎵
-  if (!isMuted) toggle.classList.add('playing');
-  else toggle.classList.remove('playing');
-}
-
-function getOrCreatePopup(toggle, audio) {
-  let popup = document.getElementById(POPUP_ID);
-  if (popup) return popup;
-
-  popup = document.createElement('div');
-  popup.id = POPUP_ID;
-  popup.className = 'music-popup';
-
-  popup.innerHTML = `
-    <div class="music-popup-card">
-      <div class="music-popup-title">Music is playing</div>
-      <button type="button" class="music-popup-btn" id="musicPopupBtn">
-        ${audio.muted ? 'Unmute' : 'Mute'}
-      </button>
-      <button type="button" class="music-popup-close" aria-label="Close" id="musicPopupClose">
-        &times;
-      </button>
-    </div>
-  `;
-  document.body.appendChild(popup);
-
-  const btn = popup.querySelector('#musicPopupBtn');
-  const closeBtn = popup.querySelector('#musicPopupClose');
-
-  btn.addEventListener('click', () => {
-    if (audio.muted) {
-      audio.muted = false;
-      setMuted(false);
-      setShouldPlay(true);
-      // Try play after unmuting.
-      audio.play().catch(() => {});
-    } else {
-      audio.muted = true;
-      setMuted(true);
-    }
-    updateToggleUI(toggle, audio);
-    // Keep popup around until auto-dismiss; text updates immediately.
-    btn.textContent = audio.muted ? 'Unmute' : 'Mute';
-  });
-
-  closeBtn.addEventListener('click', () => {
-    popup.classList.remove('active');
-  });
-
-  return popup;
-}
-
-export function initMusicPlayer() {
-  const toggle = document.getElementById('musicToggle');
+export async function initMusicPlayer() {
   const audio = document.getElementById('bgMusic');
-  if (!audio) return;
+  const player = document.getElementById('musicPlayer');
+  const title = document.getElementById('musicTrackTitle');
+  const playButton = document.getElementById('musicPlay');
+  const muteButton = document.getElementById('musicMute');
+  const shuffleButton = document.getElementById('musicShuffle');
+  const restoreButton = document.getElementById('musicRestore');
+  if (!audio || !player) return;
 
   ensureSessionDefaults();
 
-  const shouldPlay = getShouldPlay();
-  audio.loop = true; // loop seamlessly
-  audio.muted = getMuted();
+  const playlist = await loadPlaylist();
+  if (!playlist.length) {
+    if (title) title.textContent = 'Drop songs into public/music';
+    player.querySelectorAll('.music-player__controls button').forEach((button) => {
+      button.disabled = true;
+    });
+    return;
+  }
 
-  updateToggleUI(toggle, audio);
+  let trackIndex = Number.parseInt(sessionStorage.getItem(SESSION_TRACK) || '0', 10);
+  const savedTrackSrc = sessionStorage.getItem(SESSION_TRACK_SRC);
+  const savedTrackIndex = playlist.findIndex((track) => track.src === savedTrackSrc);
+  if (savedTrackIndex >= 0) trackIndex = savedTrackIndex;
+  if (!Number.isInteger(trackIndex) || !playlist[trackIndex]) trackIndex = 0;
+  let shuffle = sessionStorage.getItem(SESSION_SHUFFLE) === 'true';
+
+  audio.loop = false;
+  audio.muted = getMuted();
+  player.hidden = sessionStorage.getItem(SESSION_HIDDEN) === 'true';
+  if (restoreButton) restoreButton.hidden = !player.hidden;
+
+  const updateUI = () => {
+    const isPlaying = !audio.paused && !audio.ended;
+    if (title) title.textContent = playlist[trackIndex].title;
+    if (playButton) {
+      playButton.textContent = isPlaying ? '❚❚' : '▶';
+      playButton.setAttribute('aria-label', isPlaying ? 'Pause' : 'Play');
+      playButton.title = isPlaying ? 'Pause' : 'Play';
+    }
+    if (muteButton) {
+      muteButton.textContent = audio.muted ? '🔇' : '🔊';
+      muteButton.setAttribute('aria-label', audio.muted ? 'Unmute' : 'Mute');
+      muteButton.title = audio.muted ? 'Unmute' : 'Mute';
+      muteButton.setAttribute('aria-pressed', String(audio.muted));
+    }
+    if (shuffleButton) {
+      shuffleButton.classList.toggle('is-active', shuffle);
+      shuffleButton.setAttribute('aria-pressed', String(shuffle));
+      shuffleButton.setAttribute('aria-label', shuffle ? 'Shuffle on' : 'Shuffle off');
+      shuffleButton.title = shuffle ? 'Shuffle on' : 'Shuffle off';
+    }
+  };
+
+  const setTrack = (nextIndex, { play = true, restoreTime = false } = {}) => {
+    trackIndex = (nextIndex + playlist.length) % playlist.length;
+    sessionStorage.setItem(SESSION_TRACK, String(trackIndex));
+    sessionStorage.setItem(SESSION_TRACK_SRC, playlist[trackIndex].src);
+    audio.src = playlist[trackIndex].src;
+    audio.load();
+    if (restoreTime) {
+      audio.addEventListener('loadedmetadata', () => {
+        const savedTime = Number.parseFloat(sessionStorage.getItem(SESSION_TIME) || '0');
+        if (Number.isFinite(savedTime) && savedTime < audio.duration) audio.currentTime = savedTime;
+      }, { once: true });
+    } else {
+      sessionStorage.setItem(SESSION_TIME, '0');
+    }
+    updateUI();
+    if (play) {
+      setShouldPlay(true);
+      audio.play().catch(() => updateUI());
+    }
+  };
+
+  const nextTrack = () => {
+    if (shuffle && playlist.length > 1) {
+      let next = trackIndex;
+      while (next === trackIndex) next = Math.floor(Math.random() * playlist.length);
+      setTrack(next);
+      return;
+    }
+    setTrack(trackIndex + 1);
+  };
 
   const playIfAllowed = async () => {
     if (!getShouldPlay()) return;
     if (audio.muted) return;
     try {
       await audio.play();
-      // Successful play will be handled by the `play` event below.
     } catch {
       // Autoplay can be blocked until a user gesture.
     }
   };
 
-  let dismissTimer = null;
-  const showPopup = () => {
-    if (!getShouldPlay()) return;
-    // Only show the hint once per tab/session. Subsequent pages should not keep popping it up.
-    if (sessionStorage.getItem(POPUP_SHOWN_KEY) === 'true') return;
-
-    const popup = getOrCreatePopup(toggle, audio);
-    const btn = popup.querySelector('#musicPopupBtn');
-    if (btn) btn.textContent = audio.muted ? 'Unmute' : 'Mute';
-
-    popup.classList.add('active');
-    sessionStorage.setItem(POPUP_SHOWN_KEY, 'true');
-    if (dismissTimer) clearTimeout(dismissTimer);
-    dismissTimer = setTimeout(() => popup.classList.remove('active'), POPUP_DISMISS_MS);
-  };
-
-  audio.addEventListener('play', showPopup);
-  audio.addEventListener('pause', () => {
-    updateToggleUI(toggle, audio);
-  });
-
-  // If playback starts via autoplay, `play` event fires and shows popup.
+  setTrack(trackIndex, { play: false, restoreTime: true });
+  audio.addEventListener('play', updateUI);
+  audio.addEventListener('pause', updateUI);
+  audio.addEventListener('ended', nextTrack);
   playIfAllowed();
 
-  // If autoplay was blocked, try again after first user gesture.
   const gestureHandler = () => {
     document.removeEventListener('click', gestureHandler);
     document.removeEventListener('touchstart', gestureHandler);
@@ -144,16 +157,58 @@ export function initMusicPlayer() {
   document.addEventListener('touchstart', gestureHandler, { once: true });
   document.addEventListener('keydown', gestureHandler, { once: true });
 
-  // Toggle = mute/unmute (not pause/play), so music can stay "enabled" across pages.
-  if (toggle) {
-    toggle.addEventListener('click', () => {
-      const nextMuted = !audio.muted;
-      audio.muted = nextMuted;
-      setMuted(nextMuted);
+  playButton?.addEventListener('click', () => {
+    if (audio.paused) {
       setShouldPlay(true);
-      updateToggleUI(toggle, audio);
-      if (!nextMuted) audio.play().catch(() => {});
-      showPopup();
-    });
-  }
+      audio.play().catch(() => updateUI());
+    } else {
+      setShouldPlay(false);
+      audio.pause();
+    }
+  });
+
+  document.getElementById('musicStop')?.addEventListener('click', () => {
+    setShouldPlay(false);
+    audio.pause();
+    audio.currentTime = 0;
+    sessionStorage.setItem(SESSION_TIME, '0');
+    updateUI();
+  });
+
+  document.getElementById('musicPrev')?.addEventListener('click', () => {
+    setTrack(trackIndex - 1);
+  });
+  document.getElementById('musicNext')?.addEventListener('click', nextTrack);
+
+  muteButton?.addEventListener('click', () => {
+    audio.muted = !audio.muted;
+    setMuted(audio.muted);
+    updateUI();
+  });
+
+  shuffleButton?.addEventListener('click', () => {
+    shuffle = !shuffle;
+    sessionStorage.setItem(SESSION_SHUFFLE, String(shuffle));
+    updateUI();
+  });
+
+  document.getElementById('musicClose')?.addEventListener('click', () => {
+    player.hidden = true;
+    sessionStorage.setItem(SESSION_HIDDEN, 'true');
+    if (restoreButton) restoreButton.hidden = false;
+  });
+
+  restoreButton?.addEventListener('click', () => {
+    player.hidden = false;
+    sessionStorage.setItem(SESSION_HIDDEN, 'false');
+    restoreButton.hidden = true;
+  });
+
+  window.addEventListener('pagehide', () => {
+    sessionStorage.setItem(SESSION_TRACK, String(trackIndex));
+    sessionStorage.setItem(SESSION_TRACK_SRC, playlist[trackIndex].src);
+    sessionStorage.setItem(SESSION_TIME, String(audio.currentTime || 0));
+  });
+
+  updateUI();
 }

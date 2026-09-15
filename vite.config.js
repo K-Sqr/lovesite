@@ -28,8 +28,14 @@ async function scanMusicFolder() {
 
   return filenames.map((filename) => ({
     title: trackTitle(filename),
-    src: `./music/${filename.split('/').map(encodeURIComponent).join('/')}`,
+    // encodeURIComponent turns commas into %2C; Vite's static middleware then
+    // 404s the file. Leave commas (and other harmless punctuation) literal.
+    src: `./music/${filename.split('/').map(encodeMusicPath).join('/')}`,
   }));
+}
+
+function encodeMusicPath(segment) {
+  return encodeURIComponent(segment).replace(/%2C/g, ',');
 }
 
 function automaticMusicPlaylist() {
@@ -64,6 +70,9 @@ function automaticMusicPlaylist() {
 export default defineConfig({
   root: '.',
   base: '/lovesite/',
+  // Multi-page site: without this, Vite's SPA fallback rewrites every
+  // /lovesite/*.html request to index.html in `npm run dev`.
+  appType: 'mpa',
   plugins: [automaticMusicPlaylist()],
   build: {
     outDir: 'dist',

@@ -15,14 +15,14 @@ export const WEDDING_DATE = '2028-05-13';
 
 export const FUND = {
   /** What was in the jar on `balanceAsOf`, before any automatic deposits. */
-  balance: 400,
+  balance: 500,
   balanceAsOf: '2026-09-15',
 
   /** 5% of a paycheck, every week. */
   weekly: 43.75,
 
-  /** Day of the week the deposit lands: 0 = Sunday … 5 = Friday … 6 = Saturday. */
-  payday: 5,
+  /** Day of the week the deposit lands: 0 = Sunday, 1 = Monday, 2 = Tuesday … 6 = Saturday. */
+  payday: 2,
 
   /** Shown on the page so she knows where the number comes from. */
   source: '5% of every paycheck',

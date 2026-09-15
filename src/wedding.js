@@ -5,7 +5,7 @@
  * src/data/weddingFund.js and the arithmetic in src/modules/weddingFund.js:
  * a deposit lands every payday on its own, and between paydays the "growing
  * right now" figure ticks up at the weekly rate. Leave the tab open over a
- * Friday midnight and the page re-renders itself when the day changes.
+ * payday midnight and the page re-renders itself when the day changes.
  */
 
 import './styles/base.css';
@@ -94,7 +94,7 @@ function renderHero(s) {
 function renderStats(s) {
   const tiles = [
     { label: 'Every week', value: money(s.weekly), note: FUND.source },
-    { label: 'Every month', value: money(s.monthly), note: 'give or take a Friday' },
+    { label: 'Every month', value: money(s.monthly), note: `give or take a ${PAYDAY_NAME}` },
     { label: 'Every year', value: money(s.yearly), note: 'without lifting a finger' },
     { label: 'Until the day', value: untilWords(s.untilWedding), note: formatLongDate(WEDDING_DATE), wide: true },
   ];
@@ -124,13 +124,14 @@ function renderAhead(s) {
 }
 
 function renderLog(s, now) {
+  document.getElementById('weddingLogLabel').textContent = `The last few ${PAYDAY_NAME}s`;
   const list = document.getElementById('weddingLog');
   list.replaceChildren();
 
   if (s.deposits === 0) {
     const first = el('li', 'wedding-log__row wedding-log__row--next');
     first.append(
-      el('span', 'wedding-log__date', `First one lands ${dayAndDate(s.nextDeposit)}`),
+      el('span', 'wedding-log__date', `Next one lands ${dayAndDate(s.nextDeposit)}`),
       el('span', 'wedding-log__amount', `+ ${money(s.weekly)}`),
     );
     list.appendChild(first);

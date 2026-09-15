@@ -205,7 +205,7 @@ A savings tracker with no goal bar, because there is no goal amount yet: just wh
 kept encouraging. Static and local-only (`src/wedding.js`, `src/modules/weddingFund.js`,
 `src/styles/wedding.css`): no Firebase, no storage, no network. The only inputs are in
 `src/data/weddingFund.js` — the opening `balance` as of `balanceAsOf`, the `weekly` deposit
-($43.75, 5% of a paycheck) and the `payday` weekday (Friday). The page adds one deposit for every
+($43.75, 5% of a paycheck) and the `payday` weekday (Tuesday). The page adds one deposit for every
 payday that has passed since `balanceAsOf`, so the total keeps itself current; for a lump sum that
 doesn't fit the rhythm, bump `balance` and reset `balanceAsOf`. "Growing right now" accrues the
 next deposit continuously at the weekly rate (5 decimal places, ticking every 120 ms, 1 s under

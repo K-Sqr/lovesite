@@ -78,7 +78,8 @@ export function snapshot(now = new Date(), fund = FUND, weddingDate = WEDDING_DA
     /** Weeks the jar represents, counting the opening balance at the weekly rate. */
     weeksIn: Math.floor(saved / fund.weekly),
     live: saved + accrued,
-    isDepositDay: deposits > 0 && daysBetween(last, now) === 0,
+    // A payday on or after `balanceAsOf` counts, so the day the balance was set still says so.
+    isDepositDay: daysBetween(last, now) === 0 && daysBetween(parseISO(fund.balanceAsOf), now) >= 0,
     lastDeposit: deposits > 0 ? last : null,
     nextDeposit: next,
     weekly: fund.weekly,

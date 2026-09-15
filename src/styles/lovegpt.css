@@ -67,6 +67,103 @@
   display: none;
 }
 
+.lovegpt-starters {
+  flex-direction: column;
+  gap: 12px;
+}
+
+.starter-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.starter-tools {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.starter-tool {
+  background: transparent;
+  border: 1.5px dashed var(--pink-light);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.starter-tool:hover {
+  color: var(--text-primary);
+  border-style: solid;
+  background: var(--card-bg);
+}
+
+.starter-tool--accent {
+  border-style: solid;
+  border-color: var(--pink-hot);
+  color: var(--pink-deep);
+}
+
+/* ── In-chat suggestion row (shows once the starters are gone) ── */
+.lovegpt-suggest {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 0 8px;
+}
+
+.lovegpt-suggest__pills {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  flex: 1;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.lovegpt-suggest__pills::-webkit-scrollbar {
+  display: none;
+}
+
+.suggest-pill {
+  flex-shrink: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--pink-light);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.suggest-pill:hover {
+  color: var(--text-primary);
+  background: var(--pink-light);
+}
+
+.lovegpt-suggest__more {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--pink-light);
+  background: var(--card-bg);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: transform 0.3s ease, background 0.2s ease;
+}
+
+.lovegpt-suggest__more:hover {
+  background: var(--pink-light);
+  transform: rotate(180deg);
+}
+
 /* ── Chat area ── */
 .lovegpt-chat {
   flex: 1;

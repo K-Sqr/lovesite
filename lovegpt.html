@@ -24,16 +24,13 @@
       <p class="lovegpt-subtitle">love in the machine</p>
     </div>
 
-    <!-- Starter pills -->
+    <!-- Starter pills (pool + rendering live in src/lovegpt.js) -->
     <div class="lovegpt-starters" id="starters">
-      <button class="starter-pill" data-q="What does Tolu like to eat?">&#x1F35F; What does she like to eat?</button>
-      <button class="starter-pill" data-q="Remind us of our first date">&#x1F4F1; Remind us of our first date</button>
-      <button class="starter-pill" data-q="How was October for us?">&#x1F342; How was October for us?</button>
-      <button class="starter-pill" data-q="Suggest a date night idea">&#x1F3AC; Suggest a date night idea</button>
-      <button class="starter-pill" data-q="What are Emmanuel's promises?">&#x1F4DC; What are Emmanuel's promises?</button>
-      <button class="starter-pill" data-q="What did Tolu write about meeting me in person?">&#x1F917; What did she write about meeting me?</button>
-      <button class="starter-pill" data-q="What book are we reading together right now?">&#x1F4D6; What book are we reading?</button>
-      <button class="starter-pill" data-q="What football team do we support?">&#x26BD; What football team do we support?</button>
+      <div class="starter-pills" id="starterPills"></div>
+      <div class="starter-tools">
+        <button class="starter-tool" id="shuffleBtn" type="button">&#x1F500; Shuffle</button>
+        <button class="starter-tool starter-tool--accent" id="surpriseBtn" type="button">&#x1F3B2; Surprise me</button>
+      </div>
     </div>
 
     <!-- Chat area -->
@@ -43,6 +40,10 @@
 
     <!-- Input area -->
     <div class="lovegpt-input-area">
+      <div class="lovegpt-suggest" id="suggestBar" hidden>
+        <div class="lovegpt-suggest__pills" id="suggestPills"></div>
+        <button class="lovegpt-suggest__more" id="suggestMore" type="button" aria-label="More ideas" title="More ideas">&#x1F500;</button>
+      </div>
       <div class="lovegpt-input-wrap">
         <input
           type="text"

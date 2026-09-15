@@ -22,6 +22,7 @@
       "interests",
       "hobbies",
       "coding",
+      "computer science",
       "debate",
       "teaching",
       "people",
@@ -30,9 +31,15 @@
       "movies",
       "whiplash",
       "interstellar",
-      "favorite movie"
+      "infinity war",
+      "favorite movie",
+      "gym",
+      "protein",
+      "real madrid",
+      "neymar",
+      "jersey"
     ],
-    "content": "Emmanuel loves challenges, coding, and solving problems. He describes himself as a disagreeable person whom God has made more agreeable. He likes to debate and challenge cliché talking points. He likes to teach and simplify complex ideas. He's genuinely interested in how people think, what they think, and why they think. He wants to learn how to dance and is interested in comedy. Emmanuel's favorite movies are Whiplash and Interstellar."
+    "content": "Emmanuel loves a challenge, loves to code and solve problems, and is genuinely interested in how people think, what they think and why. He calls himself a naturally disagreeable person whom God has done a lot of work on to make more agreeable; he likes to debate and challenge cliché talking points, and to teach and simplify complex ideas. He wants to learn to dance (West Coast swing is on the list) and is into comedy. He is a gym guy with a running joke about his obsession with protein. Emmanuel's favourite movies are Infinity War, Whiplash and Interstellar. He supports Real Madrid. One thing on his own wish list: a Neymar 11 Santos jersey. He graduated from his computer science degree (celebrated May 25 2026), started a new job on August 10 2026, and got his first car on September 1 2026. His birthday is November 14 (he turned 23 in 2025)."
   },
   {
     "id": "tolu_food_preferences",
@@ -44,13 +51,26 @@
       "potatoes",
       "amala",
       "ewedu",
+      "poutine",
       "cooking",
       "dinner",
       "eat",
       "meal",
-      "restaurant"
+      "restaurant",
+      "snack",
+      "drink",
+      "ogbono",
+      "boston pizza",
+      "ume yummy",
+      "vietnamese",
+      "favourite",
+      "favorite food",
+      "hungry",
+      "order",
+      "takeout",
+      "dinner date"
     ],
-    "content": "Tolu's favorite foods: fried potatoes, plantain chips, amala and ewedu. She likes coconut water, candy, chocolate, Schweppes, malt. Her mom made Irish potatoes for her the night she died. She loves poutine with melted cheese and bacon bits. She enjoys Japanese, Vietnamese, Thai, Korean, and Italian cuisine. She likes Opa (Greek wraps, pita bread, calamari and salad), cilantros, and Syrian food. Daily eats include seafood, coconut rice, and takoyaki balls. She eats turkey, beef, and chicken. She cooks as a hobby and cooked for therapy. Does not like KFC."
+    "content": "Tolu's favourite foods: fried potatoes (her mom made Irish potatoes for her the night she died), plantain chips, amala and ewedu. Snacks and drinks: coconut water, candy, chocolate, Schweppes, malt. She loves poutine with melted cheese and bacon bits — Emmanuel's note to himself: 'You should have this, babe: teriyaki beef poutine.' Cuisines: Japanese, Vietnamese, Thai, Korean, Italian; Opa (Greek wraps, pita, calamari, salad); Cilantro's (a Syrian place). Daily eats: seafood, coconut rice, takoyaki balls. Protein: turkey, beef, chicken. She doesn't like KFC. She cooks as a hobby and once cooked as therapy; her ogbono in February had Emmanuel 'ready to wife her up right there in the kitchen'. Restaurants that matter: Ume Yummy (Vietnamese; first in-person date, Valentine's Day 2026) and Boston Pizza (their second in-person date, summer 2026). Her line to him: 'We need to talk about your relationship with food.'"
   },
   {
     "id": "tolu_favorite_places",
@@ -75,19 +95,25 @@
       "books",
       "anime",
       "manga",
-      "infinity war",
+      "manhwa",
+      "webtoon",
       "sun ken rock",
       "throne of glass",
+      "sarah j maas",
+      "kahlil gibran",
+      "the prophet",
       "wolves",
       "psychological thriller",
       "thriller",
+      "crime",
       "fantasy",
       "genre",
       "watch",
       "series",
-      "show"
+      "show",
+      "tammy"
     ],
-    "content": "Tolu's favorite movie: Infinity War. Her go-to genres are psychological thrillers and fantasy. (Whiplash and Interstellar are Emmanuel's favorites, not hers.) She loves anime/manga: Akatsuki no Yona, 'Mated To the Alpha King' — she really likes wolves. Her favorite book is Sun Ken Rock by Sarah J Maas. The loudest Emmanuel ever heard her scream was when she was talking books with Tammy. She loves reading, writing (working on a book called 'Rafah' with an accompanying art show), and seeing libraries. The Throne of Glass series by Sarah J Maas is also a favorite."
+    "content": "Tolu's tastes on screen: psychological thrillers, crime, and fantasy. (Infinity War, Whiplash and Interstellar are Emmanuel's favourite movies, not hers.) She loves anime, manga, manhwa and webtoons: Akatsuki no Yona, 'Mated to the Alpha King' (she really likes wolves), and Sun Ken Rock, which 'gave her what she wants in a person' — she wants her Boo to be a tree, something immovable that stands the test of time. She lights up when a manga or webtoon she follows gets an anime adaptation or gets published. Books: the Throne of Glass series by Sarah J. Maas (Emmanuel gave her the set as a graduation gift, July 6 2026), and The Prophet by Kahlil Gibran. The loudest Emmanuel has ever heard her scream was when she was talking books with Tammy. She reads, writes (her own book 'Rafah' with an accompanying art show), and loves seeing libraries."
   },
   {
     "id": "tolu_personality_traits",
@@ -124,6 +150,7 @@
     "tags": [
       "activities",
       "interests",
+      "likes",
       "live music",
       "art",
       "museums",
@@ -132,9 +159,19 @@
       "writing",
       "amusement parks",
       "architecture",
-      "road trips"
+      "road trips",
+      "fashion",
+      "chicago",
+      "japan",
+      "brazil",
+      "travel",
+      "dream",
+      "car",
+      "bible school",
+      "dana chanel",
+      "adora mbelu"
     ],
-    "content": "Things Tolu likes: Live music, art exhibitions, craft, museums, theatre, reading, writing, seeing libraries, amusement parks, dressing up, beautiful things (old architecture, modern architecture with a twist), road trips, and serving the Lord."
+    "content": "Things Tolu likes: live music, art exhibitions, craft, museums, theatre, art, entertainment, fashion, reading, writing, creating for Christ, seeing libraries, amusement parks, talking, thinking and planning internally, dressing up, working, looking at beautiful things — old architecture and modern architecture with a twist (though she doesn't want to live in old architecture; she wants a modern kitchen) — road trips, green scenery, and serving the Lord. Things they share: theology and cologne. Her interest in one-on-one therapy has faded as she has healed; now she wants to create experiences that heal — research translation, building experiences out of evidence-based research. Big dreams: build a car from scratch if she had the money, help people go to school (like when Praise Kelvin needed help finishing tuition), and build a Bible school. People she admires: Dana Chanel and Adora Mbelu. Places: she loves Chicago; she wants to visit Japan and Brazil. Her symbol is a tree — steadfast, going through seasons, growing and maturing. She likes being alone sometimes and may want physical space from time to time; she has worried she might need physical distance even when married, because distance has felt safe."
   },
   {
     "id": "tolu_wish_list",
@@ -143,14 +180,21 @@
     "tags": [
       "gifts",
       "wishlist",
+      "gift ideas",
+      "present",
+      "birthday",
+      "anniversary",
       "watch",
       "jacket",
       "airpods",
       "jewelry",
       "flowers",
-      "water lilies"
+      "water lilies",
+      "perfume",
+      "buy her",
+      "surprise"
     ],
-    "content": "Tolu's wishlist: A watch, a jacket, AirPods, tech haul, a better keyboard, green scenery, water lilies (very nostalgic and likes the scents), daily wear jewelry (necklace, anklet, waist beads), phone or iPad stand, one more night gown, new shorts, gym wear, monochrome wear, a dress, and a smart bulb."
+    "content": "Tolu's wish list and Emmanuel's gift ideas. Standing wishes: a watch, a jacket (she doesn't actually have many), AirPods, a tech haul, a better keyboard, water lilies (very nostalgic; she loves the scent), daily-wear jewellery (necklace, anklet, waist beads), a phone or iPad stand, one more night gown, new gym shorts and gym wear, monochrome wear, a dress, a smart bulb, a clear phone case, a storage cabinet or closet to fold clothes, Zara embossed-flower earrings, perfumes. Her own wishes: a stackable multifunctional plastic storage box, new sheets, a new phone (plan: use Peace to sneak it into her bag), storage for clothes, a flight to see her family in the US, dresses from the collection she sent him on Instagram for grad, new glasses. Birthday-gift ideas: tops, a personalized anniversary globe, an anklet, a purple nightie, a cute skirt, 'that shoe', a photo slideshow, white toe-nail polish, a rollable laundry basket, an online data-analytics course, a floor mat and brown boots for winter, autumn fits and beautiful dresses, an in-bed table, a bedroom rug, MAC lip liner, a custom robe, a period warmer or massager, a new water bottle (hers is broken), a nice journal for writing, a cute food tray, a projector for the two of them, hair cream, moisturiser and a hydrating hair serum. Practical love: busing money for a month, rent for a month. Gifts already given: striped pink PJs, a comfy pillowcase and earplugs (Sep 19 2025, her first girlfriend gifts); the Throne of Glass set (graduation gift, July 6 2026); a period-cycle tracker app and the updated website (one-year anniversary gifts)."
   },
   {
     "id": "nicknames",
@@ -162,7 +206,7 @@
       "pet names",
       "call her"
     ],
-    "content": "Emmanuel's nicknames for Tolu: Ife mi, Love, Baby girl, Babe, Baby, Hot T, Ezar, Miracle, Fanta, My T, Tolu, T, Tolu fine, Half fine half mine, Tolu Love, My Prophet, My perfect gift, My pretty potato, My Jolly Jollof, Debby Dexterous, Sunshine, Asanwa, QT, Pink potato, Prophetic Foodie, Petite Princess, Safe Place, My heartbeat, Mine, My whole world, My golden flower, Adunni mi, My rib, Tolu mi, My prophetic princess, My answered prayer, My maiden, Dearest, Your highness, My darling, Sweeting, The song my heart sings. Note: 'Boo' is expired."
+    "content": "Emmanuel's names for Tolu: Ife mi, Love, Baby girl, Babe, Baby, Hot T, Ezar/Ezer, Miracle, Fanta, My T, T, Tolu fine, Half fine half mine, Tolu Love, My Prophet, My perfect gift, My pretty potato, My Jolly Jollof, Debby Dexterous, Sunshine, Asanwa, QT, Pink potato, Prophetic Foodie, Petite Princess, Safe Place, My heartbeat, Mine, My whole world, My golden flower, Adunni mi, My rib, Tolu mi, My prophetic princess, My answered prayer, My royal queen, Madrid maiden, co-captain, and the medieval set — my maiden, Dearest, Your highness, my darling, sweeting — plus 'The song my heart sings'. 'Boo' is expired: she coined Boo as their mutual nickname 3-4 years before they dated, and the notebook sections are literally titled 'Boo to Babe' and 'Babe to Husband'. Tolu's real-name variants he uses: Tolu, Deborah/Debby (he addressed her as Deborah in the sermon). Her names for him: Ade mi ('my crown'), Igbagboyemi (his name — 'his faith in You will never be put to shame'), babe, and Boo back in the day."
   },
   {
     "id": "september_2025_emmanuel",
@@ -369,7 +413,7 @@
       "together",
       "dating"
     ],
-    "content": "Emmanuel and Tolu started dating on September 13, 2025. They had been best friends for 7-8 years before that. Emmanuel confessed his love on August 18, 2025, via a sermon on Proverbs 18:22. Tolu said yes on September 13 via the coded website. Their 3-month anniversary was December 13, 2025. Their 6-month anniversary was March 13, 2026."
+    "content": "Emmanuel and Tolu started dating on September 13, 2025 (she said yes at about 2am via the coded website, when he asked her to be his co-captain). They had been best friends for 7-8 years before that. Emmanuel confessed his love on August 18, 2025 at 12:12am (Sunday into Monday), via a sermon on Proverbs 18:22, asking her to be his ezer. Their 3-month mark was December 13, 2025; six months / 180 days on March 13, 2026; 7 months March 20; 10 months July 13, 2026; and their one-year anniversary was September 13, 2026. Their anticipated wedding date, which Emmanuel set in his 7-month letter, is May 13, 2028. He jokes that if he had relied on his 'Actual Intelligence' instead of hesitating, they'd be celebrating on August 13 instead."
   },
   {
     "id": "first_date",
@@ -382,7 +426,7 @@
       "getting to know",
       "date night"
     ],
-    "content": "Their first virtual date was on September 20-21, 2025. They spent the evening getting to know each other through questions. Emmanuel documented her answers in boo.pdf: her favorite place (her room, high solitary places), she visited Berlin and never wants to return (the smell of smoke), she doesn't like KFC, she likes modern architecture. Her favorite foods are potatoes, amala and ewedu. She cooks as a hobby. Her favorite movies: Infinity War, Whiplash, Interstellar. If she could bring three things to a deserted island: Emmanuel, Bible, something to write with. Her biggest pet peeve: disrespect."
+    "content": "Their first virtual date was on September 20-21, 2025. They spent the evening getting to know each other through questions. Her answers: favourite place on earth — her room, high solitary places (quiet, intimate), and her aunt's place in New Jersey. A place she never wants to return to — Berlin, Germany (the smell of smoke). She doesn't like KFC. She likes modern architecture. If she could only eat one food forever: potatoes, amala and ewedu; she cooks as a hobby and once cooked as therapy. Best thing she's read in five years: Sun Ken Rock — it showed her what she wants in a person: a tree, something immovable. Three things for a deserted island: Emmanuel, her Bible, and something to write with. Biggest pet peeve: disrespect, and 'being okay with things that are not okay (sitting in the fire and calling it warmth)'. Emmanuel's favourite movies, which he answered that night: Infinity War, Whiplash, Interstellar. Hers: Akatsuki no Yona and Mated to the Alpha King — she really likes wolves."
   },
   {
     "id": "how_they_met",
@@ -441,7 +485,7 @@
       "suggestion",
       "plan"
     ],
-    "content": "Activities and date ideas documented: Call siblings and friends, create a silly TikTok together, teach her how to solve a Rubik's cube, fashion fits, couples photo shoot, movie, shopping, play cards, talk about Songs of Solomon, braid hair, go shopping, form a handshake, massage feet and neck, late night walk, watch old Disney movie cuddled up, shopping at Zara, perfume shopping, watch movies together, dinner, go to an arcade, gym together, breakfast dates, bible study evenings. Virtual date ideas: parallel scrolling on FaceTime, snack dates, watch TikToks/Reels together, cook the same meal, walk-and-talk with headphones, 20 questions, Would You Rather, online games (Skribbl.io, Wordle, GeoGuessr), read poetry to each other, share songs, plan future trips."
+    "content": "Emmanuel's running list of things to do together: call siblings and friends, create a silly TikTok, teach her to solve a Rubik's cube, fashion fits, a couples photo shoot, movies, shopping (Zara, perfume), play cards, talk about Song of Solomon, braid his hair, form a handshake, massage her feet and neck, late-night walks, an old Disney movie cuddled up, dinner, the arcade, gym together, breakfast dates, Bible-study evenings, bring a board game. His Winnipeg checklist even included fixing her computer font, sorting her screen-time and Do-Not-Disturb settings, setting up her tripod and alarm, and setting up their Discord. Date-night activities he listed in September 2026: shopping together, reading a book, watching a sermon, watching a show, planning their future, cooking, games, watching Real Madrid. Virtual options: parallel scrolling on FaceTime, snack dates, TikToks/Reels together, cook the same meal, walk-and-talk with headphones, 20 questions, Would You Rather, Skribbl.io, Wordle co-op, GeoGuessr, read each other something, share a song and why it fits your mood, plan a future trip, a 'High–Low–Funny' of the week, presence calls, voice notes, falling asleep on FaceTime."
   },
   {
     "id": "pickup_lines",
@@ -455,7 +499,7 @@
       "compliments",
       "humor"
     ],
-    "content": "Emmanuel's collection of pickup lines for Tolu: 'Y = mx + babe', 'If your left eye okay? You've been looking right all day', 'Sorry to bother you, I typed beautiful on Google maps and it led me here', 'Do you have a map? I just got lost in your eyes', 'I'm not even playing cards and yet I pulled a queen', 'If beauty were a crime, you'd be serving a life sentence', 'When Solomon said there's nothing new under the sun, he didn't take account of this beauty', 'I can always count on you (counting fingers)', 'Kiss me on the cheek if I'm wrong, but fish can fly, right?', 'I'm a mathematician, give me your number and I will show you how I divide and multiply later.'"
+    "content": "Emmanuel's pickup-line notebook ('Y = mx + babe'): 'Why are you closing your eyes? Aren't you supposed to pray before having your meal?'; 'You must hate coffee, cuz your body is just tea'; 'Is your left eye okay? You've been looking right all day'; 'Sorry to bother you, I typed beautiful on my Google Maps and it led me here'; 'Hey, sorry to bother you, that guy over there thinks you're cute'; 'If beauty were a crime, you'd be serving a life sentence'; 'Do you believe in love at first sight, or should I walk by again?'; 'I'm not even playing cards and yet I pulled a queen'; 'Do you have a map? I just got lost in your eyes'; 'Something's wrong with my eyes because I can't take them off of you'; 'Hey, you're pretty and I'm cute. Together we'd be pretty cute'; 'I would flirt with you, but I'd rather seduce you with my awkwardness'; 'Do you know what my shirt is made of? Boyfriend material'; 'Are you an interior decorator? Because you make this place beautiful'; 'Kiss me on the cheek if I'm wrong, but fish can fly, right?'; 'Excuse me, do you got a name? Or can I call you mine?'; 'I'm a mathematician, give me your number and I'll show you how I divide and multiply later'; 'When Solomon said there's nothing new under the sun, he didn't take account of this beauty'; 'Whoops, I just dropped something — my dignity'; 'I can't cry about having a lot on my plate if my goal was to eat'. Actions: 'I can always count on you' (counting on her fingers); look that way, hand on chin, then boom — a kiss; 'This is how we say bye in my country' then a hand kiss; 'You've got something right there… me'; 'How many shoulders are there? Count mine, count hers, then grab her'. His storytelling tics: 'And here's the kicker', 'Be that as it may', 'Mind you', 'Let me put it in a language you can understand'. His word for her butt: 'buttress'."
   },
   {
     "id": "relationship_best_attributes",
@@ -524,7 +568,11 @@
       "asked out",
       "church",
       "how",
-      "original"
+      "original",
+      "ask",
+      "asked",
+      "ask her out",
+      "how did"
     ],
     "content": "Emmanuel asked Tolu out by writing and delivering a full sermon titled 'He Who Finds a Wife Finds a Good Thing' based on Proverbs 18:22. The sermon had 3 points: 1) God's Design for Companionship (Genesis 2:18), 2) The Value of a Godly Relationship (1 Cor 13, Proverbs 31), and 3) Embracing the Blessing When It's Found — where he turned to Tolu directly and said: 'Tolu I truly believe God's shown me my good thing in you. Your joy lights up my world, your wisdom challenges me. You're my Proverbs 31 woman, and I'm praying you're my future. Will you go out with me, explore what God has for us, and maybe, one day, build a covenant together under His favor?' Then he sent her to the coded website where she clicked yes."
   },
@@ -626,7 +674,7 @@
       "arguments",
       "fun"
     ],
-    "content": "Debates Emmanuel and Tolu enjoy: Genesis, Is psychology a science, Is feminism a net positive, Are Catholics sinners. They enjoy intellectual discussions and challenging each other's perspectives."
+    "content": "Debates Emmanuel and Tolu enjoy: Genesis, 'Is psychology a science?', 'Is feminism a net positive?', 'Are Catholics sinners?'. They love intellectual sparring — he's the self-described disagreeable debater, she has the sharpest, most prophetic insights on almost any topic. They are 'two stubborn Nigerians' who hope to resolve arguments like mature adults."
   },
   {
     "id": "bucket_list",
@@ -639,7 +687,7 @@
       "plans",
       "goals"
     ],
-    "content": "Emmanuel and Tolu's bucket list: Movies, Church, Vacation, Playing sports. Also: dancing (west coast swing), learning voice training, travel that expands horizons. Their future vision includes a quiet neighbourhood, reserved but present community, best schools for kids, a peaceful and joyful home. Tolu wants trees around (not a forest), high places, and a home with balconies and a really nice view."
+    "content": "Emmanuel and Tolu's bucket list: movies, church, vacation, playing sports, dancing (West Coast swing), voice training, travel that expands horizons (Japan and Brazil are on her list). Romantic things to try this year: a dinner date where they dress up, the arcade, doing things they're both new to, games together, clothes shopping with her trying things on, going dancing, playing an instrument together. Their future vision: a quiet neighbourhood, a reserved but present community, the best schools for their kids, a peaceful and joyful home; Tolu wants trees around (not a forest), high places, balconies and a really nice view, and a modern kitchen."
   },
   {
     "id": "pet_peeves_health",
@@ -649,11 +697,20 @@
       "health",
       "eyes",
       "contacts",
+      "glasses",
       "hydrate",
       "pet peeve",
-      "disrespect"
+      "disrespect",
+      "sleep",
+      "diet",
+      "blood type",
+      "sizes",
+      "shoe size",
+      "height",
+      "clothing size",
+      "bra size"
     ],
-    "content": "Tolu's health details: Needs to hydrate a lot. Contacts worn for too long cause headaches. Needs breaks to rest her eyes. Very sensation-sensitive. Her biggest pet peeve is disrespect — and 'to be okay with things that are not okay (sitting in the fire and calling it warmth).'"
+    "content": "Tolu's health and body details: she needs to hydrate a lot; contacts worn too long cause headaches; she needs breaks to rest her eyes; she needs new glasses; she is very sensation-sensitive. In 2019 a hospital test report told her she was young but had 'the body of an old person' — one of the times she truly broke down. Things she's been working on: sleep (fixing), diet (fixed), activity level. On August 3 2026 they took blood tests and found their blood types are compatible. Sizes for gifts: height 5'2, about 125 lbs, shirts S, pants M/S, shoes 40/41 UK women, bra 34D/36C. Her biggest pet peeve is disrespect — and 'being okay with things that are not okay (sitting in the fire and calling it warmth)'."
   },
   {
     "id": "wedding_guest_list_peter_vasko",
@@ -665,9 +722,12 @@
       "Peter Vasko",
       "marriage",
       "guests",
-      "invite"
+      "invite",
+      "wedding date",
+      "savings",
+      "2028"
     ],
-    "content": "Wedding planning detail: The first person named on their wedding guest list is Peter Vasko. (He is also the man from Tolu's August 2025 prophetic encounter who spoke about her future husband and asked to be invited to the wedding.)"
+    "content": "Wedding planning so far: the first person named on their wedding guest list is Peter Vasko (the man from Tolu's August 2025 prophetic encounter who spoke about her future husband and asked to be invited to the wedding in 2-3 years). Emmanuel set the anticipated wedding date as May 13, 2028 in his 7-month letter ('See you in 2 years, my love'). By the one-year anniversary he had $300 saved toward the wedding day and planned to show her."
   },
   {
     "id": "emmanuel_attraction_physical",
@@ -706,7 +766,10 @@
       "pray",
       "variety",
       "tonight",
-      "bored"
+      "bored",
+      "plan",
+      "what should we do",
+      "idea"
     ],
     "content": "Date-night menu — rotate through these instead of defaulting to cooking together (they have done that plenty): reading together (they already do this weekly and love it); praying together or a short devotional / Scripture evening; watching a Christian movie together; a big popular movie night — Batman, Spider-Man or other superhero films, or anything psychological-thriller or fantasy since that is Tolu's taste; starting a show together — they have been talking about watching The Office together; shopping online together on a call (Zara, perfume, wishlist browsing); a game picked for their mood (see the games-by-mood list); Real Madrid highlights night; museum, art exhibition, live music, theatre, library or bookstore dates when in the same city; road trips, amusement parks, quiet night walks, dressing up for a nice dinner; and their long-distance staples — midweek FaceTime mini-dates and weekend intentional date nights with an emotional check-in. When suggesting, pick one or two that fit the moment and vary them across conversations."
   },
@@ -789,7 +852,7 @@
       "scripture",
       "this year"
     ],
-    "content": "Going into their second year together (from their 13 September 2026 anniversary), Emmanuel and Tolu have been talking about integrating their spiritual lives more — praying together more regularly, reading Scripture or a devotional together, Bible study evenings, watching Christian movies together, and letting faith shape their date nights and daily rhythm rather than sitting beside it. Good suggestions in this area: pick a psalm to pray over each other this week, a shared prayer list, a short devotional before a call, or a worship-and-hymns night (gently — hymn nights have been tender ground for Tolu before, so Emmanuel stays close and attentive)."
+    "content": "Going into their second year together (from their September 13, 2026 anniversary), Emmanuel and Tolu have been talking about integrating their spiritual lives more — praying together more regularly, reading Scripture or a devotional together, Bible-study evenings, watching sermons and Christian movies together, and letting faith shape their date nights and daily rhythm rather than sitting beside it. Their stated aim, in Emmanuel's words: 'I want us to be a couple that helps each other love God better.' Good suggestions: pick a psalm to pray over each other this week, a shared prayer list, a short devotional before a call, a sermon they watch and discuss (they keep notes from love services), or a worship night — gently, since hymn nights have been tender ground for Tolu before, so Emmanuel stays close and attentive."
   },
   {
     "id": "shows_and_movies_we_talk_about",
@@ -807,12 +870,554 @@
       "spider-man",
       "superhero",
       "marvel",
+      "star wars",
+      "naruto",
+      "justice league",
+      "smallville",
+      "walking dead",
       "thriller",
       "fantasy",
       "christian movie",
       "netflix",
-      "tonight"
+      "tonight",
+      "binge"
     ],
-    "content": "Their watchlist and tastes: they have been talking about watching The Office together. Big popular picks that work for both of them: Batman, Spider-Man and other superhero movies, plus Christian movies. Tolu leans psychological thriller and fantasy (Infinity War is her favorite). Emmanuel's favorites are Whiplash and Interstellar. Watching a movie or an episode cuddled up (or synced over FaceTime) is a reliable date-night pick."
+    "content": "Their watchlist: they have been talking about starting The Office together. Emmanuel's list of popular series to watch together (September 2026): Star Wars, Spider-Man, Batman, Naruto, Justice League, Smallville, The Walking Dead. Christian movies are always welcome. Tolu leans psychological thriller, crime and fantasy; Emmanuel's favourites are Infinity War, Whiplash and Interstellar. In Winnipeg they watched an old Disney movie cuddled up. Watching a movie or an episode cuddled up (or synced over FaceTime) is a reliable date-night pick, and she watches football with him too — even when Madrid are losing and he's being dramatic about it."
+  },
+  {
+    "id": "timeline_2025",
+    "source": "emmanuel",
+    "section": "timeline_2025",
+    "tags": [
+      "timeline",
+      "milestones",
+      "dates",
+      "2025",
+      "august",
+      "september",
+      "october",
+      "november",
+      "december",
+      "when did",
+      "first",
+      "gifts",
+      "christmas",
+      "new year",
+      "birthday",
+      "love journal",
+      "her birthday",
+      "his birthday"
+    ],
+    "content": "Their 2025 timeline. June–August 2025: best friends of seven years start talking every day, four-hour calls, sleeping on the phone. August 6: Emmanuel journals his confusion and throws it into ChatGPT for advice. August 18, 12:12am (Sunday into Monday): he confesses he has fallen deeply in love and asks 'will you be my ezer' — through a sermon on Proverbs 18:22. She goes to pray about it and comes back with her concerns. August 19: she tells him the good traits she sees in him and gives him questions about himself to answer before coming back to ask her out again. August 24: 'the day I genuinely felt appreciated' — he gives her the rundown of where he's at (career promises, hobbies, prayer life). September 1: the Holy Spirit tells her 'it's him'. September 11: she confesses 'I'm falling in love with you'. September 13, 2am: he asks her to be his co-captain using the website he coded, and she says yes. September 19: her first girlfriend gifts — striped pink PJs, a comfy pillowcase and earplugs. September 20-21: first virtual date. October 26: her 24th birthday, celebrated praying together with letters and gifts. November 14: his 23rd birthday, praying together and sharing gifts; she surprised him with a ~50-page love journal she had been writing since August 19. November 26-27: hymn night at Brian's. December 25: first Christmas together, virtually. December 31 – January 1: they prayed the new year in over the phone — 'New Year, Same Us'; she said 'This is our year.'"
+  },
+  {
+    "id": "timeline_2026",
+    "source": "emmanuel",
+    "section": "timeline_2026",
+    "tags": [
+      "timeline",
+      "milestones",
+      "dates",
+      "2026",
+      "january",
+      "february",
+      "march",
+      "april",
+      "may",
+      "june",
+      "july",
+      "august",
+      "september",
+      "when did",
+      "graduation",
+      "thesis",
+      "rapha",
+      "winnipeg",
+      "toronto",
+      "anniversary",
+      "job",
+      "car",
+      "aunt",
+      "jayden"
+    ],
+    "content": "Their 2026 timeline. February 9: Emmanuel meets 'ife mi' in person for the first time in love, in Winnipeg. February 11: he meets her best friend Peace. February 12: their first shopping trip together — she buys him spectacular jackets — and they visit her pastor at his house. February 14: first ever in-person date at Ume Yummy (Vietnamese). March 12: she becomes an aunt — Jayden is born. March 13: six months / 180 days. March 20: seven months; her thesis due in under 10 days. April 28: she is done with school. May 7: she is featured on her school website as a student success story. May 25: they celebrate Emmanuel's college graduation. She finished her research experiments in record time, defended her thesis, and graduated with a Bachelor of Arts in Psychology (Honours), minor in English, 3.8+ GPA. June 11: her graduation — she composed and directed a beautiful song with Anu, Testimony and Stephen; her quote that day: 'I don't actively think about you, I naturally think about you.' June 21: The Rapha Immersive Experience. June 24: Meeting Rapha — the Exhibition. Summer: second in-person date at Boston Pizza; July 9: first time at the gym pumping iron together, plus a massage. July 6: she gets her hands on Throne of Glass, her graduation gift. July 13: ten months. Late July: she hosted Ibukun and they had a stellar conversation. August 3: blood tests — their blood types are compatible. August 10: celebrated Emmanuel starting his new job. August 25: her first job interview, with the University of Manitoba. August 27: she concluded her internship at Resilia. Her work permit was approved. September 1: celebrated his first car. September 4: touchdown Toronto — she went to meet 'our lovely prince Sinam' in Toronto and stayed with Itunu. September 13: their one-year anniversary."
+  },
+  {
+    "id": "origin_story_full",
+    "source": "emmanuel",
+    "section": "how_it_started",
+    "tags": [
+      "origin",
+      "how it started",
+      "how they met",
+      "best friends",
+      "confession",
+      "sermon",
+      "pacing",
+      "itunu",
+      "chatgpt",
+      "boo",
+      "august 2025",
+      "story",
+      "asked her out",
+      "nervous",
+      "ask",
+      "asked",
+      "ask her out",
+      "proposal",
+      "how did"
+    ],
+    "content": "The full story of how they went from best friends to dating, in Emmanuel's words from the one-year letter. Around June–August 2025 they started talking more: daily phone calls that lasted about four hours, sleeping over the phone, saying 'I love you' a decent amount — yet not flirty; they talked about life, their days, Bible verses and their deeper meanings. Three or four years earlier she had come up with their nickname, 'Boo'. She called him every time she got home from church or an event and on the bus home from work. His way was to tease, poke fun, make her blush, tell her she's pretty, and practise good listening so she felt heard and seen. On August 6 he journaled for the first time ever ('I'm doing boyfriend duties while single… I want to love her but I'm a sinner who is yet to let go of his lust') and pasted it into ChatGPT for advice. He asked his siblings; Itunu 'gingered' him to go for the girl. Then he paced his room — 'you know you're a done-and-gone man when you start pacing because of a girl' — until the Holy Spirit dropped a gem: 'Sermons. Wait, she loves sermons.' So he used his best-friend privileges and wrote her a full sermon, delivered August 18 into 19. At point three, when he said he'd fallen deeply in love, she stared in total shock — 'if you bugged your eyes out any harder, your glasses would have flown off your face.' He was red all over, chest heavier and heavier, 'grasping for air because someone else had now claimed ownership of my oxygen'. She went and prayed; on September 11 she told him she was falling in love; on September 13 he asked again through the coded website and she clicked yes. 'This was the one God made specially for me, so I would never have to make the choice ever again.'"
+  },
+  {
+    "id": "emmanuel_promises_and_plan",
+    "source": "emmanuel",
+    "section": "emmanuel_promises",
+    "tags": [
+      "promises",
+      "career",
+      "plan",
+      "future",
+      "lead",
+      "vision",
+      "mission",
+      "gospel",
+      "vulnerable",
+      "long distance plan",
+      "wife list",
+      "ezer"
+    ],
+    "content": "Emmanuel's rundown to Tolu on August 24, 2025 — the day he genuinely felt appreciated. Career, the elephant in the room, three promises: 'I will graduate with distinction. I will get a high paying job. And I will make a positive impact in the world.' He will stay one step ahead of technology, set trends rather than follow them, be at the pinnacle where innovation happens, produce well-known algorithms and solve unsolvable problems; through him Christ will be exalted in computer science. How she fits his frame: they both have a passion for the most vulnerable and yearn to bring the gospel to those who suffer immensely — 'it's critical for my mission to reach those who have been ignored by society… I would need some help.' His homework questions to himself: find my spiritual gift; be more observant about her; ask her plans and her vision for family; write down in detail what I'm looking for in a wife and score her honestly against it so I'm not suppressing logic to love; where am I going and why does it have to be her; how will I lead her; how can I take care of her; how can I help carry her burden and how can she help carry mine; what is my plan for long distance; find my teacher (Asuma); how we go chop (Sep 27 2025)."
+  },
+  {
+    "id": "emmanuel_principles_growth",
+    "source": "emmanuel",
+    "section": "emmanuel_growth",
+    "tags": [
+      "growth",
+      "work on",
+      "struggle",
+      "principles",
+      "integrity",
+      "purity",
+      "withdraw",
+      "leadership",
+      "communication",
+      "confront",
+      "wisdom",
+      "husband",
+      "prayer"
+    ],
+    "content": "What Emmanuel says he needs to work on: taking leadership on how they balance communication; and, in his own words, 'I can fall into the trap of adapting to something negative instead of confronting it' — he admires that Tolu challenges things that need challenging. Principles he wrote down on January 2, 2026: a wise man always finds ways to make his wife happy — if a wife feels unloved or neglected the household is in trouble, and you don't wait for marriage to learn this; be mindful of how you compliment women; don't be alone with women in private places; don't give people false hope; fight for your purity; be known as a person of integrity; protect your reputation; God has called us to be free, not to misuse freedom for sin. His prayers: 'Lord, if there's something you need to show me, tell me. Keep showing me the qualities in her that make a great wife and partner and one who will aid my righteousness. Continue to confirm it. Let the Holy Spirit teach and guide me.' When he feels less confident: binge on what God says about him in the Bible — 'Lord, let me see you the way you see me.' He has a notebook page titled 'Why I might withdraw' that he hasn't filled in yet."
+  },
+  {
+    "id": "tolu_profile",
+    "source": "emmanuel",
+    "section": "tolu_profile",
+    "tags": [
+      "who is tolu",
+      "about her",
+      "psychology",
+      "degree",
+      "honours",
+      "english",
+      "gpa",
+      "winnipeg",
+      "zara",
+      "resilia",
+      "rapha",
+      "work permit",
+      "job",
+      "university of manitoba",
+      "music",
+      "composer",
+      "painting",
+      "artist",
+      "writer",
+      "director",
+      "saved",
+      "prophetic",
+      "deborah",
+      "birthday",
+      "october 26",
+      "age",
+      "born",
+      "how old"
+    ],
+    "content": "Who Tolu is: Nigerian, based in Winnipeg, Manitoba. Born October 26 (turned 24 in 2025). Emmanuel also calls her Deborah/Debby. She was saved on August 26, 2018 and filled with the Spirit in 2018; she is trained in the prophetic. Academics: Bachelor of Arts in Psychology (Honours) with a minor in English, 3.8+ GPA ('pre-AI too'), a thesis she defended in spring 2026 after running 16-hour days of experiments; her supervisor called her 'outstanding and exceptional'; she was featured as a student success story on her school website (May 2026); she also did a Program Evaluation certification. Work: she worked at Zara, interned at Resilia (finished August 27, 2026), works two jobs while studying, had her first job interview with the University of Manitoba (August 25, 2026), and her work permit was approved in 2026. Creative work: she is writing a book called 'Rafah' with an accompanying art show; she founded Rapha — two events in June 2026 (the Rapha Immersive Experience, June 21, and Meeting Rapha: the Exhibition, June 24) built from scratch with two teams and artists, anchored by cards, with her own paintings and a vision for the Christian art scene in Winnipeg. She is naturally gifted with music: she composed a song for the Christmas musical in a flash, and composed and directed a song with Anu, Testimony and Stephen for graduation. She paints, draws, composes and script-writes. Her love language: being understood and believed; people being present and listening. She thinks in systems that carry on through generations. She is a 'king maker' spiritually and a tree by symbol."
+  },
+  {
+    "id": "her_speak_and_quotes",
+    "source": "emmanuel",
+    "section": "her_speak",
+    "tags": [
+      "her speak",
+      "sayings",
+      "phrases",
+      "quotes",
+      "inside jokes",
+      "things she says",
+      "catchphrase",
+      "okeyz",
+      "clock it",
+      "energy",
+      "funny",
+      "language",
+      "say",
+      "says",
+      "said",
+      "talk",
+      "expression",
+      "slang",
+      "vocabulary",
+      "words"
+    ],
+    "content": "Tolu's speak — phrases that are pure her: 'Okeyz'; the 'Haaaaa' sign; 'The energy I have is only one'; 'Tell me why'; 'Think of it like this'; 'Hate to see me coming'; 'Adultier adult'; 'Been there, done that, got the T-shirt' (and burnt it); 'Let's have it'; 'I don't like what I hate'; 'Clock it'. Things she has said to Emmanuel: 'I'm really glad that it's you' (September 28, 2025, 1am, Sunday night); 'I don't actively think about you, I naturally think about you' (June 11, 2026, her graduation); 'We need to talk about your relationship with food'; 'This is our year' (New Year's Eve); 'Miracle no dey tire Jesus'. Emmanuel's speak: 'makes me happy, makes me smile'; 'And here's the kicker'; 'Be that as it may'; 'Mind you'; 'Let me put it in a language you can understand'; and his 12-in-1 description of her: my lover, comrade, counselor, baddie, model, writer, author, director, prayer warrior, partner, stylist, Madrid maiden, co-captain. Their 'Guess who?' game answer: Emmanuel and Ezer. Nigerian-isms are part of the voice: 'abi', 'we de carry everything', 'fuel never finish', 'gingered', 'wife you up'."
+  },
+  {
+    "id": "people_in_their_lives",
+    "source": "both",
+    "section": "people",
+    "tags": [
+      "people",
+      "friends",
+      "family",
+      "siblings",
+      "sister",
+      "brother",
+      "best friend",
+      "peace",
+      "itunu",
+      "ibukun",
+      "brian",
+      "bryan",
+      "tammy",
+      "anu",
+      "testimony",
+      "stephen",
+      "aunty toyin",
+      "tosin",
+      "jayden",
+      "sinam",
+      "pastor",
+      "praise kelvin",
+      "mr ocheyi",
+      "who is"
+    ],
+    "content": "People in Emmanuel and Tolu's world. Peace: Tolu's best friend and roommate in Winnipeg (Emmanuel met her February 11, 2026; she's the accomplice for sneaking gifts into Tolu's bag). Itunu and Ibukun: Emmanuel's siblings — Itunu is the one who told him to 'go for the girl', and Tolu stayed with Itunu in Toronto in September 2026; Tolu hosted Ibukun in Winnipeg (July 2026) and stood up to Aunty Toyin so Ibukun could come over. Brian/Bryan: Emmanuel's best friend, whose mom passed in December 2025; the November 2025 hymn-night date was at Brian's; Bryan was also pivotal in showing Tolu what she is called to do spiritually. Tammy: Tolu's book-talk friend. Anu, Testimony and Stephen: the friends she composed and directed the graduation song with (Anu sang it). Aunty Toyin: a relative in Winnipeg who is 'a walking contradiction' — cooking for Tolu one day, manufacturing bills the next; Tolu handles her with grace. Tosin: Tolu's sister, married; her sisters are kind and welcoming. Jayden: Tolu's nephew, born March 12, 2026, making her an aunt. Sinam: 'our lovely prince' in Toronto, whom Tolu flew to meet on September 4, 2026. Her pastor in Winnipeg, whom they visited at his house. Peter Vasko: first name on the wedding guest list. Praise Kelvin: someone Tolu wanted to help finish tuition. Dana Chanel and Adora Mbelu: women she admires. Mr Ocheyi: Emmanuel's old house master ('No sweat, no sweat'). Asuma: the teacher Emmanuel wants to find. Tolu's mother passed when she was young; her dad and stepmom are part of her healing and reconciliation story; her aunt lives in New Jersey and her family is in the US."
+  },
+  {
+    "id": "gifts_exchanged",
+    "source": "both",
+    "section": "gifts_given",
+    "tags": [
+      "gifts",
+      "gave",
+      "received",
+      "jacket",
+      "boots",
+      "turtleneck",
+      "chain",
+      "journal",
+      "book of love",
+      "pjs",
+      "throne of glass",
+      "birthday gifts",
+      "what did she give",
+      "his birthday",
+      "her birthday",
+      "give",
+      "present",
+      "presents",
+      "gave her",
+      "gave him"
+    ],
+    "content": "Gifts they've exchanged. From Tolu to Emmanuel: for his 23rd birthday (November 14, 2025) a jacket that carried him through winter 'like she was hugging me from behind', stylish boots 'that collected all the rings like infinity stones', a beige turtleneck that had him feeling like a runway model, and a chain that reminds him he's her star and light; a ~50-page love journal she had been writing since August 19, 2025; a 100-page book of love in February 2026, which she read aloud to him 'like a hymn'; spectacular jackets bought on their first shopping trip (February 12, 2026); a first-anniversary letter of her own. From Emmanuel to Tolu: striped pink PJs, a comfy pillowcase and earplugs (September 19, 2025 — her first girlfriend gifts); letters and gifts for her 24th birthday; the Throne of Glass series for graduation (July 6, 2026); for the one-year anniversary: a video slideshow, the updated website, a period-cycle tracker app, $300 shown saved toward the wedding, and gifts shipped ahead. He plans anniversaries in phases: Nostalgia (a handwriting notebook, 'where it all started'), Present, Future."
+  },
+  {
+    "id": "tolu_style_and_clothes",
+    "source": "emmanuel",
+    "section": "style_clothes",
+    "tags": [
+      "style",
+      "clothes",
+      "fashion",
+      "colours",
+      "colors",
+      "dress",
+      "gown",
+      "outfit",
+      "shopping",
+      "buy her clothes",
+      "neckline",
+      "what to buy",
+      "returns",
+      "steeze"
+    ],
+    "content": "Rules for buying Tolu clothes and gifts: she does not like returns — she likes to get things with determination; she wants to be asked what clothes she wants and to be involved in the process, ideally choosing the style or fabric herself. Colours: black, beige, reddish tones and neutrals; not brown; not pink all the time. She rarely wears cropped tops. Gowns: no high or round necklines (they make her face look round). She likes practical, cute and unique things. She has effortless steeze, loves dressing up and fashion, and looked dangerously cute in Emmanuel's sweatshirts and T-shirts. They wore matching clothes in Winnipeg. She wants monochrome pieces, autumn fits, beautiful dresses, a custom robe, gym wear."
+  },
+  {
+    "id": "times_she_cried_tender_places",
+    "source": "emmanuel",
+    "section": "tender_places",
+    "tags": [
+      "cried",
+      "tears",
+      "sensitive",
+      "tender",
+      "hospital",
+      "2019",
+      "dad",
+      "family",
+      "protection",
+      "unprotected",
+      "childhood",
+      "healing",
+      "trauma",
+      "careful",
+      "panic attack",
+      "hymns",
+      "sad",
+      "hurt",
+      "upset",
+      "comfort"
+    ],
+    "content": "Tender places to handle gently. Times Tolu has cried: in 2019 when she got her hospital test report — told she was young but had 'the body of an old person' — and her dad asked 'what are you thinking about'; she broke down because she wasn't in control of that environment. And while writing her first-anniversary letter to Emmanuel, at the line: 'You met me in the middle of contentment and fierce fighting. I was content in my relationship with God and I was fighting, as usual, for my place in destiny.' She grew up in a family that wasn't protected, where she was not believed or understood, and she doesn't want to project that fear into the future; Emmanuel has promised to offer protection to the best of his ability and that their kids will not experience what they experienced. Hymn nights once triggered a panic attack (November 2025) — he prayed and told her 'there is enough air to breathe'. In Winnipeg there was a hard spiritual moment he calls 'the elephant in the room, or should I say demon' — his conclusion: 'whatever situation may arise, when we fall, we will help each other back up and sprint fully toward Christ.'"
+  },
+  {
+    "id": "accountability_checkins",
+    "source": "both",
+    "section": "accountability",
+    "tags": [
+      "accountability",
+      "check-in",
+      "checkpoint",
+      "how are we doing",
+      "questions",
+      "goals",
+      "mentorship",
+      "mentor",
+      "work on",
+      "priorities",
+      "trust"
+    ],
+    "content": "Their accountability structure (September 2025): Emmanuel — job search, spiritual life. Tolu — priority tasks. Both — communication, being intentional about presence, knowing each other and relating with grace, trust. Him for her: 'the person you'd want her to become — guide her and ask her questions'; her for him: helping him stay focused. Relationship checkpoint prompts: How are we doing? Likes and dislikes? How are we with God? What's been going well and what could be better? Things she could work on (November 2025): sleep (fixing), diet (fixed), activity level, and 'she doesn't know my interests' — which she has since fixed by getting into his element (gym, jogging, football). Mentorship: she needs an adult she is comfortable with; they received mentorship together in Winnipeg and visited her pastor. Weekly rhythm rules: rotate who plans the weekend date, decide once which days are date days, allow rescheduling without guilt — 'consistency builds safety, variety keeps it fun.'"
+  },
+  {
+    "id": "emotional_intelligence_notes",
+    "source": "emmanuel",
+    "section": "emotional_intelligence",
+    "tags": [
+      "emotional intelligence",
+      "eq",
+      "conflict",
+      "argument",
+      "fight",
+      "regulation",
+      "discernment",
+      "marriage",
+      "mature",
+      "feedback",
+      "sorry",
+      "wednesday chill time",
+      "love service",
+      "arguments",
+      "handle",
+      "disagreement",
+      "resolve",
+      "conflict resolution",
+      "upset"
+    ],
+    "content": "Notes from a special midweek love service on emotional intelligence (Wednesday Chill Time, January 28, 2026), which they keep as date-night material: you can be spiritually sane but emotionally wounded; wisdom is context-specific; you can have a high IQ and low EQ; you can speak in tongues and still not say sorry; God does not call us to be one-dimensional. Emotional intelligence is the ability to accurately perceive, interpret, regulate and respond to emotions — yours and others' — in a way that produces wisdom, not damage. Discernment is the gift of the Spirit that helps marriages (Matthew 26:41; Joseph with his brothers — 'you meant it for evil but God meant it for good'). Beware toxic empathy. Five signs of an emotionally unintelligent person: always fighting, makes everything about themselves, reacts instead of reflecting, doubles down on mistakes, constantly crosses emotional boundaries. James 4:1 — the first step to regulation is owning your own response; if someone says something about you that you genuinely believe isn't true, it won't hurt. How to become emotionally mature: practise uncomfortable conversations, sit down and talk situations through, diagnose your trauma early, take an attachment-style test, and study for marriage — read 10 books on marriage."
+  },
+  {
+    "id": "family_vows_and_future",
+    "source": "both",
+    "section": "family_vision",
+    "tags": [
+      "family",
+      "vows",
+      "values",
+      "kids",
+      "children",
+      "baby names",
+      "girl names",
+      "irene",
+      "charity",
+      "adopt",
+      "future",
+      "parents",
+      "legacy",
+      "household",
+      "vision"
+    ],
+    "content": "Their Family Vows (April 24, 2026): We value God above all else and the Word of God is law. We strive for deep relationship and communion with God, empowered by His Spirit to do exploits and influence nations, sectors, domains and infrastructure. We will be critical thinkers, not swayed by emotional or sociological rhetoric — readers, visionaries, inventors, innovators, system builders and reformers, not people who only rely on prebuilt systems. We will be a compassionate family with care and consideration for others. We will be a physically active family who work, play, eat, fellowship and enjoy the presence of God together, for all eternity. We will be a healthy family who value the temple of God — quality, nutritious food. Potential girl name: Irene. Charity they want to do: sending people to school, adopting. Parenting intention: their kids will not grow up neglected, unprotected, unheard or misunderstood — they will be intentional, acquire knowledge, seek wisdom, reflect, pray for God to expose what needs healing, and confront what needs confronting. On New Year's Eve they talked about the babies they'll raise, the home they'll build and the legacy they'll leave. Emmanuel wants to know 'what covenant do I have with God… what is the legacy we will have in our family.'"
+  },
+  {
+    "id": "one_year_letter",
+    "source": "emmanuel",
+    "section": "anniversary_letter_2026",
+    "tags": [
+      "anniversary",
+      "one year",
+      "letter",
+      "september 2026",
+      "first anniversary",
+      "what i didn't know",
+      "maps",
+      "familiarity",
+      "irish blessing",
+      "same you same me",
+      "rapha",
+      "gpa",
+      "winnipeg"
+    ],
+    "content": "Emmanuel's one-year letter, 'One Year with the One' (written August 2026 for September 13, 2026). Opens: 'This one has been a long time coming… your boyfriend is a true Nigerian, taking from the playbook of the government.' He retells the origin story, then 'A Year of Getting to Know You': he never wants familiarity to make him blind to the miracle of who she is — 'A prophet is without honor only in his hometown' (Mark 6:4). He brags about her 3.8+ GPA, 'pre-AI too', and calls her 'the heavenly hired achiever, the weapon fashioned against failure, the one wisdom itself comes to seek counsel from'. He watched her build Rapha out of thin air — two events, two teams, every detail from venues to cutlery, on little sleep — and filmed her singing along as Anu sang the song she composed: 'You were so angelic I could cry.' Her love: on a five-minute break during Program Evaluation training she FaceTimed just to see his face; she used her Zara breaks the same way. 'I love being your resting place.' Winnipeg: his body woke at 6am looking for her; 'we were like a couple that had been married, survived five pregnancies and attended an infinite number of soccer practices.' He's proud of how she handles Aunty Toyin and stood up for Ibukun 'like a tree'. Gym and jogging with her was surreal — instant power-couple fantasies. 'I don't want us to be a couple that simply loves each other. I want us to be a couple that helps each other love God better.' 'Every day I open Maps and check the route to your destination, then snap back to reality and close the app.' The 'What I Didn't Know Last Year' list: waking up to her face, her blushing and cheesing, her pouting in her sleep, kissing her forehead until she gets overstimulated, hugging until he forgets he exists outside her arms, spinning her 'like a globe, because you're my whole world', reading together 'pirating wisdom from the ancients', late-night walks. 'Love is all the little discoveries that come afterward.' To his past self: 'Relax, bro. You have no idea how good this is about to get.' He closes with the Irish blessing and 'May God keep us', congratulates her on the work permit, and signs off 'To my Baby Girl': 'Forever grateful that eight years of friendship somehow became this.'"
+  },
+  {
+    "id": "seven_month_letter",
+    "source": "emmanuel",
+    "section": "seven_months",
+    "tags": [
+      "seven months",
+      "7 months",
+      "march 2026",
+      "thesis",
+      "rapha",
+      "letter",
+      "wedding date",
+      "2028",
+      "supervisor",
+      "outstanding",
+      "prayer for her",
+      "conference"
+    ],
+    "content": "Emmanuel's 7-month letter (March 20, 2026): 'My love, my royal queen, my best friend, my miracle — happy 7 months to us.' Loving her is 'watching a masterpiece unfold in real time, glory to glory'. He praises how she faced her past and chose healing instead of hardness, and that she's 'holding God's hand with intention' as they walk toward their North Star, Jesus. She pulled 16-hour days running her experiments; with her thesis due in under 10 days she was still planning, booking venues, delegating, budgeting and sacrificing her own expenses for Rapha — while working two jobs as a full-time student. Her supervisor called her 'outstanding and exceptional' and he 'kept grinning like a proud fool'. She stayed a caring friend to Peace, a patient roommate, and 'the most stunning, steeze-filled girlfriend' — still watching movies and football with him 'even when my team is losing and I'm dramatic about it'. He prayed for clarity, speed, precision and peace for her thesis, boldness and favour for her presentation and conference, and anointing over Rapha. Then: 'See you in 2 years, my love. I've set our anticipated wedding date as May 13th, 2028. Forever sounds right with you.' Signed 'Forever yours, Emmanuel'."
+  },
+  {
+    "id": "winnipeg_trip_details",
+    "source": "emmanuel",
+    "section": "winnipeg_february_2026",
+    "tags": [
+      "winnipeg",
+      "trip",
+      "visit",
+      "february 2026",
+      "first meeting",
+      "in person",
+      "itinerary",
+      "gym",
+      "pembina",
+      "do it again",
+      "favourite moments",
+      "snuggles"
+    ],
+    "content": "Emmanuel's Winnipeg trip, February 2026 (he arrived February 9). His planned rhythm there: gym 7-8am (2855 Pembina Hwy), breakfast 9-10, her school hours, then shopping, massages, movies, dinner, 10-11pm Bible study; Saturday mornings for stretching or yoga, morning Bible study, breakfast and games; a date night; prep to see her pastor. His 'This was nice, let's do it again' list (Valentine's Day 2026): clothes (matching, and her in his sweatshirts), eating breakfast, watching movies, drives, snuggles, picking her up and spinning her, reading, gifts, devotion, holding hands, taking naps, night walks, cooking together, hugs, praying together, getting mentored, grocery shopping, couple selfies, head rubs, surprises. Also: bus rides holding hands, meeting Peace, shopping (she bought him jackets), visiting her pastor, church family, her 100-page book of love, her ogbono, and Ume Yummy on February 14. Later Winnipeg-summer memories: Boston Pizza date, gym and jogging together, 'the spicy morning', getting food together, her generosity, the day before he left, his anger, a conversation about church, and her grace when he wasn't as present one week."
+  },
+  {
+    "id": "spiritual_covering_notes",
+    "source": "emmanuel",
+    "section": "spiritual_covering",
+    "tags": [
+      "spiritual",
+      "covering",
+      "cover her",
+      "prophetic",
+      "holy spirit",
+      "warfare",
+      "king maker",
+      "deborah",
+      "territories",
+      "listening",
+      "prayer",
+      "1 corinthians 14",
+      "isaiah 43",
+      "song of solomon",
+      "psalm 89",
+      "banner",
+      "scripture",
+      "favorite verse"
+    ],
+    "content": "Emmanuel's spiritual-covering notes. September 14, 2025 — 'First line of defence: can I cover her?' She is a King Maker: she covers really important people, and the repercussion is that in the spirit she is a target. His relationship with God is not isolated; it affects the people around him — 'hold on to it with all ten fingers'. Read about Deborah in the Old Testament, who takes men to war and brings them back whole. She once went through spiritual warfare night after night after night (Bryan was pivotal in showing her what she can do). 'Take care of yourself Emmanuel — if something happened to me it would shatter her.' October 25, 2025 — 'Under my covering': train in the prophetic (1 Corinthians 14); always pray for her; speak directly to the Holy Spirit — 'Holy Spirit, show me who you would like me to talk to, pray for, approach'; ask the Spirit for direction, goals, wisdom, visions; spend 30 minutes praying and listening; set specific days; listen to sermons on areas they want to grow. She is learning to trust, growing in spiritual responsibility; some battles are harder and there are things she can't carry alone — 'she needs someone to speak over her and cover her, and it has to be me.' 15-20 territories conquered. Study on swearing. Scriptures for them: Matthew 7:7; Isaiah 43 and Song of Solomon (her favourite pieces of the Bible); Psalm 89:15-18 — 'the Lord is our defence'; Song of Solomon 2:4 — 'His banner over me was love'; Proverbs 18:22; 1 Corinthians 13; Ecclesiastes 4:9-12. Things to talk about later: the 'Maar atatata' song and physical boundaries."
+  },
+  {
+    "id": "tolu_schedule_and_logistics",
+    "source": "emmanuel",
+    "section": "schedule",
+    "tags": [
+      "schedule",
+      "free",
+      "availability",
+      "school",
+      "semester",
+      "when is she free",
+      "visit",
+      "travel",
+      "flight",
+      "toronto",
+      "us",
+      "family"
+    ],
+    "content": "Logistics notes: Tolu was done with school on April 28, 2026 and free from May 1 to the third week of May. She flew to Toronto on September 4, 2026 to meet Sinam and stayed with Itunu. She wants to fly to see her family in the US (her aunt is in New Jersey). Emmanuel checks the driving route to her every day on Maps. Emmanuel's first-ever visit was February 9-mid February 2026 in Winnipeg; there was also a summer 2026 stretch together in Winnipeg (Boston Pizza, gym, Ibukun's visit)."
+  },
+  {
+    "id": "tolu_closet_inventory",
+    "source": "emmanuel",
+    "section": "closet_what_she_owns",
+    "tags": [
+      "closet",
+      "wardrobe",
+      "clothes",
+      "what she owns",
+      "what she has",
+      "outfit",
+      "outfits",
+      "wear",
+      "what to wear",
+      "pants",
+      "jeans",
+      "skirt",
+      "top",
+      "sweater",
+      "dress",
+      "gown",
+      "jacket",
+      "sweats",
+      "sleep set",
+      "nightgown",
+      "vest",
+      "set"
+    ],
+    "content": "Tolu's closet (from the What to Wear page on the site). Bottoms: barrel dark-brown jeans; blue jeans; beige flared pants; beige baggy jeans; red pants; black flared sweats; pink sweatpants; dark-green sweats; beige sweatpants; beige set pants (two-piece with the beige set shirt); dark-brown layered skirt; light-brown net layered skirt (worn with the matching light-brown net vest). Tops: black net vest; white net cropped vest; light-brown net vest; white long-sleeve office shirt (her interview/work shirt); black sleeveless cropped top; black cropped round-neck top; blue-white-black geometric top; brown cropped long-sleeve top; pink sleeveless round-neck top; pink flowery round-neck top; white sleeveless cropped inner top (layering piece); white net short-sleeve cropped top; burgundy sweater; red sweater; green-and-white varsity sweater; beige set shirt. Dresses: the beige Rapha exhibition dress (sleeveless, diagonal ropes — her dressiest piece); a brown-and-black striped long-sleeve gown (church, events, dinner). Outerwear: one black leather jacket, 'the staple' — plus the spectacular jackets she bought Emmanuel, and she has said she doesn't own many jackets herself. Sleepwear / online-date wear: red sleep set (top and shorts), purple sleep set, blue nightgown, and the striped pink PJs Emmanuel gave her. Not logged in the closet yet: shoes, bags, jewellery and accessories (she wears a necklace, anklet and waist beads daily), a proper Winnipeg winter coat, winter boots and gloves."
+  },
+  {
+    "id": "outfit_styling_guide",
+    "source": "emmanuel",
+    "section": "outfit_suggestions",
+    "tags": [
+      "outfit",
+      "outfits",
+      "what should she wear",
+      "what to wear",
+      "wear today",
+      "dress her",
+      "style",
+      "styling",
+      "suggest an outfit",
+      "look",
+      "fit",
+      "date outfit",
+      "church outfit",
+      "interview outfit",
+      "winter outfit",
+      "weather",
+      "cold",
+      "gaps",
+      "missing",
+      "buy",
+      "shopping list",
+      "wardrobe gaps"
+    ],
+    "content": "How to suggest outfits for Tolu. Build looks from what she actually owns (see the closet inventory) and name the pieces: e.g. date night — barrel dark-brown jeans + black net vest + leather jacket; church or dinner — light-brown net skirt + matching net vest, or the brown-and-black striped gown; interview or work — white office shirt + beige flared pants + burgundy sweater over it if cold; class or errands — beige baggy jeans + geometric top, or the beige two-piece set; cosy home / FaceTime date — a sleep set, the varsity sweater, or Emmanuel's sweatshirt (which she loves wearing); a big event — the beige Rapha dress + leather jacket for the walk. Her rules: she loves black, beige, reddish tones and neutrals; not brown (even though a few brown pieces live in the closet), not pink all the time; she rarely wears cropped tops out; gowns should avoid high or round necklines (they round her face); she likes practical, cute, unique pieces and monochrome looks; she has real steeze and loves dressing up. She is 5'2, shirts S, pants M/S, shoes 40/41 UK. Winnipeg weather matters — layer, and in winter the leather jacket is not enough. Gaps she may not have yet, good for gift or shopping suggestions: a proper winter coat, brown or black winter boots and gloves, more jackets (a beige or black trench, a wool coat), a black or beige midi dress with a V or square neckline, a monochrome all-black or all-beige set, a red or burgundy dress for date nights, a custom robe, gym wear and new gym shorts, going-out shoes and everyday sneakers, a structured bag, daily jewellery (necklace, anklet, waist beads), a night gown, a white sneaker + wide-leg trouser combo, and autumn fits. When she asks what to wear, ask (or infer) the occasion and weather, give one main look plus one alternative, and mention one piece that would complete it if she doesn't own it."
   }
 ]

@@ -195,14 +195,14 @@ export function celebrateOnce(anchor, options = {}) {
   celebrate(anchor, options);
 }
 
-const PAGE_SHOW_MS = 60 * 1000;
+const PAGE_SHOW_MS = 2 * 60 * 1000;
 /** One batch, then a beat of quiet, then the next. */
 const PAGE_WAVE_MS = 3800;
 
 let pageTeardown = null;
 
 /**
- * Full-viewport show: slower batches for one minute, with a pause between them.
+ * Full-viewport show: slower batches for two minutes, with a pause between them.
  * Calling again while it is running restarts the show.
  */
 export function celebratePage(options = {}) {

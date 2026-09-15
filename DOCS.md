@@ -199,6 +199,21 @@ exclusion of light items — and every line of explanation comes from the owner-
 block at the top of that file. Backup exports item metadata only; photos are not included and the
 UI says so. Reminder seam as in `peopleStore.js`, opt-in and off by default.
 
+### `wedding.html` — Our Wedding Fund
+
+A savings tracker with no goal bar, because there is no goal amount yet: just what's in the jar,
+kept encouraging. Static and local-only (`src/wedding.js`, `src/modules/weddingFund.js`,
+`src/styles/wedding.css`): no Firebase, no storage, no network. The only inputs are in
+`src/data/weddingFund.js` — the opening `balance` as of `balanceAsOf`, the `weekly` deposit
+($43.75, 5% of a paycheck) and the `payday` weekday (Friday). The page adds one deposit for every
+payday that has passed since `balanceAsOf`, so the total keeps itself current; for a lump sum that
+doesn't fit the rhythm, bump `balance` and reset `balanceAsOf`. "Growing right now" accrues the
+next deposit continuously at the weekly rate (5 decimal places, ticking every 120 ms, 1 s under
+reduced motion, paused while the tab is hidden) and is continuous across payday midnight. Also
+shown: monthly/yearly equivalents, a calendar countdown to `WEDDING_DATE` (May 13, 2028), one
+heart per week saved, the last six deposit dates, and a projection of the total on the wedding
+morning at the current pace. All maths is in `weddingFund.js` (pure; imports only `dates.js`).
+
 ### `letters.html` — Letters
 
 The reading room (`docs/anniversary/06-LETTERS.md`): a locked, session-authenticated archive of
@@ -248,7 +263,7 @@ Top-level navigation (one list, `NAV_LINKS` in `src/modules/siteChrome.js`):
 
 "Our Story" is `timeline.html`. On screens ≤600px the links move into a fixed bottom tab bar
 (`.site-tabs`) and the top bar keeps only the brand and theme toggle. Tool pages (Letters, The
-Application Desk, People, Rhythm, What to Wear) are reached only from the For You hub, never from
+Application Desk, People, Rhythm, What to Wear, Our Wedding Fund) are reached only from the For You hub, never from
 the nav. See `docs/anniversary/PAGE-CHECKLIST.md` for how to add a page.
 
 ---
@@ -314,6 +329,7 @@ CSS uses custom properties for theming, `clamp()` for responsive typography, and
 | `timeline-page.css` | Timeline page: stats bar with stat cards, extended timeline layout, responsive breakpoints. |
 | `ui.css` | Shared primitives for the tool pages (`.usm-card`, `.usm-btn--*`, `.usm-pill`, `.usm-input`, `.usm-panel`, `.usm-modal`, `.usm-empty`, `.usm-toast`, `.usm-tone--*`, `.usm-skeleton`). Each is extracted from an existing class — the header comment names which. Imported only by new pages. |
 | `foryou.css` | For You hub: header, lede, centred card wrap. |
+| `wedding.css` | Our Wedding Fund: the big number, live ticker, pace tiles, deposit log. Alignment and padding live on child selectors because the shared `ui.css` chunk loads after page CSS. |
 | `reminders.css` | The reminder card and the "Reminders" panel, built only from `ui.css` primitives and `base.css` tokens (no red/amber, no badges). Imported by `reminderUI.js`. |
 | `lovegpt.css` | LoveGPT page: subtle gradient background, sparkly header, starter pills, chat area, message bubbles (user: pink gradient, AI: glass card with `backdrop-filter`), typing dots animation, input area, custom scrollbar. |
 
@@ -722,6 +738,7 @@ ahosite/
 ├── timeline.html                # Relationship timeline page
 ├── lovegpt.html                 # LoveGPT chat page
 ├── foryou.html                  # For You hub
+├── wedding.html                 # Our Wedding Fund
 ├── package.json                 # Root dependencies & scripts
 ├── vite.config.js               # Vite build config (multi-page)
 ├── src/
@@ -730,10 +747,12 @@ ahosite/
 │   ├── timeline-page.js         # Timeline page entry point
 │   ├── lovegpt.js               # LoveGPT page entry point
 │   ├── foryou.js                # For You hub entry point
+│   ├── wedding.js               # Our Wedding Fund entry point
 │   ├── data/
 │   │   ├── timeline.js          # The story — single source of truth
 │   │   ├── noTexts.js           # No-button messages
-│   │   └── verses.js            # Bible verses & graffiti texts
+│   │   ├── verses.js            # Bible verses & graffiti texts
+│   │   └── weddingFund.js       # Wedding fund balance, rate, payday, date
 │   ├── modules/
 │   │   ├── auth.js              # Passcode auth
 │   │   ├── buttons.js           # Yes/No button logic
@@ -753,6 +772,7 @@ ahosite/
 │   │   ├── timeline.js          # Timeline renderer
 │   │   ├── upload.js            # Image upload + compression
 │   │   ├── verses.js            # Verse carousel
+│   │   ├── weddingFund.js       # Wedding fund arithmetic (pure)
 │   │   └── webhook.js           # Response webhook
 │   └── styles/
 │       ├── animations.css       # All @keyframes
@@ -762,7 +782,8 @@ ahosite/
 │       ├── memories.css         # Memories page styles
 │       ├── sections.css         # Homepage section layouts
 │       ├── timeline-page.css    # Timeline page styles
-│       └── ui.css               # Shared primitives for tool pages
+│       ├── ui.css               # Shared primitives for tool pages
+│       └── wedding.css          # Our Wedding Fund styles
 ├── docs/anniversary/
 │   └── PAGE-CHECKLIST.md        # How to add a page
 └── functions/

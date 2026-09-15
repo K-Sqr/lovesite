@@ -89,6 +89,7 @@ export default defineConfig({
         peopleDashboard: resolve(__dirname, 'people-dashboard.html'),
         outfit: resolve(__dirname, 'outfit.html'),
         letters: resolve(__dirname, 'letters.html'),
+        wedding: resolve(__dirname, 'wedding.html'),
       },
     },
   },

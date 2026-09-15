@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Us Machina &mdash; Our Wedding Fund &hearts;</title>
+  <link rel="icon" type="image/png" href="./heart.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <meta name="description" content="A little set aside every week, for the day." />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' https://*.firebasestorage.app https://firebasestorage.googleapis.com data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://lovegpt-osmy5pclpq-uc.a.run.app https://www.google-analytics.com https://analytics.google.com https://api.open-meteo.com; font-src 'self' https://fonts.gstatic.com; media-src 'self'; frame-src 'none';" />
+</head>
+<body>
+
+  <!-- ═══ NAVBAR (rendered by src/modules/siteChrome.js) ═══ -->
+  <nav class="site-nav" id="siteNav"></nav>
+
+  <main class="wedding-page">
+    <header class="wedding-header reveal">
+      <p class="wedding-eyebrow" id="weddingEyebrow">For May 13, 2028</p>
+      <h1>Our Wedding Fund</h1>
+      <p class="wedding-lede">A little set aside every week, for the day we keep talking about.</p>
+    </header>
+
+    <!-- The number. Deposits land on their own — see src/data/weddingFund.js -->
+    <section class="usm-card wedding-hero reveal" aria-labelledby="weddingSavedLabel">
+      <p class="wedding-hero__label" id="weddingSavedLabel">Saved so far</p>
+      <p class="wedding-hero__amount" id="weddingSaved" aria-live="polite">&nbsp;</p>
+      <p class="wedding-hero__note" id="weddingNote"></p>
+      <div class="wedding-hearts" id="weddingHearts" aria-hidden="true"></div>
+      <p class="wedding-hearts__caption" id="weddingHeartsCaption"></p>
+    </section>
+
+    <!-- Live accrual at the weekly rate: the number she can watch move -->
+    <section class="usm-card wedding-live reveal" data-delay="1" aria-labelledby="weddingLiveLabel">
+      <p class="wedding-live__label" id="weddingLiveLabel"><span class="wedding-live__dot" aria-hidden="true"></span>Growing right now</p>
+      <p class="wedding-live__amount" id="weddingLive">&nbsp;</p>
+      <p class="wedding-live__note" id="weddingLiveNote"></p>
+    </section>
+
+    <div class="wedding-stats" id="weddingStats" aria-label="The pace"></div>
+
+    <section class="usm-card wedding-ahead reveal" aria-labelledby="weddingAheadLabel">
+      <p class="wedding-ahead__label" id="weddingAheadLabel">Where this is going</p>
+      <p class="wedding-ahead__line" id="weddingAhead"></p>
+    </section>
+
+    <section class="usm-card wedding-log reveal" aria-labelledby="weddingLogLabel">
+      <p class="wedding-log__label" id="weddingLogLabel">The last few Fridays</p>
+      <ol class="wedding-log__list" id="weddingLog"></ol>
+    </section>
+
+    <details class="wedding-how reveal">
+      <summary>How this is counted</summary>
+      <p id="weddingHow"></p>
+    </details>
+
+    <p class="wedding-sign reveal" id="weddingSign"></p>
+  </main>
+
+  <footer class="site-footer" id="siteFooter"></footer>
+
+  <!-- ═══ MUSIC (rendered by src/modules/siteChrome.js) ═══ -->
+  <div id="siteMusic"></div>
+
+  <script type="module" src="/src/wedding.js"></script>
+</body>
+</html>

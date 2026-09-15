@@ -4,8 +4,8 @@ Use this list to capture details over time. Answers can be folded into `function
 
 ## Daily life & rhythm
 
-- **What book are you reading together right now?** (title, author if it helps — update the knowledge base when you finish and start a new one.)
-- **What football or sports team do you support** — and do you watch matches or highlights together?
+- **What book are you reading together right now?** ✅ Finished *Things I Wish I'd Known Before We Got Married* (Gary D. Chapman); now reading *Boundaries in Dating* (Dr. Henry Cloud). Update `current_book_tuesday_reading` when you finish it.
+- **What football or sports team do you support** ✅ Real Madrid — highlights together (`sports_real_madrid`).
 - What does a “normal” weekday look like for each of you (wake time, work/school, wind-down)?
 - What are your non-negotiables for feeling connected when long distance (calls, texts, voice notes)?
 - What does “quality time” mean to each of you — same thing or different?

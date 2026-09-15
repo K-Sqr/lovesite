@@ -41,6 +41,7 @@ export const REMINDER_STATE_DAYS = 30;
 const REMINDER_STATUSES = ['delivered', 'snoozed', 'dismissed'];
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+const RECORD_ID = /^r_[a-z0-9-]{1,64}$/i;
 
 function initialData() {
   return { version: STORE_VERSION, records: [], settings: { autoLockMinutes: DEFAULT_AUTO_LOCK_MINUTES }, reminders: {} };
@@ -77,6 +78,7 @@ function normalise(input, existing = {}) {
   const startDate = input.startDate !== undefined ? input.startDate : existing.startDate;
   if (!isIsoDate(startDate)) throw new StorageError('A start date is needed', 'bad-start');
   if (startDate > toISO(new Date())) throw new StorageError("That date hasn't happened yet", 'future-start');
+  const approximate = input.approximate !== undefined ? input.approximate === true : existing.approximate === true;
 
   let endDate = input.endDate !== undefined ? input.endDate : existing.endDate;
   if (endDate === '' || endDate === undefined) endDate = null;
@@ -98,7 +100,7 @@ function normalise(input, existing = {}) {
   const mood = cleanText(input.mood !== undefined ? input.mood : existing.mood, MOOD_MAX);
   const note = cleanText(input.note !== undefined ? input.note : existing.note, NOTE_MAX);
 
-  return { startDate, endDate, flow, symptoms, mood, note };
+  return { startDate, approximate, endDate, flow, symptoms, mood, note };
 }
 
 function newId() {
@@ -138,7 +140,28 @@ function coerceReminders(raw, now = new Date()) {
 function coerceData(data) {
   const base = initialData();
   if (!data || typeof data !== 'object') return base;
-  const records = Array.isArray(data.records) ? data.records.filter((r) => r && typeof r.id === 'string' && isIsoDate(r.startDate)) : [];
+  const seenIds = new Set();
+  const records = Array.isArray(data.records)
+    ? data.records
+      .filter((r) => {
+        if (!r || !RECORD_ID.test(r.id) || seenIds.has(r.id) || !isIsoDate(r.startDate)) return false;
+        seenIds.add(r.id);
+        return true;
+      })
+      .map((r) => {
+        try {
+          return {
+            id: r.id,
+            ...normalise(r),
+            createdAt: isIsoInstant(r.createdAt) ? r.createdAt : new Date().toISOString(),
+            updatedAt: isIsoInstant(r.updatedAt) ? r.updatedAt : new Date().toISOString(),
+          };
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean)
+    : [];
   const minutes = data.settings && Number.isFinite(data.settings.autoLockMinutes) ? data.settings.autoLockMinutes : base.settings.autoLockMinutes;
   return { version: STORE_VERSION, records: sortNewestFirst(records), settings: { autoLockMinutes: minutes }, reminders: coerceReminders(data.reminders) };
 }
@@ -234,7 +257,7 @@ export function findNear(records, isoDate, ignoreId) {
 }
 
 /**
- * @param {{ startDate: string, endDate?: string|null, flow?: string|null, symptoms?: string[], mood?: string, note?: string }} input
+ * @param {{ startDate: string, approximate?: boolean, endDate?: string|null, flow?: string|null, symptoms?: string[], mood?: string, note?: string }} input
  * @returns {Promise<object>} the stored record
  */
 export async function add(input) {
@@ -328,6 +351,36 @@ export async function exportJson() {
     null,
     2,
   );
+}
+
+/**
+ * Replace the current records from a plaintext file made by exportJson().
+ * The imported data is immediately encrypted again under the currently
+ * unlocked passphrase. Reminder state is kept on this device.
+ */
+export async function importJson(json) {
+  let backup;
+  try {
+    backup = typeof json === 'string' ? JSON.parse(json) : json;
+  } catch {
+    throw new StorageError("That file doesn't look like a Rhythm backup", 'bad-json');
+  }
+  if (!backup || typeof backup !== 'object' || backup.name !== STORE_NAME || !Array.isArray(backup.records)) {
+    throw new StorageError("That file doesn't look like a Rhythm backup", 'bad-shape');
+  }
+
+  const current = await readData();
+  const imported = coerceData({
+    version: STORE_VERSION,
+    records: backup.records,
+    settings: backup.settings,
+    reminders: current.reminders,
+  });
+  if (backup.records.length > 0 && imported.records.length === 0) {
+    throw new StorageError("I couldn't find any readable entries in that backup", 'bad-records');
+  }
+  await writeData(imported);
+  return imported.records.length;
 }
 
 /** `rhythm-backup-YYYY-MM-DD.json` for today. */

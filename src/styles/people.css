@@ -92,6 +92,25 @@
   margin-bottom: var(--space-3);
 }
 
+.people-suggestion-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.people-suggestion-head .people-line {
+  margin-bottom: 0;
+}
+
+.people-suggestion-head .people-shuffle {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.82rem;
+}
+
 .people-quiet {
   font-size: 0.9rem;
   color: var(--text-muted);
@@ -118,15 +137,17 @@
 .people-list {
   list-style: none;
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-2);
   margin-bottom: var(--space-4);
 }
 
 .usm-card.person-row {
-  padding: var(--space-4) var(--space-4) var(--space-3);
+  padding: var(--space-3) var(--space-4);
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-2);
   scroll-margin-top: 70px;
+  box-shadow: none;
+  border: 1px solid var(--border-subtle);
 }
 
 .person-row.is-highlighted {
@@ -179,24 +200,25 @@
   color: var(--text-muted);
 }
 
-/* two actions, one size, side by side — snoozing is as legitimate as saying hi */
+/* Everyday actions stay visible; compact wrapping keeps the card short. */
 .person-row__actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
   gap: var(--space-2);
 }
 
 .person-row__actions .person-row__btn {
-  width: 100%;
+  width: auto;
   min-height: 44px;
   padding-left: var(--space-3);
   padding-right: var(--space-3);
   font-size: 0.9rem;
 }
 
-/* Low: the quick hello takes the whole first row, the pair sits underneath */
+/* Low energy keeps the useful shortcut first without adding another panel. */
 .person-row__actions.is-low .person-row__quick {
-  grid-column: 1 / -1;
+  margin-right: auto;
 }
 
 .usm-btn.is-copied,
@@ -527,6 +549,12 @@ details[open] > .people-form__more-summary::before {
   padding-top: var(--space-4);
 }
 
+@media (min-width: 680px) {
+  .people-list--focus {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* ── Reduced motion ── nothing here may hide content; only transitions go */
 @media (prefers-reduced-motion: reduce) {
   .people-fold__summary::before,
@@ -548,7 +576,7 @@ details[open] > .people-form__more-summary::before {
 
   .people-header,
   .people-energy,
-  .people-line,
+  .people-suggestion-head,
   .people-quiet,
   .people-fold__summary,
   .people-messages,

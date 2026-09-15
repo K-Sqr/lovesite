@@ -27,7 +27,34 @@
 
 /* ── Header ── */
 .outfit-header {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  overflow: hidden;
   margin-bottom: var(--space-4);
+  padding: clamp(1.25rem, 4vw, 2rem);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at 90% 10%, var(--tone-warm-soft), transparent 38%),
+    linear-gradient(135deg, var(--card-bg), var(--pink-bg-alt));
+  box-shadow: 0 12px 34px var(--shadow-soft);
+}
+
+.outfit-header__copy {
+  position: relative;
+  z-index: 1;
+}
+
+.outfit-header__eyebrow,
+.outfit-today__eyebrow {
+  margin: 0 0 var(--space-1);
+  color: var(--pink-hot);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .outfit-header h1 {
@@ -43,6 +70,44 @@
   opacity: 0.85;
   line-height: 1.45;
   max-width: 34ch;
+}
+
+.outfit-header__sparkles {
+  position: relative;
+  width: 6.5rem;
+  flex: 0 0 6.5rem;
+  color: var(--pink-hot);
+}
+
+.outfit-header__sparkles span {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--card-bg);
+  box-shadow: 0 6px 18px var(--shadow-pink);
+}
+
+.outfit-header__sparkles span:nth-child(1) {
+  top: 0.2rem;
+  right: 0.4rem;
+  width: 3.6rem;
+  height: 3.6rem;
+  font-size: 1.45rem;
+  transform: rotate(8deg);
+}
+
+.outfit-header__sparkles span:nth-child(2) {
+  top: 3.5rem;
+  left: 0;
+  width: 2.4rem;
+  height: 2.4rem;
+}
+
+.outfit-header__sparkles span:nth-child(3) {
+  right: 0;
+  bottom: -0.4rem;
+  font-size: 1.2rem;
 }
 
 /* ── Weather line ── plain, trusted, one glance */
@@ -131,6 +196,19 @@
 /* ── Occasion chips ── the only thing she should touch before an answer */
 .outfit-occasions {
   margin-bottom: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--card-bg);
+  box-shadow: 0 6px 20px var(--shadow-soft);
+}
+
+.outfit-occasions__heading,
+.outfit-today__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
 }
 
 .outfit-occasions__label {
@@ -142,14 +220,23 @@
   margin-bottom: var(--space-2);
 }
 
+.outfit-occasions__selected,
+.outfit-look-number {
+  flex: 0 0 auto;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  background: var(--tone-warm-soft);
+  color: var(--tone-warm);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
 .outfit-occasions__row {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-2);
-  overflow-x: auto;
   padding: 2px 2px 6px;
   margin: 0 -2px;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
 }
 
 .outfit-occasions__row::-webkit-scrollbar {
@@ -166,9 +253,36 @@
   padding: 6px 12px;
 }
 
+.outfit-occasions__hint,
+.outfit-combo-note {
+  margin-top: var(--space-2);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
 /* ── Today's outfit ── */
 .outfit-today {
   margin-bottom: var(--space-6);
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--card-bg);
+  box-shadow: 0 14px 38px var(--shadow-pink);
+}
+
+.outfit-today__heading {
+  margin-bottom: var(--space-3);
+}
+
+.outfit-today__eyebrow {
+  margin-bottom: 0.1rem;
+}
+
+.outfit-today__title {
+  margin: 0;
+  color: var(--pink-deep);
+  font-size: clamp(1.25rem, 4vw, 1.6rem);
 }
 
 .outfit-headline {
@@ -254,7 +368,8 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  background: var(--surface-sunken);
 }
 
 .outfit-tile__slot {
@@ -331,6 +446,14 @@
   flex-wrap: wrap;
   gap: var(--space-2);
   margin-top: var(--space-3);
+}
+
+.outfit-actions .outfit-remix {
+  box-shadow: 0 8px 22px var(--shadow-pink);
+}
+
+.outfit-combo-note {
+  text-align: center;
 }
 
 .outfit-sparse {
@@ -673,6 +796,7 @@
 
   .outfit-header {
     margin-bottom: var(--space-3);
+    padding: var(--space-4);
   }
 
   .outfit-header h1 {
@@ -681,6 +805,32 @@
 
   .outfit-lede {
     font-size: 1rem;
+  }
+
+  .outfit-header__sparkles {
+    width: 3.5rem;
+    flex-basis: 3.5rem;
+  }
+
+  .outfit-header__sparkles span:nth-child(1) {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .outfit-header__sparkles span:nth-child(2),
+  .outfit-header__sparkles span:nth-child(3) {
+    display: none;
+  }
+
+  .outfit-occasions {
+    padding: var(--space-3);
+  }
+
+  .outfit-occasions__row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
   }
 
   .outfit-headline {

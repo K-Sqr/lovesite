@@ -64,6 +64,45 @@
   margin-bottom: var(--space-2);
 }
 
+/* ── Today ── the useful glance before any controls */
+.rhythm-overview {
+  position: relative;
+  overflow: hidden;
+}
+
+.rhythm-overview::after {
+  content: '';
+  position: absolute;
+  width: 7rem;
+  height: 7rem;
+  right: -2.5rem;
+  top: -3rem;
+  border-radius: 50%;
+  background: var(--tone-warm-soft);
+  pointer-events: none;
+}
+
+.rhythm-overview__eyebrow {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.rhythm-overview__value {
+  margin-top: var(--space-1);
+  font-family: var(--font-body);
+  font-size: clamp(1.5rem, 6vw, 2.25rem);
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--pink-deep);
+}
+
+.usm-btn.rhythm-end {
+  margin-top: var(--space-3);
+}
+
 /* ── The button ── the one thing she is here to press.
    Two classes on purpose: Vite emits the shared ui.css chunk after this file,
    so a bare .rhythm-primary would lose the min-height tie with .usm-btn in production. */
@@ -90,6 +129,146 @@
 .rhythm-pick .usm-input {
   flex: 1 1 160px;
   width: auto;
+}
+
+.rhythm-approximate {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.85rem;
+  line-height: 1.35;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.rhythm-approximate input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--pink-deep);
+}
+
+/* ── Calendar ── a compact visual index, not a medical chart */
+.rhythm-calendar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.rhythm-calendar__head {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+}
+
+.rhythm-calendar__head h2 {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.usm-btn.rhythm-calendar__nav {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  font-size: 1.35rem;
+}
+
+.rhythm-calendar__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.25rem;
+}
+
+.rhythm-calendar__weekday,
+.rhythm-calendar__day,
+.rhythm-calendar__blank {
+  min-width: 0;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 0.78rem;
+}
+
+.rhythm-calendar__weekday {
+  aspect-ratio: auto;
+  min-height: 1.5rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.rhythm-calendar__day {
+  position: relative;
+  color: var(--text-primary);
+}
+
+.rhythm-calendar__day.is-window {
+  background: var(--tone-waiting-soft);
+  color: var(--tone-waiting);
+}
+
+.rhythm-calendar__day.is-period {
+  background: var(--tone-warm-soft);
+  color: var(--tone-warm);
+}
+
+.rhythm-calendar__day.is-start {
+  background: var(--pink-deep);
+  color: var(--white);
+  font-weight: 600;
+}
+
+.rhythm-calendar__day.is-approximate {
+  outline: 2px dashed var(--pink-hot);
+  outline-offset: 2px;
+}
+
+.rhythm-calendar__day.is-today::after {
+  content: '';
+  position: absolute;
+  bottom: 0.18rem;
+  width: 0.22rem;
+  height: 0.22rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.rhythm-calendar__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.rhythm-calendar__legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.rhythm-calendar__legend i {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+}
+
+.rhythm-calendar__legend i.is-start {
+  background: var(--pink-deep);
+}
+
+.rhythm-calendar__legend i.is-period {
+  background: var(--tone-warm-soft);
+  border: 1px solid var(--tone-warm);
+}
+
+.rhythm-calendar__legend i.is-window {
+  background: var(--tone-waiting-soft);
+  border: 1px solid var(--tone-waiting);
 }
 
 /* ── Confirmation / undo ── aria-live; sits between the button and the history */

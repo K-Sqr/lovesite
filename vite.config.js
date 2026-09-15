@@ -77,6 +77,7 @@ export default defineConfig({
         rhythm: resolve(__dirname, 'rhythm.html'),
         applications: resolve(__dirname, 'applications.html'),
         people: resolve(__dirname, 'people.html'),
+        peopleDashboard: resolve(__dirname, 'people-dashboard.html'),
         outfit: resolve(__dirname, 'outfit.html'),
         letters: resolve(__dirname, 'letters.html'),
       },

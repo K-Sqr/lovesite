@@ -20,6 +20,7 @@ const LOCAL_PHOTOS = [
 ];
 
 let selectedFiles = [];
+let selectedCaptions = [];
 
 document.addEventListener('DOMContentLoaded', () => {
   initSiteChrome({ active: 'memories' });
@@ -104,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function handleFiles(fileList) {
     const newFiles = Array.from(fileList).filter(f => f.type.startsWith('image/'));
     selectedFiles.push(...newFiles);
+    selectedCaptions.push(...newFiles.map(() => ''));
     renderPreviews();
     uploadSubmit.disabled = selectedFiles.length === 0;
   }
@@ -119,11 +121,16 @@ document.addEventListener('DOMContentLoaded', () => {
       captionInput.type = 'text';
       captionInput.placeholder = 'Caption...';
       captionInput.dataset.idx = idx;
+      captionInput.value = selectedCaptions[idx] || '';
+      captionInput.addEventListener('input', () => {
+        selectedCaptions[idx] = captionInput.value;
+      });
       const removeBtn = document.createElement('button');
       removeBtn.className = 'remove-preview';
       removeBtn.textContent = '\u00D7';
       removeBtn.addEventListener('click', () => {
         selectedFiles.splice(idx, 1);
+        selectedCaptions.splice(idx, 1);
         renderPreviews();
         uploadSubmit.disabled = selectedFiles.length === 0;
       });
@@ -140,8 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
     uploadSubmit.disabled = true;
     uploadProgress.classList.add('active');
 
-    const captions = Array.from(previewList.querySelectorAll('input'))
-      .map(inp => inp.value.trim());
+    const captions = selectedCaptions.map(caption => caption.trim());
 
     let uploaded = 0;
     const total = selectedFiles.length;
@@ -178,6 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function resetUpload() {
     selectedFiles = [];
+    selectedCaptions = [];
     previewList.innerHTML = '';
     fileInput.value = '';
     progressBar.style.width = '0%';

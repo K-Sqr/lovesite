@@ -7,7 +7,7 @@
  * renders and wires events; it never touches storage itself.
  *
  * Stores (storage.js, both plain localStorage, both `{ v, updatedAt, data }`):
- *   usm.people.v1            → { items: Person[] }
+ *   usm.people.v3            → { items: Person[] } (including per-person check-in dates)
  *   usm.messageTemplates.v1  → { customTemplates: CustomTemplate[] }
  *
  * The energy selection is NOT in either store. It lives in sessionStorage
@@ -98,10 +98,10 @@ export const STATES = {
  * is always allowed, so an unlabelled person is never hidden).
  */
 export const ENERGY_LEVELS = [
-  { id: 'low',    label: 'Low',          line: 'A quick hello counts.',        people: 3,        costs: ['low'],                   templateCategory: 'low-energy' },
-  { id: 'little', label: 'A little',     line: 'One or two people is plenty.', people: 6,        costs: ['low', 'medium'],         templateCategory: 'thinking' },
-  { id: 'normal', label: 'Normal',       line: 'Whoever comes to mind.',       people: Infinity, costs: ['low', 'medium', 'high'], templateCategory: 'thinking' },
-  { id: 'social', label: 'Social today', line: 'Good day to call someone.',    people: Infinity, costs: ['low', 'medium', 'high'], templateCategory: 'thinking' },
+  { id: 'low',    label: 'Low',          line: 'One small hello is enough.',  people: 2,  costs: ['low'],                   templateCategory: 'low-energy' },
+  { id: 'little', label: 'A little',     line: 'A few familiar faces.',       people: 4,  costs: ['low', 'medium'],         templateCategory: 'thinking' },
+  { id: 'normal', label: 'Normal',       line: 'Six gentle possibilities.',   people: 6,  costs: ['low', 'medium', 'high'], templateCategory: 'thinking' },
+  { id: 'social', label: 'Social today', line: 'A wider circle for today.',   people: 10, costs: ['low', 'medium', 'high'], templateCategory: 'thinking' },
 ];
 
 const ENERGY_SESSION_KEY = 'usm.people.energy';
@@ -123,6 +123,7 @@ function seededItems() {
     notes: '',
     isSnoozedUntil: null,
     energyCost: p.energyCost,
+    checkIns: [],
     createdAt: ts,
     updatedAt: ts,
   }));
@@ -137,11 +138,16 @@ function mergeSeed(existing) {
 }
 
 const peopleStore = createStore('people', {
-  version: 2,
+  version: 3,
   initial: { items: seededItems() },
   migrate(oldData) {
     const existing = Array.isArray(oldData?.items) ? oldData.items : [];
-    return { items: mergeSeed(existing) };
+    return {
+      items: mergeSeed(existing).map((person) => ({
+        ...person,
+        checkIns: cleanCheckIns(person.checkIns),
+      })),
+    };
   },
 });
 const templatesStore = createStore('messageTemplates', { version: 1, initial: { customTemplates: [] } });
@@ -204,6 +210,11 @@ function cleanImportantDates(list) {
   return out;
 }
 
+function cleanCheckIns(list) {
+  if (!Array.isArray(list)) return [];
+  return Array.from(new Set(list.filter(isDateOnly))).sort().slice(-2000);
+}
+
 /**
  * Coerce any input into a valid Person. A name is the only requirement —
  * everything else falls back to "nothing set", and "nothing set" is a
@@ -227,6 +238,7 @@ export function normalisePerson(input, existing = null) {
     notes: cleanText(input?.notes, 2000),
     isSnoozedUntil: isDateOnly(input?.isSnoozedUntil) ? input.isSnoozedUntil : null,
     energyCost: energy,
+    checkIns: cleanCheckIns(input?.checkIns !== undefined ? input.checkIns : existing?.checkIns),
     createdAt: existing?.createdAt || ts,
     updatedAt: ts,
   };
@@ -322,6 +334,95 @@ export function orderPeople(items, now = new Date()) {
     });
 }
 
+function seededRng(seed) {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return () => {
+    h += 0x6d2b79f5;
+    let t = h;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function shuffled(entries, seed) {
+  const out = entries.slice();
+  const random = seededRng(seed);
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
+function isParent(person) {
+  const name = String(person.name || '').trim().toLowerCase();
+  const relationship = String(person.relationship || '').trim().toLowerCase();
+  return ['mother', 'mom', 'mum', 'father', 'dad', 'parent', 'parents'].includes(name)
+    || /(^|\s)(mother|mom|mum|father|dad|parent)(\s|$)/.test(relationship);
+}
+
+function isSister(person) {
+  const name = String(person.name || '').trim().toLowerCase();
+  const relationship = String(person.relationship || '').trim().toLowerCase();
+  return name === 'sister' || name === 'sisters' || relationship.includes('sister');
+}
+
+function isBestFriend(person) {
+  return String(person.relationship || '').trim().toLowerCase() === 'best friend';
+}
+
+function longestUnchecked(entries) {
+  return entries.slice().sort((a, b) => {
+    const aLast = a.person.lastContactAt;
+    const bLast = b.person.lastContactAt;
+    if (aLast === bLast) return a.person.name.localeCompare(b.person.name);
+    if (!aLast) return 1;
+    if (!bLast) return -1;
+    return aLast < bLast ? -1 : 1;
+  });
+}
+
+/**
+ * Pick the small set shown first for an energy level. Random selections are
+ * stable for one local calendar day so a re-render never feels like a moving target.
+ */
+export function pickSuggestions(entries, energyId, now = new Date(), shuffle = 0) {
+  const level = getEnergyLevel(energyId);
+  const dateSeed = `${toISO(now)}|people|${level.id}|${shuffle}`;
+  const active = entries.filter((entry) => entry.state.id !== 'snoozed');
+
+  if (level.id === 'low') {
+    const eligible = longestUnchecked(active.filter((entry) => !isParent(entry.person)));
+    if (shuffle > 0 && eligible.length > level.people) {
+      const offset = (shuffle * level.people) % eligible.length;
+      return [...eligible.slice(offset), ...eligible.slice(0, offset)].slice(0, level.people);
+    }
+    return eligible.slice(0, level.people);
+  }
+
+  if (level.id === 'little') {
+    const picked = [];
+    const add = (entry) => {
+      if (entry && !picked.some((item) => item.person.id === entry.person.id)) picked.push(entry);
+    };
+    add(active.find((entry) => isSister(entry.person)));
+    add(shuffled(active.filter((entry) => isBestFriend(entry.person)), `${dateSeed}|best-friend`)[0]);
+    shuffled(active.filter((entry) => !picked.some((item) => item.person.id === entry.person.id)), dateSeed)
+      .some((entry) => {
+        add(entry);
+        return picked.length >= level.people;
+      });
+    return picked.slice(0, level.people);
+  }
+
+  return shuffled(active, dateSeed).slice(0, level.people);
+}
+
 /**
  * The full picture the page renders from, already split into the visible
  * list (filtered by energy) and the parked list.
@@ -332,27 +433,17 @@ export function orderPeople(items, now = new Date()) {
  *
  * @param {string} energyId
  * @param {Date} [now]
+ * @param {number} [shuffle] changes the stable daily selection on explicit request
  */
-export function getView(energyId, now = new Date()) {
+export function getView(energyId, now = new Date(), shuffle = 0) {
   const level = getEnergyLevel(energyId);
   const all = orderPeople(listPeople(), now);
   const parked = all.filter((e) => e.state.id === 'snoozed');
-  let active = all.filter((e) => e.state.id !== 'snoozed');
-  const total = active.length;
-
-  // Unlabelled people (energyCost null) are allowed everywhere.
-  active = active.filter((e) => e.person.energyCost === null || level.costs.includes(e.person.energyCost));
-
-  if (level.id === 'social') {
-    // Social today: the people who take the most are surfaced first, then the usual order.
-    active = [
-      ...active.filter((e) => e.person.energyCost === 'high'),
-      ...active.filter((e) => e.person.energyCost !== 'high'),
-    ];
-  }
-
-  if (Number.isFinite(level.people)) active = active.slice(0, level.people);
-  return { level, active, parked, hiddenByEnergy: total - active.length };
+  const available = all.filter((e) => e.state.id !== 'snoozed');
+  const active = pickSuggestions(available, level.id, now, shuffle);
+  const selectedIds = new Set(active.map((entry) => entry.person.id));
+  const rest = available.filter((entry) => !selectedIds.has(entry.person.id));
+  return { level, active, suggested: active, rest, parked, hiddenByEnergy: rest.length };
 }
 
 export function getEnergyLevel(id) {
@@ -434,7 +525,56 @@ export function removePerson(id) {
  * and that is the whole record of it. Nothing about what was said is kept.
  */
 export function markSaidHi(id, now = new Date()) {
-  return updatePerson(id, { lastContactAt: toISO(now), isSnoozedUntil: null });
+  const person = getPerson(id);
+  if (!person) return null;
+  const today = toISO(now);
+  const checkIns = cleanCheckIns([...(person.checkIns || []), today]);
+  return updatePerson(id, { lastContactAt: today, isSnoozedUntil: null, checkIns });
+}
+
+/** Dashboard-ready check-in totals. Only explicit "Said hi" taps appear here. */
+export function getCheckInSummary(now = new Date()) {
+  const today = startOfDay(now);
+  const weekStart = addDays(today, -((today.getDay() + 6) % 7));
+  const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+  const weekISO = toISO(weekStart);
+  const monthISO = toISO(monthStart);
+  const people = listPeople();
+  const events = [];
+
+  for (const person of people) {
+    for (const date of cleanCheckIns(person.checkIns)) {
+      events.push({ personId: person.id, name: person.name, date });
+    }
+  }
+  events.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : a.name.localeCompare(b.name)));
+
+  const thisWeek = events.filter((event) => event.date >= weekISO);
+  const thisMonth = events.filter((event) => event.date >= monthISO);
+  const perPerson = people
+    .map((person) => {
+      const checkIns = cleanCheckIns(person.checkIns);
+      return {
+        personId: person.id,
+        name: person.name,
+        relationship: person.relationship,
+        count: checkIns.length,
+        lastCheckIn: checkIns.length ? checkIns[checkIns.length - 1] : null,
+      };
+    })
+    .filter((entry) => entry.count > 0)
+    .sort((a, b) => b.count - a.count || String(b.lastCheckIn).localeCompare(String(a.lastCheckIn)) || a.name.localeCompare(b.name));
+
+  return {
+    total: events.length,
+    thisWeek: thisWeek.length,
+    thisMonth: thisMonth.length,
+    uniqueThisMonth: new Set(thisMonth.map((event) => event.personId)).size,
+    activeDaysThisMonth: new Set(thisMonth.map((event) => event.date)).size,
+    startedAt: events.length ? events[events.length - 1].date : null,
+    perPerson,
+    recent: events.slice(0, 12),
+  };
 }
 
 /**

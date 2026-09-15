@@ -78,22 +78,51 @@ function releaseScope(scope) {
   scopes.delete(scope);
 }
 
+/** Show a photo on `img` and hide the emoji placeholder. */
+function showPhoto(img, url, scope, revokeOnRelease = false) {
+  if (scope.released) {
+    if (revokeOnRelease) URL.revokeObjectURL(url);
+    return;
+  }
+  // Blob URLs resolve async — if the tile was already torn down, drop them.
+  // Static seed URLs are assigned synchronously *before* mount, so isConnected
+  // is still false; those must be allowed through.
+  if (revokeOnRelease && !img.isConnected) {
+    URL.revokeObjectURL(url);
+    return;
+  }
+  if (revokeOnRelease) scope.urls.add(url);
+  img.src = url;
+  img.hidden = false;
+  const placeholder = img.parentElement && img.parentElement.querySelector('.outfit-tile__emoji');
+  if (placeholder) placeholder.hidden = true;
+}
+
+/** Resolve a static seed photo against the site base (`/lovesite/`). */
+function staticPhotoUrl(src) {
+  if (!src) return null;
+  if (/^(?:https?:|data:|blob:)/i.test(src)) return src;
+  const base = import.meta.env.BASE_URL || '/';
+  return base + String(src).replace(/^\.\//, '');
+}
+
 /** Load an item's photo into `img` (or show the placeholder) inside `scope`. */
 function attachPhoto(img, item, scope) {
-  if (!item || !item.photoId) return;
-  store.getPhoto(item.photoId).then((blob) => {
-    if (!blob) return;
-    const url = URL.createObjectURL(blob);
-    if (scope.released || !img.isConnected) {
-      URL.revokeObjectURL(url);
-      return;
-    }
-    scope.urls.add(url);
-    img.src = url;
-    img.hidden = false;
-    const placeholder = img.parentElement && img.parentElement.querySelector('.outfit-tile__emoji');
-    if (placeholder) placeholder.hidden = true;
-  }).catch((err) => warn('photo load failed', err));
+  if (!item) return;
+  // Uploaded blob wins; seed items use a static photoSrc under ./outfits/.
+  if (item.photoId) {
+    store.getPhoto(item.photoId).then((blob) => {
+      if (!blob) {
+        const fallback = staticPhotoUrl(item.photoSrc);
+        if (fallback) showPhoto(img, fallback, scope);
+        return;
+      }
+      showPhoto(img, URL.createObjectURL(blob), scope, true);
+    }).catch((err) => warn('photo load failed', err));
+    return;
+  }
+  const url = staticPhotoUrl(item.photoSrc);
+  if (url) showPhoto(img, url, scope);
 }
 
 window.addEventListener('pagehide', () => { scopes.forEach(releaseScope); });
@@ -301,8 +330,12 @@ function locationLine() {
 function renderOccasions() {
   const m = mounts.occasions;
   if (!m) return;
+  const selected = store.OCCASION_OPTIONS.find((o) => o.id === occasion);
   mount(m, [
-    el('p', { class: 'outfit-occasions__label', id: 'occasionLabel', text: 'Today is…' }),
+    el('div', { class: 'outfit-occasions__heading' }, [
+      el('p', { class: 'outfit-occasions__label', id: 'occasionLabel', text: 'What kind of day is it?' }),
+      el('span', { class: 'outfit-occasions__selected', text: selected ? `${selected.emoji} ${selected.label}` : '' }),
+    ]),
     el('div', { class: 'outfit-occasions__row', role: 'group', 'aria-labelledby': 'occasionLabel' },
       store.OCCASION_OPTIONS.map((o) => el('button', {
         type: 'button',
@@ -322,6 +355,7 @@ function renderOccasions() {
         el('span', { 'aria-hidden': 'true', text: o.emoji }),
         el('span', { text: o.label }),
       ]))),
+    el('p', { class: 'outfit-occasions__hint', text: 'Choose the plan, then tap any clothing card to swap just that piece.' }),
   ]);
 }
 
@@ -373,6 +407,16 @@ function excludeIds() {
   return Array.from(new Set(recentPicks.flat()));
 }
 
+function combinationCount(wardrobe) {
+  const count = (category) => wardrobe.filter((item) => item.category === category && !item.archived).length;
+  const tops = count('tops');
+  const bottoms = count('bottoms');
+  const dresses = count('dresses');
+  const shoes = Math.max(1, count('shoes'));
+  const layerChoices = Math.max(1, count('jackets') + 1); // "+1" is no layer.
+  return ((tops * bottoms) + dresses) * shoes * layerChoices;
+}
+
 function renderOutfit() {
   const m = mounts.today;
   if (!m) return;
@@ -406,14 +450,25 @@ function renderOutfit() {
   if (sparse) store.updateSettings({ sparseNoteShown: true });
 
   mount(m, [
+    el('div', { class: 'outfit-today__heading' }, [
+      el('div', {}, [
+        el('p', { class: 'outfit-today__eyebrow', text: 'Picked from her closet' }),
+        el('h2', { class: 'outfit-today__title', text: 'Today’s look' }),
+      ]),
+      el('span', { class: 'outfit-look-number', text: `Look ${shuffleCount + 1}` }),
+    ]),
     el('p', { class: 'outfit-headline', text: reasons[0] || 'Here’s today.' }),
     el('ul', { class: 'outfit-collage', 'aria-label': 'Today’s pieces — tap one to swap it' }, tiles),
     reasons.length > 1 ? el('ul', { class: 'outfit-why', 'aria-label': 'Why these' }, reasons.slice(1).map((r) => el('li', { text: r }))) : null,
     warnings.length ? el('ul', { class: 'outfit-warnings' }, warnings.map((w) => el('li', { text: w }))) : null,
     el('div', { class: 'outfit-actions' }, [
-      el('button', { type: 'button', class: 'usm-btn usm-btn--primary', text: 'Give me another option', onclick: reshuffle }),
+      el('button', { type: 'button', class: 'usm-btn usm-btn--primary outfit-remix', text: '✨ Mix another look', onclick: reshuffle }),
       el('button', { type: 'button', class: 'usm-btn usm-btn--secondary', text: 'That’s what I wore', onclick: openWoreSheet }),
     ]),
+    el('p', {
+      class: 'outfit-combo-note',
+      text: `${wardrobe.length} pieces · about ${combinationCount(wardrobe).toLocaleString()} core combinations before weather and occasion`,
+    }),
     sparse ? el('p', { class: 'outfit-sparse', text: SPARSE_CLOSET_LINE }) : null,
   ]);
 }
@@ -809,11 +864,12 @@ function openItemSheet(id) {
   const occasionBoxes = store.OCCASION_OPTIONS.map((o) => checkChip(`occ-${o.id}`, o.label, (existing?.occasions || []).includes(o.id)));
 
   // Photo
+  const hasPhoto = Boolean(existing?.photoId || existing?.photoSrc);
   const previewImg = el('img', { class: 'outfit-form__preview-img', alt: '', hidden: true });
   const previewEmoji = el('span', { class: 'outfit-tile__emoji', 'aria-hidden': 'true', text: categoryEmoji(existing?.category || 'tops') });
   const fileInput = el('input', { type: 'file', accept: 'image/*', capture: 'environment', class: 'sr-only', id: 'itemPhoto', tabindex: '-1' });
-  const photoBtn = el('button', { type: 'button', class: 'usm-btn usm-btn--secondary', text: existing?.photoId ? 'Replace photo' : 'Add a photo', onclick: () => fileInput.click() });
-  const photoRemove = el('button', { type: 'button', class: 'usm-btn usm-btn--ghost', text: 'Remove photo', hidden: !(existing?.photoId), onclick: () => {
+  const photoBtn = el('button', { type: 'button', class: 'usm-btn usm-btn--secondary', text: hasPhoto ? 'Replace photo' : 'Add a photo', onclick: () => fileInput.click() });
+  const photoRemove = el('button', { type: 'button', class: 'usm-btn usm-btn--ghost', text: 'Remove photo', hidden: !hasPhoto, onclick: () => {
     pendingPhoto = null;
     removePhoto = true;
     previewImg.hidden = true;
@@ -836,7 +892,7 @@ function openItemSheet(id) {
     photoRemove.hidden = false;
     photoBtn.textContent = 'Replace photo';
   });
-  if (existing?.photoId) attachPhoto(previewImg, existing, previewScope);
+  if (hasPhoto) attachPhoto(previewImg, existing, previewScope);
 
   const warmthField = el('div', { class: 'usm-field', id: 'warmthField' }, [
     el('label', { class: 'usm-field__label', for: 'itemWarmth', text: 'How warm is it?' }),
@@ -880,8 +936,14 @@ function openItemSheet(id) {
     }
     save.disabled = true;
     try {
-      if (removePhoto && existing?.photoId) await store.removePhoto(item.id);
-      if (pendingPhoto) await store.setPhoto(item.id, pendingPhoto);
+      if (removePhoto) {
+        if (existing?.photoId) await store.removePhoto(item.id);
+        if (existing?.photoSrc) store.updateItem(item.id, { photoSrc: null });
+      }
+      if (pendingPhoto) {
+        const photoId = await store.setPhoto(item.id, pendingPhoto);
+        if (!photoId) showToast('Saved the item, but the photo could not be stored on this device.', { sticky: true });
+      }
     } catch (err) {
       warn('photo save failed', err);
       showToast('Saved the item, but that photo couldn’t be read. Try another.', { sticky: true });

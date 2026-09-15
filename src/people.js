@@ -54,6 +54,7 @@ let animateRows = true;         // rows animate in on first paint only; later re
 let editingId = null;           // person currently open in the form, or null for "add"
 let templateFor = '';           // person id selected in the Messages section ('' = nobody)
 let lowHelloIndex = -1;         // cycles through the "Very low energy" lines
+let suggestionShuffle = 0;      // explicit shuffle only; daily defaults stay stable
 
 let mounts = {};
 
@@ -261,8 +262,16 @@ function setEnergy(id) {
   // A view filter for right now. Written to sessionStorage as one string,
   // never to localStorage, never as a history. Nothing about a person changes.
   energy = store.setEnergy(id);
+  suggestionShuffle = 0;
   renderEnergy();
   renderList();
+}
+
+function shuffleSuggestions() {
+  suggestionShuffle += 1;
+  renderList();
+  requestAnimationFrame(() => mounts.list.querySelector('.people-shuffle')?.focus({ preventScroll: true }));
+  announce('Here are a few different people.');
 }
 
 /* ─────────────────────────────── people list ─────────────────────────────── */
@@ -302,7 +311,6 @@ function renderRow({ person, state }, index, { level, parked = false }) {
 
   const saidHi = el('button', { type: 'button', class: 'usm-btn usm-btn--secondary person-row__btn', text: 'Said hi', onclick: () => onSaidHi(person) });
   const snooze = el('button', { type: 'button', class: 'usm-btn usm-btn--secondary person-row__btn', text: 'Snooze', 'aria-haspopup': 'dialog', onclick: () => openSnooze(person) });
-
   const actions = el('div', { class: isLow ? 'person-row__actions is-low' : 'person-row__actions' });
   if (isLow) {
     const quick = el('button', {
@@ -336,37 +344,10 @@ function renderRow({ person, state }, index, { level, parked = false }) {
   return row;
 }
 
-function categoryRank(relationship) {
-  const i = store.PEOPLE_CATEGORIES.indexOf(relationship);
-  return i === -1 ? store.PEOPLE_CATEGORIES.length : i;
-}
-
-function renderGroupedList(entries, level) {
-  const groups = new Map();
-  for (const entry of entries) {
-    const key = entry.person.relationship || 'Others';
-    if (!groups.has(key)) groups.set(key, []);
-    groups.get(key).push(entry);
-  }
-  const keys = [...groups.keys()].sort((a, b) => {
-    const d = categoryRank(a) - categoryRank(b);
-    return d !== 0 ? d : a.localeCompare(b);
-  });
-
-  const wrap = el('div', { class: 'people-groups' });
-  let i = 0;
-  for (const key of keys) {
-    const list = el('ul', { class: 'people-list' });
-    groups.get(key).forEach((entry) => {
-      list.appendChild(renderRow(entry, i, { level }));
-      i += 1;
-    });
-    wrap.appendChild(el('section', { class: 'people-group', 'aria-label': key }, [
-      el('h2', { class: 'people-group__title', text: key }),
-      list,
-    ]));
-  }
-  return wrap;
+function renderPeopleList(entries, level, { focus = false } = {}) {
+  const list = el('ul', { class: focus ? 'people-list people-list--focus' : 'people-list' });
+  entries.forEach((entry, index) => list.appendChild(renderRow(entry, index, { level })));
+  return list;
 }
 
 function renderEmptyState() {
@@ -380,8 +361,8 @@ function renderEmptyState() {
 
 function renderList() {
   const wrap = mounts.list;
-  const view = store.getView(energy);
-  const total = view.active.length + view.parked.length + view.hiddenByEnergy;
+  const view = store.getView(energy, new Date(), suggestionShuffle);
+  const total = view.active.length + view.rest.length + view.parked.length;
 
   if (total === 0) {
     wrap.replaceChildren(renderEmptyState());
@@ -394,25 +375,33 @@ function renderList() {
   mounts.addWrap.hidden = false;
 
   const children = [];
-  children.push(el('p', { class: 'people-line', text: view.level.line }));
+  children.push(el('div', { class: 'people-suggestion-head' }, [
+    el('p', { class: 'people-line', text: view.level.line }),
+    el('button', {
+      type: 'button',
+      class: 'usm-btn usm-btn--ghost people-shuffle',
+      text: 'Shuffle',
+      'aria-label': `Shuffle ${view.level.label.toLowerCase()} energy suggestions`,
+      disabled: view.rest.length === 0,
+      onclick: shuffleSuggestions,
+    }),
+  ]));
+  const focus = view.active;
 
-  if (view.active.length === 0) {
+  if (focus.length === 0) {
     children.push(el('p', { class: 'people-quiet', text: view.hiddenByEnergy > 0
       ? 'Nobody easy to reach in this list right now, and that’s fine.'
       : 'Everyone’s parked for now. Enjoy the quiet.' }));
   } else {
-    children.push(renderGroupedList(view.active, view.level));
+    children.push(renderPeopleList(focus, view.level, { focus: true }));
   }
 
-  if (view.hiddenByEnergy > 0) {
-    // The rest of the list, folded away rather than gone. No count on purpose.
-    const full = store.getView('normal');
-    const shownIds = new Set(view.active.map((e) => e.person.id));
-    const rest = full.active.filter((e) => !shownIds.has(e.person.id));
+  const rest = view.rest;
+  if (rest.length > 0) {
     const list = el('ul', { class: 'people-list' });
     rest.forEach((entry, i) => list.appendChild(renderRow(entry, i, { level: view.level })));
     children.push(el('details', { class: 'people-fold' }, [
-      el('summary', { class: 'people-fold__summary', text: 'Everyone else' }),
+      el('summary', { class: 'people-fold__summary', text: `Everyone else (${rest.length})` }),
       list,
     ]));
   }

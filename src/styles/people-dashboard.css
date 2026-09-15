@@ -1,0 +1,222 @@
+.people-dashboard-page {
+  width: min(760px, 100%);
+  min-height: 70vh;
+  margin: 0 auto;
+  padding: clamp(1.25rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem);
+  text-align: left;
+}
+
+.people-dashboard-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.people-dashboard-header .usm-btn {
+  flex: 0 0 auto;
+}
+
+.people-dashboard-header h1 {
+  color: var(--pink-deep);
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  line-height: 1.1;
+}
+
+.people-dashboard-header p {
+  margin-top: var(--space-1);
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 3vw, 1.3rem);
+  color: var(--pink-hot);
+}
+
+.people-dashboard-intro {
+  margin-bottom: var(--space-3);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--pink-deep);
+}
+
+.people-dashboard-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.usm-card.people-dashboard-metric {
+  padding: var(--space-4);
+  box-shadow: none;
+  border: 1px solid var(--border-subtle);
+}
+
+.people-dashboard-metric__label {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.people-dashboard-metric__value {
+  margin-top: var(--space-1);
+  color: var(--pink-deep);
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+.people-dashboard-metric__note,
+.people-dashboard-hint,
+.people-dashboard-person__meta {
+  margin-top: var(--space-1);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+#dashboardPeople,
+#dashboardRecent,
+#dashboardRewards {
+  margin-top: var(--space-6);
+}
+
+.people-dashboard-title {
+  color: var(--pink-deep);
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+}
+
+.people-dashboard-person-list,
+.people-dashboard-recent-list {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  list-style: none;
+}
+
+.people-dashboard-person {
+  padding: var(--space-3) var(--space-4);
+}
+
+.people-dashboard-person__top,
+.people-dashboard-recent-list li,
+.people-dashboard-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.people-dashboard-person__name {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.people-dashboard-person__count {
+  flex: 0 0 auto;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.people-dashboard-person__track {
+  height: 4px;
+  margin-top: var(--space-2);
+  overflow: hidden;
+  border-radius: 99px;
+  background: var(--surface-sunken);
+}
+
+.people-dashboard-person__track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--pink-light);
+}
+
+.people-dashboard-recent > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--pink-deep);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.people-dashboard-recent-list li {
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+}
+
+.people-dashboard-recent-list li span:last-child {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.people-rewards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.usm-card.people-reward-card {
+  padding: var(--space-4);
+  box-shadow: none;
+  border: 1px dashed var(--border-subtle);
+  opacity: 0.82;
+}
+
+.people-reward-card h3 {
+  margin-top: var(--space-2);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+}
+
+.people-reward-card p {
+  margin-top: var(--space-1);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.people-dashboard-empty {
+  padding: var(--space-7) var(--space-4);
+}
+
+.people-dashboard-empty__title {
+  margin-bottom: var(--space-2);
+  color: var(--pink-deep);
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+}
+
+.people-dashboard-empty .usm-btn {
+  margin-top: var(--space-4);
+}
+
+.people-dashboard-note {
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .people-dashboard-page {
+    padding-bottom: calc(var(--space-7) + 72px);
+  }
+
+  .people-dashboard-header {
+    flex-direction: column;
+  }
+
+  .people-dashboard-metrics,
+  .people-rewards-grid {
+    grid-template-columns: 1fr;
+  }
+}

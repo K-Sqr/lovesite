@@ -587,8 +587,11 @@ export function createBlobStore(name) {
 
   async function put(id, blob) {
     try {
+      // Remove an older fallback copy first so its presence after `run`
+      // unambiguously means this write did not reach IndexedDB.
+      fallback.delete(id);
       await run('readwrite', (store) => (store ? store.put(blob, id) : void useFallback().set(id, blob)));
-      return true;
+      return !fallback.has(id);
     } catch (err) {
       warn('blob put failed; keeping in memory', err);
       useFallback().set(id, blob);

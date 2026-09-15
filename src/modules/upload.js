@@ -1,4 +1,4 @@
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, storage } from './firebase.js';
 import { ensureAuthenticated } from './auth.js';
@@ -57,6 +57,9 @@ export async function uploadMemory(file, caption, onProgress) {
           });
           resolve({ id: doc.id, url: downloadURL, caption });
         } catch (err) {
+          // The binary landed before its Firestore record. Roll it back so a
+          // failed save never leaves an unreachable file consuming storage.
+          await deleteObject(task.snapshot.ref).catch(() => {});
           reject(err);
         }
       }

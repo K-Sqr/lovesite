@@ -1,7 +1,7 @@
 /**
  * wardrobeStore.js — her closet, kept on this device (10-OUTFIT R5/R6/R7/R13/R14).
  *
- *   Metadata  → createStore('wardrobe', { version: 1 })     localStorage key usm.wardrobe.v1
+ *   Metadata  → createStore('wardrobe', { version: 5 })     localStorage key usm.wardrobe.v5
  *   Photos    → createBlobStore('wardrobe-photos')           IndexedDB, keyed by photoId
  *
  * Photos never go in localStorage (5 MB quota, base64 inflation, and a thrown
@@ -15,7 +15,8 @@
  * Item shape (WardrobeItem):
  *   { id: 'itm_…', name, category, colour, style, warmth (1-5 | null),
  *     season: [], formality (1-5 | null), occasions: [], waterproof,
- *     photoId (| null), notes, lastWornAt (date-only ISO | null), archived,
+ *     photoId (| null), photoSrc (| null — static seed URL under ./outfits/),
+ *     notes, lastWornAt (date-only ISO | null), archived,
  *     createdAt, updatedAt }
  * A name and a category is a complete, valid item.
  *
@@ -29,6 +30,7 @@
 
 import { createStore, createBlobStore } from './storage.js';
 import { toISO, addDays, parseISO } from './dates.js';
+import { wardrobeSeed } from '../data/wardrobeSeed.js';
 
 /** The only console output in this file. Never pass it an item. */
 function warn(message, err) {
@@ -86,7 +88,12 @@ export const OCCASION_OPTIONS = [
   { id: 'class',     label: 'Class',     emoji: '\u{1F4DA}' }, // 📚
   { id: 'work',      label: 'Work',      emoji: '\u{1F4BC}' }, // 💼
   { id: 'church',    label: 'Church',    emoji: '\u{26EA}' },  // ⛪
-  { id: 'date',      label: 'Date',      emoji: '\u{1F495}' }, // 💕
+  { id: 'date',      label: 'Date out',  emoji: '\u{1F495}' }, // 💕
+  { id: 'online-date', label: 'FaceTime date', emoji: '\u{1F4F1}' }, // 📱
+  { id: 'brunch',    label: 'Brunch',    emoji: '\u{1F950}' }, // 🥐
+  { id: 'hangout',   label: 'Hangout',   emoji: '\u{1F46F}' }, // 👯
+  { id: 'study',     label: 'Study day', emoji: '\u{1F4DD}' }, // 📝
+  { id: 'dinner',    label: 'Dinner',    emoji: '\u{1F37D}\u{FE0F}' }, // 🍽️
   { id: 'gym',       label: 'Gym',       emoji: '\u{1F3CB}\u{FE0F}' }, // 🏋️
   { id: 'errands',   label: 'Errands',   emoji: '\u{1F6D2}' }, // 🛒
   { id: 'event',     label: 'Event',     emoji: '\u{1F389}' }, // 🎉
@@ -109,19 +116,73 @@ export function categoryLabel(id) {
 
 /* ─────────────────────────────── stores ─────────────────────────────── */
 
-const INITIAL = { items: [], settings: { sparseNoteShown: false, morningReminder: false } };
+const INITIAL_SETTINGS = { sparseNoteShown: false, morningReminder: false };
 
-const store = createStore('wardrobe', { version: 1, initial: INITIAL });
+/** Stable starter records so a re-seed never duplicates or reshuffles ids. */
+function seededItems() {
+  const ts = '2026-09-14T00:00:00.000Z';
+  return wardrobeSeed.map((row) => ({
+    id: `itm_seed_${row.slug}`,
+    name: row.name,
+    category: row.category,
+    colour: row.colour || '',
+    style: row.style || '',
+    warmth: row.warmth ?? null,
+    season: Array.isArray(row.season) ? row.season : [],
+    formality: row.formality ?? null,
+    occasions: Array.isArray(row.occasions) ? row.occasions : [],
+    waterproof: Boolean(row.waterproof),
+    photoId: null,
+    photoSrc: row.photoSrc || null,
+    notes: row.notes || '',
+    lastWornAt: null,
+    archived: false,
+    createdAt: ts,
+    updatedAt: ts,
+  }));
+}
+
+function mergeById(existing, seeded) {
+  const byId = new Map(seeded.map((item) => [item.id, item]));
+  // Refresh additive seed metadata while preserving edits to names and details.
+  const refreshed = existing.map((item) => {
+    if (!item || !item.id || !String(item.id).startsWith('itm_seed_')) return item;
+    const fresh = byId.get(item.id);
+    if (!fresh) return item;
+    return {
+      ...item,
+      photoSrc: item.photoSrc || fresh.photoSrc || null,
+      occasions: Array.from(new Set([...(item.occasions || []), ...(fresh.occasions || [])])),
+    };
+  });
+  const have = new Set(refreshed.map((item) => item && item.id).filter(Boolean));
+  const extra = seeded.filter((item) => !have.has(item.id));
+  return extra.length === 0 ? refreshed : [...refreshed, ...extra];
+}
+
+const INITIAL = { items: seededItems(), settings: { ...INITIAL_SETTINGS } };
+
+const store = createStore('wardrobe', {
+  version: 5,
+  initial: INITIAL,
+  migrate(oldData) {
+    const existing = Array.isArray(oldData?.items) ? oldData.items : [];
+    return {
+      items: mergeById(existing, seededItems()),
+      settings: { ...INITIAL_SETTINGS, ...(oldData?.settings || {}) },
+    };
+  },
+});
 const photos = createBlobStore('wardrobe-photos');
 
 export const STORE_NAME = store.name;
 
 function readState() {
   const data = store.read();
-  if (!data || typeof data !== 'object') return { items: [], settings: { ...INITIAL.settings } };
+  if (!data || typeof data !== 'object') return { items: [], settings: { ...INITIAL_SETTINGS } };
   return {
     items: Array.isArray(data.items) ? data.items : [],
-    settings: { ...INITIAL.settings, ...(data.settings || {}) },
+    settings: { ...INITIAL_SETTINGS, ...(data.settings || {}) },
   };
 }
 
@@ -186,6 +247,9 @@ export function normaliseItem(input, existing = null) {
     occasions: cleanList(input.occasions, OCCASION_OPTIONS.map((o) => o.id)),
     waterproof: WATERPROOF_CATEGORIES.includes(category) ? Boolean(input.waterproof) : false,
     photoId: input.photoId === undefined ? (existing?.photoId ?? null) : (input.photoId || null),
+    photoSrc: input.photoSrc === undefined
+      ? (existing?.photoSrc ?? null)
+      : (cleanText(input.photoSrc, 200) || null),
     notes: cleanText(input.notes, 300),
     lastWornAt: input.lastWornAt === undefined ? (existing?.lastWornAt ?? null) : cleanDate(input.lastWornAt),
     archived: input.archived === undefined ? Boolean(existing?.archived) : Boolean(input.archived),
@@ -341,8 +405,11 @@ export async function setPhoto(id, file) {
   const blob = await compressImage(file);
   const photoId = id; // photoId is the item id — one photo per item
   const persisted = await photos.put(photoId, blob);
+  if (!persisted) {
+    warn('photo could not be stored beyond this session');
+    return null;
+  }
   updateItem(id, { photoId });
-  if (!persisted) warn('photo kept in memory only for this session');
   return photoId;
 }
 
@@ -387,7 +454,7 @@ export function importJSON(json) {
   for (const raw of items) {
     try { clean.push(normaliseItem(raw, raw)); } catch { /* skip */ }
   }
-  writeState({ items: clean, settings: { ...INITIAL.settings, ...(data?.settings || {}) } });
+  writeState({ items: clean, settings: { ...INITIAL_SETTINGS, ...(data?.settings || {}) } });
   return clean.length;
 }
 

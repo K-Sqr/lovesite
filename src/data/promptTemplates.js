@@ -17,7 +17,7 @@
  * missing half leaves just the other one.
  *
  * She can edit any body from the page ("Edit this template"); those edits are
- * stored as `templateOverrides` in usm.materials.v1. This file is the default.
+ * stored as `templateOverrides` in usm.materials.v2. This file is the default.
  */
 
 /** Which material kinds are pre-checked when a template is picked. */

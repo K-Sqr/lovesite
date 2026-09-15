@@ -47,6 +47,15 @@ import { parseISO, daysBetween } from './dates.js';
    ═══════════════════════════════════════════════════════════════════════════ */
 
 const HEADLINES = {
+  home: [
+    'Staying in: {main}. Soft, easy, done.',
+    'Home mode. {main} and no overthinking it.',
+  ],
+  onlineDate: [
+    'FaceTime date tonight: {main}. Comfortable, cute, camera-ready.',
+    'Online date pick: {main}. No outside clothes required.',
+    'For seeing each other through a screen: {main}. Cozy still counts.',
+  ],
   // feels ≤ −20 — the hard-exclusion band
   extremeCold: [
     "It's {feels} with the wind, so: {layer}, {main}, and {shoes}. Not the day for the nice shoes.",
@@ -116,6 +125,11 @@ const RULE_LINES = {
     church:    'Church, so {main}.',
     event:     "It's an event, so {main} — the good stuff.",
     date:      'Date, so {main}. You know what you’re doing.',
+    'online-date': 'FaceTime date: {main}. Cute, comfortable, and no outside shoes required.',
+    brunch:    'Brunch, so {main} — easy, bright, and ready for pictures.',
+    hangout:   'A hangout day: {main}. Relaxed, but still put together.',
+    study:     'Study day, so {main}. Comfortable enough to stay focused.',
+    dinner:    'Dinner plans, so {main} — a little more dressed up.',
     gym:       'Gym: {main} and {shoes}. Nobody there cares, that’s the point.',
     home:      'Home day. {main} — comfort wins.',
     travel:    'Travel, so {main} — things you can sit in for hours.',
@@ -130,7 +144,10 @@ const RULE_LINES = {
 
 /* ────────────────────────────── vocab & scales ────────────────────────────── */
 
-export const OCCASIONS = ['home', 'class', 'work', 'church', 'date', 'gym', 'errands', 'event', 'travel', 'interview'];
+export const OCCASIONS = [
+  'home', 'class', 'work', 'church', 'date', 'online-date', 'brunch',
+  'hangout', 'study', 'dinner', 'gym', 'errands', 'event', 'travel', 'interview',
+];
 export const SEASONS = ['spring', 'summer', 'autumn', 'winter'];
 
 /** Slots → categories. Accessories are the three optional categories. */
@@ -146,11 +163,16 @@ export const SLOT_CATEGORIES = {
 /** Occasion → { target formality, hard floor }. Floor 1 = no floor. */
 const OCCASION_FORMALITY = {
   home:      { target: 1,   floor: 1 },
+  'online-date': { target: 1.5, floor: 1 },
   gym:       { target: 1.5, floor: 1 },
   errands:   { target: 2,   floor: 1 },
+  study:     { target: 2,   floor: 1 },
+  hangout:   { target: 2.5, floor: 1 },
   travel:    { target: 2,   floor: 1 },
   class:     { target: 2.5, floor: 1 },
+  brunch:    { target: 3,   floor: 1 },
   date:      { target: 3.5, floor: 1 },
+  dinner:    { target: 4,   floor: 2 },
   work:      { target: 4,   floor: 2 },  // never formality 1
   church:    { target: 4,   floor: 2 },  // never formality 1
   event:     { target: 4.5, floor: 2 },  // never formality 1
@@ -174,6 +196,15 @@ const W = {
   recency: 0.4,
   exclude: 5,
   jitter: 0.6,
+};
+
+/** Older broad tags still count for newer, more specific occasions. */
+const OCCASION_AFFINITIES = {
+  brunch: ['date', 'church', 'class'],
+  dinner: ['date', 'event', 'church'],
+  hangout: ['class', 'errands', 'date'],
+  study: ['class', 'home'],
+  'online-date': ['home'],
 };
 
 /* ────────────────────────────── small helpers ────────────────────────────── */
@@ -301,6 +332,8 @@ function buildContext({ weather, occasion, date, exclude = [], rng = Math.random
 
   const occ = OCCASIONS.includes(occasion) ? occasion : null;
   const formality = occ ? OCCASION_FORMALITY[occ] : { target: 2.5, floor: 1 };
+  const indoors = occ === 'home' || occ === 'online-date';
+  const outfitFeels = indoors ? 21 : effectiveFeels;
 
   return {
     season,
@@ -308,19 +341,20 @@ function buildContext({ weather, occasion, date, exclude = [], rng = Math.random
     feels,
     tempC,
     effectiveFeels,
-    target: targetWarmth(effectiveFeels),
+    target: targetWarmth(outfitFeels),
     band: bandFor(feels),
     condition,
     windKph,
     precipChance,
-    wet,
-    snowy,
-    windy,
-    extreme,
-    hot,
-    // a layer is required in the cold, in rain, in wind; merely welcome up to ~19°
-    needLayer: effectiveFeels < 14 || wet || windy,
-    wantLayer: effectiveFeels < 19,
+    wet: indoors ? false : wet,
+    snowy: indoors ? false : snowy,
+    windy: indoors ? false : windy,
+    extreme: indoors ? false : extreme,
+    hot: indoors ? false : hot,
+    indoors,
+    // Indoor modes deliberately ignore the forecast.
+    needLayer: !indoors && (effectiveFeels < 14 || wet || windy),
+    wantLayer: !indoors && effectiveFeels < 19,
     occasion: occ,
     formality,
     date: date instanceof Date ? date : parseISO(String(date)),
@@ -370,8 +404,16 @@ function scoreItem(item, slot, ctx) {
 
   // Occasion tags. [] = any.
   if (ctx.occasion && Array.isArray(item.occasions) && item.occasions.length > 0) {
-    score += item.occasions.includes(ctx.occasion) ? W.occasion : -W.occasion * 0.8;
+    const related = OCCASION_AFFINITIES[ctx.occasion] || [];
+    const exact = item.occasions.includes(ctx.occasion);
+    const adjacent = related.some((tag) => item.occasions.includes(tag));
+    score += exact ? W.occasion * 1.5 : adjacent ? W.occasion * 0.65 : -W.occasion * 0.8;
   }
+
+  const styleText = `${item.name || ''} ${item.style || ''} ${item.notes || ''}`.toLowerCase();
+  const nightwear = /night|sleep|top\s*&\s*shorts/.test(styleText);
+  if (ctx.occasion === 'online-date') score += nightwear ? 8 : 0;
+  else if (nightwear && ctx.occasion !== 'home') score -= 6;
 
   // 3. Condition needs.
   if (slot === 'shoes') {
@@ -438,6 +480,38 @@ function rankCandidates(wardrobe, slot, categories, ctx) {
   return { ranked, fallbackKey };
 }
 
+/** Rotate among choices that are close enough to the best one to still make sense. */
+function chooseNearBest(ranked, rng, { limit = 6, tolerance = 2.4 } = {}) {
+  if (!ranked.length) return null;
+  const usable = ranked.filter((row) => row.eligible).slice(0, limit);
+  if (!usable.length) return ranked[0];
+  const pool = usable.filter((row) => usable[0].score - row.score <= tolerance);
+  if (pool.length <= 1) return pool[0] || ranked[0];
+  // Bias toward the strongest choices without making the first one inevitable.
+  return pool[Math.floor(Math.pow(rng(), 1.45) * pool.length)];
+}
+
+function words(value) {
+  return new Set(String(value || '').toLowerCase().split(/[^a-z]+/).filter((word) => word.length > 2));
+}
+
+/** A small coordination bonus; weather and occasion still dominate. */
+function pairCompatibility(top, bottom) {
+  const topStyle = String(top.style || '').toLowerCase();
+  const bottomStyle = String(bottom.style || '').toLowerCase();
+  const topColour = String(top.colour || '').toLowerCase();
+  const bottomColour = String(bottom.colour || '').toLowerCase();
+  if (topStyle.includes('matching set') && bottomStyle.includes('matching set') && topColour === bottomColour) return 4;
+
+  let score = 0;
+  const sharedColours = [...words(topColour)].filter((colour) => words(bottomColour).has(colour));
+  if (sharedColours.length) score += 0.75;
+  const neutral = /black|white|beige|brown|cream|grey|gray/;
+  if (neutral.test(topColour) || neutral.test(bottomColour)) score += 0.35;
+  if (topStyle.includes('net') && bottomStyle.includes('net') && topColour === bottomColour) score += 2.5;
+  return score;
+}
+
 /* ─────────────────────────────── public API ─────────────────────────────── */
 
 /**
@@ -460,31 +534,51 @@ export function suggestOutfit({ wardrobe, weather, occasion = null, date, exclud
   const ctx = buildContext({ weather, occasion, date, exclude, rng });
   const fallbacks = new Set();
 
-  const pick = (slot) => {
+  const rank = (slot) => {
     const { ranked, fallbackKey } = rankCandidates(wardrobe, slot, SLOT_CATEGORIES[slot], ctx);
     if (fallbackKey) fallbacks.add(fallbackKey);
-    return ranked[0] || null;
+    return ranked;
   };
 
-  const top = pick('top');
-  const bottom = pick('bottom');
-  const dress = pick('dress');
-  const shoes = pick('shoes');
+  const topRanked = rank('top');
+  const bottomRanked = rank('bottom');
+  const dress = chooseNearBest(rank('dress'), ctx.rng);
+  const shoes = chooseNearBest(rank('shoes'), ctx.rng);
+
+  // Score coordinated top + bottom combinations instead of choosing each half
+  // independently. This unlocks many more sensible looks from the same closet.
+  const pairOptions = [];
+  for (const top of topRanked.filter((row) => row.eligible).slice(0, 8)) {
+    for (const bottom of bottomRanked.filter((row) => row.eligible).slice(0, 8)) {
+      pairOptions.push({
+        top,
+        bottom,
+        score: (top.score + bottom.score) / 2 + pairCompatibility(top.item, bottom.item),
+        eligible: true,
+      });
+    }
+  }
+  pairOptions.sort((a, b) => b.score - a.score);
+  const pair = chooseNearBest(pairOptions, ctx.rng, { limit: 12, tolerance: 2.8 });
+  const top = pair?.top || chooseNearBest(topRanked, ctx.rng);
+  const bottom = pair?.bottom || chooseNearBest(bottomRanked, ctx.rng);
 
   // Dress, or top + bottom. Compare the best of each; near-ties go to rng.
   let useDress = false;
   if (dress && (!top || !bottom)) useDress = true;
   else if (dress && top && bottom) {
-    const pairScore = (top.score + bottom.score) / 2;
+    const pairScore = pair?.score ?? (top.score + bottom.score) / 2;
     const diff = dress.score - pairScore;
-    useDress = Math.abs(diff) < 0.75 ? ctx.rng() < 0.5 : diff > 0;
+    useDress = ctx.occasion === 'online-date' && dress.score >= pairScore - 1
+      ? true
+      : Math.abs(diff) < 1.25 ? ctx.rng() < 0.5 : diff > 0;
   }
 
   // Layer: required in the cold / wet / wind, welcome up to ~19°, otherwise none.
   let layer = null;
   if (ctx.needLayer || ctx.wantLayer) {
     const { ranked, fallbackKey } = rankCandidates(wardrobe, 'layer', SLOT_CATEGORIES.layer, ctx);
-    layer = ranked[0] || null;
+    layer = chooseNearBest(ranked, ctx.rng);
     // When a layer is merely optional and the best one scores badly (too warm), skip it.
     if (layer && !ctx.needLayer && layer.score < -W.warmth) layer = null;
     if (fallbackKey && ctx.needLayer) fallbacks.add(fallbackKey);
@@ -495,7 +589,7 @@ export function suggestOutfit({ wardrobe, weather, occasion = null, date, exclud
   for (const cat of SLOT_CATEGORIES.accessories) {
     if (cat === 'jewellery' && ctx.occasion === 'gym') continue;
     const { ranked, fallbackKey } = rankCandidates(wardrobe, 'accessories', [cat], ctx);
-    const best = ranked[0];
+    const best = chooseNearBest(ranked, ctx.rng, { limit: 4, tolerance: 1.5 });
     // Omit silently when nothing fits the day; an accessories row is never a nag.
     if (best && !fallbackKey && best.note === null && best.score > -2) accessories.push(best.item);
   }
@@ -504,7 +598,7 @@ export function suggestOutfit({ wardrobe, weather, occasion = null, date, exclud
     top: useDress ? null : (top ? top.item : null),
     bottom: useDress ? null : (bottom ? bottom.item : null),
     dress: useDress ? dress.item : null,
-    shoes: shoes ? shoes.item : null,
+    shoes: ctx.indoors ? null : (shoes ? shoes.item : null),
     layer: layer ? layer.item : null,
     accessories,
   };
@@ -552,8 +646,13 @@ function explain(picks, ctx, fallbacks) {
     return { reasons, warnings };
   }
 
-  // 1. The headline — always cites the real temperature or condition.
-  const headline = chooseTemplate(HEADLINES[ctx.band], slots, ctx.rng)
+  // 1. Indoor occasions lead with the plan; outdoor ones lead with weather.
+  const headlineTemplates = ctx.occasion === 'online-date'
+    ? HEADLINES.onlineDate
+    : ctx.occasion === 'home'
+      ? HEADLINES.home
+      : HEADLINES[ctx.band];
+  const headline = chooseTemplate(headlineTemplates, slots, ctx.rng)
     || (feelsText ? fill('{feels} and {cond}. {pieces}.', slots) : fill("Going by {season}: {pieces}.", slots));
   reasons.push(headline);
 
@@ -593,7 +692,7 @@ function explain(picks, ctx, fallbacks) {
   }
 
   // 3. Occasion.
-  if (ctx.occasion && RULE_LINES.occasion[ctx.occasion] && slots.main) {
+  if (!ctx.indoors && ctx.occasion && RULE_LINES.occasion[ctx.occasion] && slots.main) {
     const line = RULE_LINES.occasion[ctx.occasion];
     if (placeholdersOf(line).every((k) => slots[k])) reasons.push(fill(line, slots));
   }

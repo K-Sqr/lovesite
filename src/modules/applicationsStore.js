@@ -5,13 +5,18 @@
  * reminder seam. `src/applications.js` renders and wires events; it never
  * touches localStorage and never imports storage.js directly.
  *
- *   createStore('applications', { version: 1 })  →  usm.applications.v1
- *   createStore('materials',    { version: 1 })  →  usm.materials.v1
+ *   createStore('applications', { version: 2 })  →  usm.applications.v2
+ *   createStore('materials',    { version: 2 })  →  usm.materials.v2
+ *
+ * v2 adds starter records from src/data/applicationsSeed.js (resumes, cover
+ * letters, and a few applications she has already worked on) so the first
+ * visit is not empty. A later seed merge recognises `mat_seed_` / `app_seed_`
+ * ids and will not duplicate them.
  *
  * On disk both are `{ v, updatedAt, data }` envelopes (storage.js does that).
  *
- *   usm.applications.v1.data = { items: Application[] }
- *   usm.materials.v1.data    = { items: Material[], templateOverrides: { [templateId]: body } }
+ *   usm.applications.v2.data = { items: Application[] }
+ *   usm.materials.v2.data    = { items: Material[], templateOverrides: { [templateId]: body } }
  *
  * Application (17 fields):
  *   { id, organization, position, url, jobDescription,
@@ -57,6 +62,7 @@
 
 import { createStore } from './storage.js';
 import { parseISO, toISO, startOfDay, addDays, formatLongDate } from './dates.js';
+import { materialsSeed, applicationsSeed } from '../data/applicationsSeed.js';
 
 /** One small helper — the only place this module talks to the console. */
 function warn(message, err) {
@@ -104,8 +110,64 @@ export function isArchived(app) {
 
 /* ─────────────────────────────── stores ─────────────────────────────── */
 
-const applications = createStore('applications', { version: 1, initial: { items: [] } });
-const materials = createStore('materials', { version: 1, initial: { items: [], templateOverrides: {} } });
+/** Stable starter records so a re-seed never duplicates or reshuffles ids. */
+function seededMaterials() {
+  return materialsSeed.map((m) => ({
+    id: `mat_seed_${m.slug}`,
+    label: m.label,
+    kind: m.kind,
+    body: String(m.body ?? ''),
+    updatedAt: m.updatedAt,
+  }));
+}
+
+function seededApplications() {
+  return applicationsSeed.map((a) => ({
+    id: `app_seed_${a.slug}`,
+    organization: a.organization,
+    position: a.position,
+    url: a.url || '',
+    jobDescription: String(a.jobDescription ?? ''),
+    deadline: a.deadline ?? null,
+    discoveredAt: a.discoveredAt,
+    appliedAt: a.appliedAt ?? null,
+    status: a.status,
+    resumeUsed: a.resumeUsed ?? null,
+    coverLetter: a.coverLetter ?? null,
+    referencesUsed: a.referencesUsed ?? null,
+    interviewAt: a.interviewAt ?? null,
+    followUpAt: a.followUpAt ?? null,
+    notes: a.notes || '',
+    outcome: a.outcome ?? null,
+    updatedAt: a.updatedAt,
+  }));
+}
+
+function mergeById(existing, seeded) {
+  const have = new Set(existing.map((item) => item && item.id).filter(Boolean));
+  const extra = seeded.filter((item) => !have.has(item.id));
+  return extra.length === 0 ? existing : [...existing, ...extra];
+}
+
+const applications = createStore('applications', {
+  version: 2,
+  initial: { items: seededApplications() },
+  migrate(oldData) {
+    const existing = Array.isArray(oldData?.items) ? oldData.items : [];
+    return { items: mergeById(existing, seededApplications()) };
+  },
+});
+const materials = createStore('materials', {
+  version: 2,
+  initial: { items: seededMaterials(), templateOverrides: {} },
+  migrate(oldData) {
+    const existing = Array.isArray(oldData?.items) ? oldData.items : [];
+    const templateOverrides = oldData?.templateOverrides && typeof oldData.templateOverrides === 'object'
+      ? oldData.templateOverrides
+      : {};
+    return { items: mergeById(existing, seededMaterials()), templateOverrides };
+  },
+});
 
 /** Listeners told when a write did not reach disk (storage kept it in memory). */
 const failureListeners = new Set();

@@ -30,6 +30,7 @@ export const RECENT_CYCLES = 6;
 const MIN_USABLE_FOR_ESTIMATE = 3;
 const MODERATE_FROM = 5;
 const SPREAD_MAX = 7;
+const APPROXIMATE_DATE_PADDING = 2;
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -104,6 +105,7 @@ export function cycleLengthByRecord(records) {
  *   recentLengths: number[],
  *   usableLengths: number[],
  *   starts: string[],
+ *   hasApproximateDates: boolean,
  * }}
  */
 export function predictNextWindow(records, today = new Date()) {
@@ -120,6 +122,7 @@ export function predictNextWindow(records, today = new Date()) {
   // 3: the last 6 usable
   const recentLengths = usableLengths.slice(-RECENT_CYCLES);
   const usableCycles = recentLengths.length;
+  const hasApproximateDates = sorted.slice(-(recentLengths.length + 1)).some((r) => r.approximate === true);
 
   const base = {
     state: 'insufficient',
@@ -135,6 +138,7 @@ export function predictNextWindow(records, today = new Date()) {
     recentLengths,
     usableLengths,
     starts,
+    hasApproximateDates,
   };
 
   if (usableCycles < MIN_USABLE_FOR_ESTIMATE || !lastStart) return base;
@@ -146,7 +150,10 @@ export function predictNextWindow(records, today = new Date()) {
   // Fewer cycles → wider window: the spread floor is 3 days rather than 2.
   const spreadMin = confidence === 'low' ? 3 : 2;
   const mad = Math.ceil(medianAbsoluteDeviation(recentLengths, rawMedian));
-  const spreadDays = Math.min(SPREAD_MAX, Math.max(spreadMin, mad));
+  const spreadDays = Math.min(
+    SPREAD_MAX + APPROXIMATE_DATE_PADDING,
+    Math.max(spreadMin, mad) + (hasApproximateDates ? APPROXIMATE_DATE_PADDING : 0),
+  );
 
   // 5: the window
   const predictedStart = addDays(lastStart, medianLength);

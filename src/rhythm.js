@@ -60,6 +60,7 @@ const state = {
   lockTimer: null,
   undoTimer: null,
   historyAnimated: false,
+  calendarMonth: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
   /** @type {{ unmount: () => void } | null} the in-page reminder card while unlocked */
   reminderStrip: null,
 };
@@ -75,6 +76,8 @@ const state = {
 /** @type {HTMLButtonElement} */ let unlockBtn;
 /** @type {HTMLElement | null} */ let statusEl = null;
 /** @type {HTMLElement | null} */ let answerEl = null;
+/** @type {HTMLElement | null} */ let overviewEl = null;
+/** @type {HTMLElement | null} */ let calendarEl = null;
 /** @type {HTMLElement | null} */ let historyEl = null;
 
 /* ─────────────────────────────── helpers ─────────────────────────────── */
@@ -145,7 +148,7 @@ function lock({ prompt = true } = {}) {
   state.settings = null;
   state.hiddenAt = null;
   state.historyAnimated = false;
-  statusEl = answerEl = historyEl = null;
+  statusEl = answerEl = overviewEl = calendarEl = historyEl = null;
   content.replaceChildren();
   if (passInput) passInput.value = '';
   if (confirmInput) confirmInput.value = '';
@@ -375,7 +378,131 @@ function buildAnswer(records) {
     const g = p.discardedCycles;
     wrap.appendChild(el('p', { class: 'rhythm-basis', text: `I left ${g} gap${g === 1 ? '' : 's'} out of the maths because ${g === 1 ? 'it' : 'they'} didn't look like a cycle.` }));
   }
+  if (p.state === 'estimate' && p.hasApproximateDates) {
+    wrap.appendChild(el('p', { class: 'rhythm-basis', text: 'I made this range a little wider because one or more dates were remembered approximately.' }));
+  }
   return wrap;
+}
+
+/* ─────────────────────── unlocked: today + calendar ─────────────────────── */
+
+function currentOpenRecord(records) {
+  const latest = records[0];
+  if (!latest || latest.endDate) return null;
+  const age = daysBetween(latest.startDate, todayISO());
+  return age >= 0 && age <= store.MAX_DURATION_DAYS ? latest : null;
+}
+
+function buildOverview(records) {
+  const card = el('div', { class: 'usm-card rhythm-overview' });
+  if (!records.length) {
+    card.append(
+      el('p', { class: 'rhythm-overview__eyebrow', text: 'A good place to start' }),
+      el('p', { class: 'rhythm-overview__value', text: 'Add the dates you remember.' }),
+      el('p', { class: 'rhythm-basis', text: 'Use “Pick a date” below and mark it approximate if you only remember roughly when it happened.' }),
+    );
+    return card;
+  }
+
+  const latest = records[0];
+  const cycleDay = daysBetween(latest.startDate, todayISO()) + 1;
+  const open = currentOpenRecord(records);
+  card.append(
+    el('p', { class: 'rhythm-overview__eyebrow', text: open ? 'Right now' : 'Today' }),
+    el('p', { class: 'rhythm-overview__value', text: open ? `Period day ${cycleDay}` : `Cycle day ${cycleDay}` }),
+    el('p', {
+      class: 'rhythm-basis',
+      text: `${latest.approximate ? 'Last remembered around' : 'Last started'} ${formatLongDate(latest.startDate)}.`,
+    }),
+  );
+
+  if (open) {
+    card.appendChild(button('Period ended today', 'usm-btn--secondary rhythm-end', async () => {
+      try {
+        await store.update(open.id, { endDate: todayISO() });
+        await refresh();
+        showStatus('End date saved.');
+      } catch (err) {
+        showStatus(errorMessage(err));
+      }
+    }));
+  }
+  return card;
+}
+
+function monthLabel(date) {
+  return new Intl.DateTimeFormat(undefined, { month: 'long', year: 'numeric' }).format(date);
+}
+
+function calendarCellLabel(iso, record, inPeriod, inWindow) {
+  const parts = [formatLongDate(iso)];
+  if (iso === todayISO()) parts.push('today');
+  if (record) parts.push(record.approximate ? 'approximate recorded start' : 'recorded start');
+  else if (inPeriod) parts.push('recorded period');
+  if (inWindow) parts.push('estimated window');
+  return parts.join(', ');
+}
+
+function renderCalendar() {
+  if (!calendarEl) return;
+  const records = state.records || [];
+  const cursor = state.calendarMonth;
+  const year = cursor.getFullYear();
+  const month = cursor.getMonth();
+  const first = new Date(year, month, 1);
+  const count = new Date(year, month + 1, 0).getDate();
+  const prediction = predictNextWindow(records, new Date());
+  const starts = new Map(records.map((r) => [r.startDate, r]));
+
+  const previous = button('‹', 'usm-btn--ghost rhythm-calendar__nav', () => {
+    state.calendarMonth = new Date(year, month - 1, 1);
+    renderCalendar();
+  }, { 'aria-label': 'Previous month' });
+  const next = button('›', 'usm-btn--ghost rhythm-calendar__nav', () => {
+    state.calendarMonth = new Date(year, month + 1, 1);
+    renderCalendar();
+  }, { 'aria-label': 'Next month' });
+  const grid = el('div', { class: 'rhythm-calendar__grid', role: 'grid', 'aria-label': monthLabel(first) });
+  ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach((day, i) => {
+    grid.appendChild(el('span', { class: 'rhythm-calendar__weekday', text: day, 'aria-label': ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][i] }));
+  });
+  for (let i = 0; i < first.getDay(); i++) grid.appendChild(el('span', { class: 'rhythm-calendar__blank', 'aria-hidden': 'true' }));
+  for (let day = 1; day <= count; day++) {
+    const iso = toISO(new Date(year, month, day));
+    const record = starts.get(iso);
+    const inPeriod = records.some((r) => r.endDate && iso >= r.startDate && iso <= r.endDate);
+    const inWindow = prediction.state === 'estimate' && iso >= prediction.windowStart && iso <= prediction.windowEnd;
+    const classes = ['rhythm-calendar__day'];
+    if (iso === todayISO()) classes.push('is-today');
+    if (record) classes.push('is-start');
+    else if (inPeriod) classes.push('is-period');
+    if (record && record.approximate) classes.push('is-approximate');
+    if (inWindow) classes.push('is-window');
+    grid.appendChild(el('span', {
+      class: classes.join(' '),
+      text: String(day),
+      role: 'gridcell',
+      'aria-label': calendarCellLabel(iso, record, inPeriod, inWindow),
+    }));
+  }
+
+  const legend = el('div', { class: 'rhythm-calendar__legend' }, [
+    el('span', {}, [el('i', { class: 'is-start', 'aria-hidden': 'true' }), el('span', { text: 'Recorded start' })]),
+    el('span', {}, [el('i', { class: 'is-period', 'aria-hidden': 'true' }), el('span', { text: 'Recorded days' })]),
+    prediction.state === 'estimate'
+      ? el('span', {}, [el('i', { class: 'is-window', 'aria-hidden': 'true' }), el('span', { text: 'Estimated window' })])
+      : null,
+  ].filter(Boolean));
+
+  calendarEl.replaceChildren(
+    el('div', { class: 'rhythm-calendar__head' }, [
+      previous,
+      el('h2', { text: monthLabel(first), 'aria-live': 'polite' }),
+      next,
+    ]),
+    grid,
+    legend,
+  );
 }
 
 /* ──────────────────────────── unlocked: status ──────────────────────────── */
@@ -400,6 +527,8 @@ async function refresh() {
     return;
   }
   if (answerEl) answerEl.replaceChildren(buildAnswer(state.records));
+  if (overviewEl) overviewEl.replaceChildren(buildOverview(state.records));
+  if (calendarEl) renderCalendar();
   if (historyEl) renderHistory();
   syncReminder();
 }
@@ -453,10 +582,10 @@ async function syncReminder() {
 
 /* ─────────────────────────── unlocked: logging ─────────────────────────── */
 
-async function addStart(iso) {
+async function addStart(iso, { approximate = false } = {}) {
   let record;
   try {
-    record = await store.add({ startDate: iso });
+    record = await store.add({ startDate: iso, approximate });
   } catch (err) {
     showStatus(errorMessage(err));
     return;
@@ -482,17 +611,17 @@ async function addStart(iso) {
 }
 
 /** The one-tap path. Guards against logging the same start twice. */
-async function logStart(iso) {
+async function logStart(iso, { approximate = false } = {}) {
   if (!state.records) return;
   const near = store.findNear(state.records, iso);
   if (!near) {
-    await addStart(iso);
+    await addStart(iso, { approximate });
     return;
   }
   const day = ordinal(parseISO(near.startDate).getDate());
   const change = button('Change it', 'usm-btn--secondary', async () => {
     try {
-      await store.update(near.id, { startDate: iso });
+      await store.update(near.id, { startDate: iso, approximate });
       await refresh();
       showStatus(`Changed to ${dayLabel(iso)}.`);
     } catch (err) {
@@ -507,15 +636,23 @@ function buildLogging() {
   const primary = button('Period started today', 'usm-btn--primary rhythm-primary', () => logStart(todayISO()));
 
   const pickInput = el('input', { type: 'date', class: 'usm-input', max: todayISO(), 'aria-label': 'Start date' });
+  const approximateInput = el('input', { type: 'checkbox', id: 'rhythmApproximate' });
+  const approximateLabel = el('label', { class: 'rhythm-approximate', for: 'rhythmApproximate' }, [
+    approximateInput,
+    el('span', { text: 'I only remember roughly' }),
+  ]);
   const pickRow = el('div', { class: 'rhythm-pick', hidden: true }, [
     pickInput,
+    approximateLabel,
     button('Log it', 'usm-btn--secondary', () => {
       const iso = pickInput.value;
       if (!iso) { pickInput.focus(); return; }
       if (iso > todayISO()) { showStatus("That date hasn't happened yet."); return; }
       pickRow.hidden = true;
       pickInput.value = '';
-      logStart(iso);
+      const approximate = approximateInput.checked;
+      approximateInput.checked = false;
+      logStart(iso, { approximate });
     }),
   ]);
 
@@ -539,6 +676,7 @@ function buildLogging() {
 
 function describeRecord(record, lengthToNext) {
   const bits = [];
+  if (record.approximate) bits.push('Date remembered approximately');
   if (record.endDate) {
     const span = daysBetween(record.startDate, record.endDate) + 1;
     bits.push(`${span} day${span === 1 ? '' : 's'}, through ${formatDateRange(record.endDate, record.endDate)}`);
@@ -565,7 +703,7 @@ function buildRow(record, lengthToNext, index) {
 
   row.append(...[
     el('div', { class: 'rhythm-row__head' }, [
-      el('span', { class: 'rhythm-row__date', text: formatLongDate(record.startDate) }),
+      el('span', { class: 'rhythm-row__date', text: `${record.approximate ? 'Around ' : ''}${formatLongDate(record.startDate)}` }),
       el('div', { class: 'rhythm-row__actions' }, [
         button('Edit', 'usm-btn--ghost', () => openEditor(record.id), { 'aria-label': `Edit the entry from ${formatLongDate(record.startDate)}` }),
         button('Delete', 'usm-btn--ghost', () => confirmDelete(record.id), { 'aria-label': `Delete the entry from ${formatLongDate(record.startDate)}` }),
@@ -651,6 +789,8 @@ function openEditor(id, { detailsOpen = false } = {}) {
   if (!record || !row) return;
 
   const start = el('input', { type: 'date', class: 'usm-input', value: record.startDate, max: todayISO(), id: `start-${id}` });
+  const approximate = el('input', { type: 'checkbox', id: `approximate-${id}` });
+  approximate.checked = record.approximate === true;
   const end = el('input', { type: 'date', class: 'usm-input', value: record.endDate || '', min: record.startDate, max: toISO(addDays(record.startDate, store.MAX_DURATION_DAYS)), id: `end-${id}` });
   start.addEventListener('change', () => {
     if (start.value) { end.min = start.value; end.max = toISO(addDays(start.value, store.MAX_DURATION_DAYS)); }
@@ -688,6 +828,7 @@ function openEditor(id, { detailsOpen = false } = {}) {
     try {
       await store.update(id, {
         startDate: start.value,
+        approximate: approximate.checked,
         endDate: end.value || null,
         flow: flow.read(),
         symptoms: symptoms.read(),
@@ -704,6 +845,10 @@ function openEditor(id, { detailsOpen = false } = {}) {
 
   row.replaceChildren(el('div', { class: 'rhythm-form' }, [
     field('Started', start),
+    el('label', { class: 'rhythm-approximate', for: approximate.id }, [
+      approximate,
+      el('span', { text: 'This date is approximate' }),
+    ]),
     details,
     error,
     el('div', { class: 'rhythm-form__actions' }, [save, cancel]),
@@ -730,6 +875,27 @@ async function downloadCopy() {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+async function offerRestore(file) {
+  let json;
+  try {
+    json = await file.text();
+  } catch {
+    showStatus("I couldn't read that file.");
+    return;
+  }
+  const replace = button('Replace my entries', 'usm-btn--secondary', async () => {
+    try {
+      const count = await store.importJson(json);
+      await refresh();
+      showStatus(`${count} ${count === 1 ? 'entry' : 'entries'} restored.`);
+    } catch (err) {
+      showStatus(errorMessage(err));
+    }
+  });
+  const keep = button('Keep what I have', 'usm-btn--ghost', clearStatus);
+  showStatus('Restoring a backup replaces the entries currently on this device.', [replace, keep]);
+}
+
 function buildSettings() {
   const lockSelect = el('select', { class: 'usm-select', id: 'rhythmAutoLock', 'aria-describedby': 'rhythmAutoLockHint' });
   [1, 5, 15].forEach((m) => lockSelect.appendChild(el('option', { value: String(m), text: `${m} minute${m === 1 ? '' : 's'}` })));
@@ -741,6 +907,18 @@ function buildSettings() {
     } catch (err) {
       showStatus(errorMessage(err));
     }
+  });
+  const restoreInput = el('input', {
+    type: 'file',
+    accept: 'application/json,.json',
+    class: 'sr-only',
+    tabindex: '-1',
+    'aria-hidden': 'true',
+  });
+  restoreInput.addEventListener('change', () => {
+    const file = restoreInput.files && restoreInput.files[0];
+    if (file) offerRestore(file);
+    restoreInput.value = '';
   });
 
   return el('details', { class: 'rhythm-details usm-card' }, [
@@ -760,6 +938,8 @@ function buildSettings() {
       el('p', { class: 'rhythm-note' }, [el('strong', { text: COPY.exportWarning })]),
       el('div', { class: 'rhythm-settings-actions' }, [
         button('Download a copy', 'usm-btn--secondary', downloadCopy),
+        button('Restore a copy', 'usm-btn--ghost', () => restoreInput.click()),
+        restoreInput,
       ]),
       el('p', { class: 'rhythm-note', text: COPY.loss }),
     ]),
@@ -770,9 +950,12 @@ function buildSettings() {
 
 function renderUnlocked() {
   const reminderEl = el('div', { class: 'rhythm-reminders' });
+  overviewEl = el('div', { class: 'rhythm-overview-wrap' }, [buildOverview(state.records)]);
   answerEl = el('div', { class: 'rhythm-answer-wrap' }, [buildAnswer(state.records)]);
+  calendarEl = el('section', { class: 'usm-card rhythm-calendar', 'aria-label': 'Cycle calendar' });
   historyEl = el('section', { class: 'rhythm-history', 'aria-label': 'Recorded' });
-  content.replaceChildren(reminderEl, answerEl, ...buildLogging(), historyEl, buildSettings());
+  content.replaceChildren(reminderEl, overviewEl, answerEl, ...buildLogging(), calendarEl, historyEl, buildSettings());
+  renderCalendar();
   renderHistory();
   if (state.reminderStrip) state.reminderStrip.unmount();
   state.reminderStrip = mountReminderStrip(reminderEl, { types: ['rhythm'] });

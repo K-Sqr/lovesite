@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Us Machina &mdash; What to Wear &hearts;</title>
+  <link rel="icon" type="image/png" href="./heart.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <meta name="description" content="For the mornings the wardrobe says nothing." />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' https://*.firebasestorage.app https://firebasestorage.googleapis.com data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://lovegpt-osmy5pclpq-uc.a.run.app https://www.google-analytics.com https://analytics.google.com https://api.open-meteo.com; font-src 'self' https://fonts.gstatic.com; media-src 'self'; frame-src 'none';" />
+  <script type="module" crossorigin src="/lovesite/assets/outfit-CwYdMjvG.js"></script>
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/dates-kyTPMPBX.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/storage-DnWYfYa4.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/reminders-C0YM09jF.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/siteChrome-s7Q2ZUt1.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/preload-helper-D8MbjoNq.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/modal-wKvJMx9T.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/reminderUI-B59KSyAs.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/reveal-eQ-c7gKR.js">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/siteChrome-D5bf8iRE.css">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/reminderUI-BO9dpVtf.css">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/reveal-BF-ZO3Id.css">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/outfit-DSPLwHtf.css">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/ui-XKoYbeGj.css">
+</head>
+<body>
+
+  <!-- ═══ NAVBAR (rendered by src/modules/siteChrome.js) ═══ -->
+  <nav class="site-nav" id="siteNav"></nav>
+
+  <main class="outfit-page" id="outfitPage">
+    <header class="outfit-header">
+      <div class="outfit-header__copy">
+        <p class="outfit-header__eyebrow">Deborah’s closet ✦ styled with care</p>
+        <h1>What to Wear</h1>
+        <p class="outfit-lede">Real clothes. A fresh combination for whatever today looks like.</p>
+      </div>
+      <div class="outfit-header__sparkles" aria-hidden="true">
+        <span>♥</span><span>✦</span><span>♡</span>
+      </div>
+    </header>
+
+    <!-- everything below is rendered by src/outfit.js -->
+    <div id="outfitReminders"></div>
+    <section class="outfit-weather" id="outfitWeather" aria-label="Today's weather"></section>
+    <div class="outfit-banner" id="outfitBanner" role="status" hidden></div>
+    <section class="outfit-occasions" id="outfitOccasions" aria-label="What's today?"></section>
+    <section class="outfit-today" id="outfitToday" aria-label="Today's outfit"></section>
+
+    <details class="outfit-closet" id="outfitCloset">
+      <summary class="outfit-closet__summary">
+        <span class="outfit-closet__title">Your closet</span>
+        <span class="outfit-closet__count" id="closetCount"></span>
+      </summary>
+      <div class="outfit-closet__body" id="closetBody"></div>
+    </details>
+
+    <details class="outfit-about" id="outfitAbout">
+      <summary class="outfit-about__summary">About this page</summary>
+      <div class="outfit-about__body">
+        <p>Everything here stays in this browser on this device — your clothes, your photos, your notes. Nothing is sent to LoveGPT, to me, or to anyone. Clearing your browser data will erase it, so download a backup now and then.</p>
+        <p>The only thing this page ever fetches from the internet is the weather, from Open-Meteo. It receives a rounded location (to about a kilometre) and nothing else — no account, no identifier, no cookie. Pick a city instead if you’d rather the browser never asks where you are.</p>
+        <p>Suggestions come from a small set of rules about the weather and the day, applied to the clothes you already own. No AI, nothing invented.</p>
+      </div>
+    </details>
+
+    <div class="sr-only" role="status" aria-live="polite" id="outfitStatus"></div>
+  </main>
+
+  <footer class="site-footer" id="siteFooter"></footer>
+
+  <!-- ═══ MUSIC (rendered by src/modules/siteChrome.js) ═══ -->
+  <div id="siteMusic"></div>
+
+</body>
+</html>

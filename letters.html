@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Us Machina &mdash; Letters &hearts;</title>
+  <link rel="icon" type="image/png" href="./heart.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <meta name="description" content="Something to read, whenever you like." />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' https://*.firebasestorage.app https://firebasestorage.googleapis.com data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://lovegpt-osmy5pclpq-uc.a.run.app https://www.google-analytics.com https://analytics.google.com https://api.open-meteo.com; font-src 'self' https://fonts.gstatic.com; media-src 'self'; frame-src blob: https://firebasestorage.googleapis.com;" />
+  <script type="module" crossorigin src="/lovesite/assets/letters-wmnzvw5e.js"></script>
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/siteChrome-s7Q2ZUt1.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/firebase-CwOE8gp2.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/letters-CWRWeyi5.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/auth-BvEvtq_x.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/dates-kyTPMPBX.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/reveal-eQ-c7gKR.js">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/siteChrome-D5bf8iRE.css">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/reveal-BF-ZO3Id.css">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/letters-DXI3PXsz.css">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/ui-XKoYbeGj.css">
+</head>
+<body>
+
+  <!-- ═══ NAVBAR (rendered by src/modules/siteChrome.js) ═══ -->
+  <nav class="site-nav" id="siteNav"></nav>
+
+  <main class="letters-page">
+
+    <!-- Locked: the first thing she sees. Warm, and it gives nothing away.
+         Nothing about the letters exists in the DOM until src/letters.js unlocks. -->
+    <section class="letters-locked" id="lettersLocked" aria-labelledby="lettersLockedLine">
+      <p class="letters-locked__line" id="lettersLockedLine">These are just for you. The passcode is the one you already know.</p>
+      <form class="letters-locked__form" id="lettersPasscodeForm" autocomplete="off" hidden>
+        <label class="sr-only" for="lettersPasscode">Passcode</label>
+        <input class="usm-input letters-locked__input" id="lettersPasscode" type="password" autocomplete="off" placeholder="Passcode" />
+        <button class="usm-btn usm-btn--primary" type="submit" id="lettersPasscodeSubmit">Open</button>
+      </form>
+      <p class="letters-locked__note" id="lettersPasscodeNote" aria-live="polite"></p>
+    </section>
+
+    <!-- Archive: cards rendered by src/letters.js after authentication -->
+    <section class="letters-archive" id="lettersArchive" hidden>
+      <header class="letters-header">
+        <p class="letters-eyebrow">A drawer, just for you</p>
+        <h1>Letters</h1>
+        <p class="letters-lede">Everything I've written you, kept in one place.</p>
+        <p class="letters-count" id="lettersCount" hidden></p>
+      </header>
+      <div class="letters-list" id="lettersList"></div>
+    </section>
+
+    <!-- Reading view: one letter at a time, held in memory for this view only -->
+    <section class="letters-reading" id="lettersReading" hidden></section>
+
+  </main>
+
+  <footer class="site-footer" id="siteFooter"></footer>
+
+  <!-- ═══ MUSIC (rendered by src/modules/siteChrome.js) ═══ -->
+  <div id="siteMusic"></div>
+
+</body>
+</html>

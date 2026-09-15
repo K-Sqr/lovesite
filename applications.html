@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Us Machina &mdash; The Application Desk &hearts;</title>
+  <link rel="icon" type="image/png" href="./heart.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <meta name="description" content="One application at a time." />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' https://*.firebasestorage.app https://firebasestorage.googleapis.com data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://lovegpt-osmy5pclpq-uc.a.run.app https://www.google-analytics.com https://analytics.google.com https://api.open-meteo.com; font-src 'self' https://fonts.gstatic.com; media-src 'self'; frame-src 'none';" />
+  <script type="module" crossorigin src="/lovesite/assets/applications-Bk3DWPux.js"></script>
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/dates-kyTPMPBX.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/storage-DnWYfYa4.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/reminders-C0YM09jF.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/siteChrome-s7Q2ZUt1.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/preload-helper-D8MbjoNq.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/modal-wKvJMx9T.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/reminderUI-B59KSyAs.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/reveal-eQ-c7gKR.js">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/siteChrome-D5bf8iRE.css">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/reminderUI-BO9dpVtf.css">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/reveal-BF-ZO3Id.css">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/applications-BPSIWnAb.css">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/ui-XKoYbeGj.css">
+</head>
+<body>
+
+  <!-- ═══ NAVBAR (rendered by src/modules/siteChrome.js) ═══ -->
+  <nav class="site-nav" id="siteNav"></nav>
+
+  <main class="applications-page">
+    <header class="desk-header">
+      <div class="desk-header__text">
+        <h1>The Application Desk</h1>
+        <p class="desk-lede">One application at a time.</p>
+      </div>
+      <div class="desk-header__actions">
+        <button type="button" class="usm-btn usm-btn--secondary" id="exportBtn">Export / Backup</button>
+        <button type="button" class="usm-btn usm-btn--ghost" id="importBtn">Import</button>
+        <input type="file" id="importFile" accept=".json,application/json" class="sr-only" tabindex="-1" />
+      </div>
+    </header>
+
+    <div id="deskReminders"></div>
+
+    <!-- ═══ SEGMENTED CONTROL ═══ -->
+    <div class="desk-tabs" role="tablist" aria-label="Application Desk views">
+      <button type="button" role="tab" id="tab-prepare" class="desk-tab" aria-selected="true" aria-controls="panel-prepare">Prepare</button>
+      <button type="button" role="tab" id="tab-materials" class="desk-tab" aria-selected="false" aria-controls="panel-materials" tabindex="-1">Materials</button>
+      <button type="button" role="tab" id="tab-applications" class="desk-tab" aria-selected="false" aria-controls="panel-applications" tabindex="-1">Applications</button>
+    </div>
+
+    <!-- ═══ PREPARE — the assembler ═══ -->
+    <section id="panel-prepare" class="desk-view" role="tabpanel" aria-labelledby="tab-prepare">
+      <div class="usm-empty prepare-empty" id="prepareEmpty">
+        <p>You've already done the hard part. Let's make this one easier.</p>
+        <button type="button" class="usm-btn usm-btn--secondary" id="prepareEmptyBtn">Paste a job description</button>
+      </div>
+
+      <form class="prepare-form" id="prepareForm" autocomplete="off">
+        <div class="usm-field prepare-jd">
+          <label class="usm-field__label" for="jobDescription">Job description</label>
+          <textarea class="usm-textarea" id="jobDescription" name="jobDescription" rows="8" placeholder="Paste the posting here, exactly as it is."></textarea>
+        </div>
+
+        <div class="prepare-meta">
+          <div class="usm-field">
+            <label class="usm-field__label" for="organization">Organization</label>
+            <input class="usm-input" id="organization" name="organization" type="text" placeholder="Optional" />
+          </div>
+          <div class="usm-field">
+            <label class="usm-field__label" for="position">Position</label>
+            <input class="usm-input" id="position" name="position" type="text" placeholder="Optional" />
+          </div>
+          <div class="usm-field">
+            <label class="usm-field__label" for="url">Posting link</label>
+            <input class="usm-input" id="url" name="url" type="url" inputmode="url" placeholder="Optional" />
+          </div>
+          <div class="usm-field">
+            <label class="usm-field__label" for="deadline">Closes on</label>
+            <input class="usm-input" id="deadline" name="deadline" type="date" />
+          </div>
+        </div>
+
+        <fieldset class="prepare-group">
+          <legend class="usm-field__label">What do you need?</legend>
+          <div class="pill-row" id="templatePills" role="radiogroup" aria-label="Prompt template"></div>
+        </fieldset>
+
+        <fieldset class="prepare-group">
+          <legend class="usm-field__label">Include from your materials</legend>
+          <p class="usm-field__hint" id="materialsHint">Pre-checked for what you picked above. Untick anything you don't want in this one.</p>
+          <div class="materials-picker" id="materialsPicker">
+            <span class="usm-skeleton picker-skeleton" aria-hidden="true"></span>
+            <span class="usm-skeleton picker-skeleton" aria-hidden="true"></span>
+          </div>
+        </fieldset>
+
+        <fieldset class="prepare-group" id="constraintsGroup">
+          <legend class="usm-field__label">Tone and length</legend>
+          <div class="pill-row" id="tonePills" role="radiogroup" aria-label="Tone"></div>
+          <div class="usm-field prepare-length">
+            <label class="usm-field__label" for="lengthSelect">Length</label>
+            <select class="usm-select" id="lengthSelect" name="length">
+              <option value="one page">One page</option>
+              <option value="two pages">Two pages</option>
+              <option value="match the posting">Match the posting</option>
+            </select>
+          </div>
+        </fieldset>
+
+        <details class="template-editor" id="templateEditor">
+          <summary>Edit this template</summary>
+          <div class="usm-field">
+            <label class="usm-field__label" for="templateBody">Template text</label>
+            <p class="usm-field__hint">Anything in double curly braces is filled in from the fields above. Keep the rule about not inventing experience.</p>
+            <textarea class="usm-textarea template-editor__body" id="templateBody" rows="14" spellcheck="false"></textarea>
+          </div>
+          <div class="template-editor__actions">
+            <button type="button" class="usm-btn usm-btn--secondary" id="templateSave">Save template</button>
+            <button type="button" class="usm-btn usm-btn--ghost" id="templateReset">Reset to default</button>
+          </div>
+        </details>
+      </form>
+
+      <section class="prompt-output" aria-labelledby="promptHeading">
+        <h2 class="prompt-output__heading" id="promptHeading">Your prompt</h2>
+        <pre class="prompt-preview usm-well" id="promptPreview" tabindex="0" aria-label="Prompt preview"></pre>
+        <p class="prompt-count" id="promptCount"></p>
+      </section>
+
+      <!-- last child of the Prepare panel on purpose: on phones it is sticky to the
+           bottom of the viewport for as long as the panel is on screen -->
+      <div class="copy-bar" id="copyBar">
+        <button type="button" class="usm-btn usm-btn--primary copy-btn" id="copyBtn">Copy prompt</button>
+        <p class="copy-bar__hint" id="copyHint">Ready when you are.</p>
+        <button type="button" class="usm-btn usm-btn--secondary" id="saveToAppsBtn">Save to applications</button>
+      </div>
+    </section>
+
+    <!-- ═══ MATERIALS — the library ═══ -->
+    <section id="panel-materials" class="desk-view" role="tabpanel" aria-labelledby="tab-materials" hidden>
+      <div class="view-toolbar">
+        <p class="view-toolbar__text">Resume, cover letters, experience notes, references. Paste each in once.</p>
+        <button type="button" class="usm-btn usm-btn--secondary" id="addMaterialBtn" aria-expanded="false" aria-controls="materialForm">+ Add a material</button>
+      </div>
+
+      <form class="usm-panel material-form" id="materialForm" autocomplete="off">
+        <div class="material-form__row">
+          <div class="usm-field">
+            <label class="usm-field__label" for="materialLabel">Name</label>
+            <input class="usm-input" id="materialLabel" name="label" type="text" placeholder="Master resume — 2026" />
+          </div>
+          <div class="usm-field">
+            <label class="usm-field__label" for="materialKind">Kind</label>
+            <select class="usm-select" id="materialKind" name="kind"></select>
+          </div>
+        </div>
+        <div class="usm-field">
+          <label class="usm-field__label" for="materialBody">Text</label>
+          <textarea class="usm-textarea" id="materialBody" name="body" rows="10" placeholder="Paste the whole thing here. Plain text is exactly what Claude needs."></textarea>
+        </div>
+        <div class="material-form__actions">
+          <button type="submit" class="usm-btn usm-btn--secondary" id="materialSaveBtn">Save material</button>
+          <button type="button" class="usm-btn usm-btn--ghost" id="materialCancelBtn">Cancel</button>
+        </div>
+      </form>
+
+      <div class="material-list" id="materialList">
+        <span class="usm-skeleton row-skeleton" aria-hidden="true"></span>
+        <span class="usm-skeleton row-skeleton" aria-hidden="true"></span>
+        <span class="usm-skeleton row-skeleton" aria-hidden="true"></span>
+      </div>
+    </section>
+
+    <!-- ═══ APPLICATIONS — the tracker ═══ -->
+    <section id="panel-applications" class="desk-view" role="tabpanel" aria-labelledby="tab-applications" hidden>
+
+      <!-- detail panel: a section that opens in place, not a modal -->
+      <section class="usm-panel app-detail" id="appDetail" aria-labelledby="appDetailTitle" tabindex="-1">
+        <div class="app-detail__top">
+          <h2 class="app-detail__title" id="appDetailTitle">Application</h2>
+          <button type="button" class="usm-btn usm-btn--ghost" id="detailCloseBtn">Close</button>
+        </div>
+
+        <div class="rejection" id="rejectionBlock" hidden>
+          <p class="rejection__line">Their loss. This one's done.</p>
+          <button type="button" class="usm-btn usm-btn--secondary" id="archiveBtn">Archive</button>
+        </div>
+
+        <form class="app-detail__form" id="appDetailForm" autocomplete="off">
+          <div class="detail-grid">
+            <div class="usm-field">
+              <label class="usm-field__label" for="d_position">Position</label>
+              <input class="usm-input" id="d_position" name="position" type="text" />
+            </div>
+            <div class="usm-field">
+              <label class="usm-field__label" for="d_organization">Organization</label>
+              <input class="usm-input" id="d_organization" name="organization" type="text" />
+            </div>
+            <div class="usm-field">
+              <label class="usm-field__label" for="d_status">Status</label>
+              <select class="usm-select" id="d_status" name="status"></select>
+            </div>
+            <div class="usm-field">
+              <label class="usm-field__label" for="d_url">Posting link</label>
+              <input class="usm-input" id="d_url" name="url" type="url" inputmode="url" />
+              <span class="usm-field__hint detail-link" id="d_urlLink"></span>
+            </div>
+            <div class="usm-field">
+              <label class="usm-field__label" for="d_deadline">Closes on</label>
+              <input class="usm-input" id="d_deadline" name="deadline" type="date" />
+            </div>
+            <div class="usm-field">
+              <label class="usm-field__label" for="d_discoveredAt">Found on</label>
+              <input class="usm-input" id="d_discoveredAt" name="discoveredAt" type="date" />
+            </div>
+            <div class="usm-field">
+              <label class="usm-field__label" for="d_appliedAt">Applied on</label>
+              <input class="usm-input" id="d_appliedAt" name="appliedAt" type="date" />
+            </div>
+            <div class="usm-field">
+              <label class="usm-field__label" for="d_interviewAt">Interview</label>
+              <input class="usm-input" id="d_interviewAt" name="interviewAt" type="datetime-local" />
+            </div>
+            <div class="usm-field">
+              <label class="usm-field__label" for="d_followUpAt">Follow up on</label>
+              <input class="usm-input" id="d_followUpAt" name="followUpAt" type="date" />
+            </div>
+            <div class="usm-field">
+              <label class="usm-field__label" for="d_resumeUsed">Resume used</label>
+              <select class="usm-select" id="d_resumeUsed" name="resumeUsed"></select>
+            </div>
+            <div class="usm-field">
+              <label class="usm-field__label" for="d_coverLetter">Cover letter</label>
+              <select class="usm-select" id="d_coverLetter" name="coverLetter"></select>
+            </div>
+            <div class="usm-field">
+              <label class="usm-field__label" for="d_referencesUsed">References</label>
+              <select class="usm-select" id="d_referencesUsed" name="referencesUsed"></select>
+            </div>
+          </div>
+
+          <div class="usm-field">
+            <label class="usm-field__label" for="d_notes">Notes</label>
+            <textarea class="usm-textarea" id="d_notes" name="notes" rows="3" placeholder="Who you spoke to, what they asked, anything you want to remember."></textarea>
+          </div>
+
+          <div class="usm-field">
+            <label class="usm-field__label" for="d_outcome">Outcome</label>
+            <input class="usm-input" id="d_outcome" name="outcome" type="text" placeholder="Optional — a line for you, shown nowhere else." />
+          </div>
+
+          <div class="usm-field">
+            <label class="usm-field__label" for="d_jobDescription">Job description</label>
+            <textarea class="usm-textarea detail-jd" id="d_jobDescription" name="jobDescription" rows="4"></textarea>
+            <button type="button" class="usm-btn usm-btn--ghost detail-jd__toggle" id="jdToggle" aria-expanded="false" aria-controls="d_jobDescription">Show full posting</button>
+          </div>
+
+          <div class="app-detail__actions">
+            <button type="button" class="usm-btn usm-btn--secondary" id="detailPrepareBtn">Prepare with this one</button>
+            <button type="button" class="usm-btn usm-btn--ghost" id="detailDeleteBtn">Delete</button>
+          </div>
+        </form>
+      </section>
+
+      <div class="app-list" id="appList">
+        <span class="usm-skeleton row-skeleton" aria-hidden="true"></span>
+        <span class="usm-skeleton row-skeleton" aria-hidden="true"></span>
+        <span class="usm-skeleton row-skeleton" aria-hidden="true"></span>
+      </div>
+
+      <details class="archived" id="archivedDisclosure" hidden>
+        <summary>Archived</summary>
+        <div class="app-list app-list--archived" id="archivedList"></div>
+      </details>
+
+      <p class="storage-note">This lives only in this browser on this device. Clearing your browser data will erase it — download a backup now and then.</p>
+    </section>
+
+    <!-- shared row overflow menu (a bottom sheet on phones) -->
+    <div class="row-menu" id="rowMenu" hidden>
+      <div class="row-menu__scrim" data-menu-close></div>
+      <div class="row-menu__sheet" role="menu" aria-label="More actions" id="rowMenuItems"></div>
+    </div>
+
+    <!-- one live region for confirmations; never rely on a label change alone -->
+    <div class="sr-only" id="liveStatus" role="status" aria-live="polite"></div>
+  </main>
+
+  <!-- confirmation dialog (import / delete) -->
+  <div class="usm-modal" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" data-focus-trap hidden>
+    <div class="usm-modal__scrim" data-modal-close></div>
+    <div class="usm-modal__card">
+      <h3 id="confirmTitle">Are you sure?</h3>
+      <p id="confirmBody"></p>
+      <div class="usm-modal__actions">
+        <button type="button" class="usm-btn usm-btn--primary" id="confirmOk">Yes</button>
+        <button type="button" class="usm-btn usm-btn--secondary" data-modal-close>Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer" id="siteFooter"></footer>
+
+  <!-- ═══ MUSIC (rendered by src/modules/siteChrome.js) ═══ -->
+  <div id="siteMusic"></div>
+
+</body>
+</html>

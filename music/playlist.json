@@ -1,0 +1,20 @@
+{
+  "tracks": [
+    {
+      "title": "Outgun Onkar - Wind II feat. The Good Wine, Anendlessocean",
+      "src": "./music/Outgun%20Onkar%20-%20Wind%20II%20feat.%20The%20Good%20Wine,%20Anendlessocean%20(Official%20Visualizer).mp3"
+    },
+    {
+      "title": "Blessings (feat. Steven Sharp Nelson)",
+      "src": "./music/Blessings%20(feat.%20Steven%20Sharp%20Nelson).mp3"
+    },
+    {
+      "title": "Love Letter - 01 LANDR-Love Letter Final-Balanced-High",
+      "src": "./music/Love%20Letter%20-%2001%20LANDR-Love%20Letter%20Final-Balanced-High.wav"
+    },
+    {
+      "title": "Venus (Bass Version)",
+      "src": "./music/Venus%20(Bass%20Version).mp3"
+    }
+  ]
+}

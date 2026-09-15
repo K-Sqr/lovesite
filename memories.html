@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Us Machina &mdash; Memories &hearts;</title>
+  <link rel="icon" type="image/png" href="./heart.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <meta name="description" content="Our shared memory wall -- upload and browse our favourite moments." />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' https://*.firebasestorage.app https://firebasestorage.googleapis.com data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://lovegpt-osmy5pclpq-uc.a.run.app https://www.google-analytics.com https://analytics.google.com https://api.open-meteo.com; font-src 'self' https://fonts.gstatic.com; media-src 'self'; frame-src 'none';" />
+  <script type="module" crossorigin src="/lovesite/assets/memories-CuELC-3A.js"></script>
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/siteChrome-s7Q2ZUt1.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/firebase-CwOE8gp2.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/auth-BvEvtq_x.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/memoriesGallery-DD6mPUXN.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/reveal-eQ-c7gKR.js">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/siteChrome-D5bf8iRE.css">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/reveal-BF-ZO3Id.css">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/memories-zXMWG7dw.css">
+</head>
+<body>
+
+  <!-- ═══ NAVBAR (rendered by src/modules/siteChrome.js) ═══ -->
+  <nav class="site-nav" id="siteNav"></nav>
+
+  <div class="memories-page">
+    <!-- Header -->
+    <div class="memories-header">
+      <h1>Our Memories</h1>
+      <div class="memories-header-actions">
+        <button class="upload-btn" id="uploadToggle">+ Add Memory</button>
+      </div>
+    </div>
+
+    <!-- Upload Panel -->
+    <div class="upload-panel" id="uploadPanel">
+      <div class="upload-drop-zone" id="dropZone">
+        <span class="drop-icon">&#x1F4F7;</span>
+        <p>Tap to select photos or drag & drop</p>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" multiple hidden />
+      <div class="upload-preview-list" id="previewList"></div>
+      <div class="upload-progress" id="uploadProgress">
+        <div class="upload-progress-bar" id="progressBar"></div>
+      </div>
+      <p class="upload-status" id="uploadStatus"></p>
+      <div class="upload-actions">
+        <button class="upload-cancel" id="uploadCancel">Cancel</button>
+        <button class="upload-submit" id="uploadSubmit" disabled>Upload</button>
+      </div>
+    </div>
+
+    <!-- Gallery Grid -->
+    <div class="memories-grid" id="memoriesGrid"></div>
+    <div class="memories-empty" id="memoriesEmpty" style="display:none">
+      No memories yet -- be the first to add one!
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+    <img id="lightbox-img" src="" alt="" />
+    <p class="lightbox-caption" id="lightbox-caption"></p>
+  </div>
+
+  <!-- ═══ MUSIC (rendered by src/modules/siteChrome.js) ═══ -->
+  <div id="siteMusic"></div>
+
+</body>
+</html>

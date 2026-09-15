@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Us Machina &mdash; People &hearts;</title>
+  <link rel="icon" type="image/png" href="./heart.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <meta name="description" content="Who you might want to say hi to." />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' https://*.firebasestorage.app https://firebasestorage.googleapis.com data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://lovegpt-osmy5pclpq-uc.a.run.app https://www.google-analytics.com https://analytics.google.com https://api.open-meteo.com; font-src 'self' https://fonts.gstatic.com; media-src 'self'; frame-src 'none';" />
+  <script type="module" crossorigin src="/lovesite/assets/people-xZtUo0Xw.js"></script>
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/dates-kyTPMPBX.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/storage-DnWYfYa4.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/reminders-C0YM09jF.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/siteChrome-s7Q2ZUt1.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/preload-helper-D8MbjoNq.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/peopleStore-fAcUeTGm.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/modal-wKvJMx9T.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/reminderUI-B59KSyAs.js">
+  <link rel="modulepreload" crossorigin href="/lovesite/assets/reveal-eQ-c7gKR.js">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/siteChrome-D5bf8iRE.css">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/reminderUI-BO9dpVtf.css">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/reveal-BF-ZO3Id.css">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/people-D4_1zNO1.css">
+  <link rel="stylesheet" crossorigin href="/lovesite/assets/ui-XKoYbeGj.css">
+</head>
+<body>
+
+  <!-- ═══ NAVBAR (rendered by src/modules/siteChrome.js) ═══ -->
+  <nav class="site-nav" id="siteNav"></nav>
+
+  <main class="people-page" id="peoplePage">
+    <header class="people-header">
+      <div class="people-header__text">
+        <h1>People</h1>
+        <p class="people-lede">The ones you like thinking about, so you don't have to hold them all in your head.</p>
+      </div>
+      <div class="people-header__actions">
+        <a class="usm-btn usm-btn--ghost" href="./people-dashboard.html">Check-in dashboard</a>
+        <button type="button" class="usm-btn usm-btn--ghost" id="peopleExport">Backup</button>
+        <button type="button" class="usm-btn usm-btn--ghost" id="peopleImport">Import</button>
+        <input type="file" id="peopleImportFile" accept="application/json,.json" class="sr-only" tabindex="-1" aria-hidden="true" />
+      </div>
+    </header>
+
+    <!-- everything below is rendered by src/people.js -->
+    <div id="peopleReminders"></div>
+    <section class="people-energy" id="peopleEnergy" aria-label="Social energy"></section>
+    <section class="people-list-wrap" id="peopleListWrap" aria-label="People"></section>
+    <section class="people-messages" id="peopleMessages" aria-label="Messages"></section>
+    <div class="people-add-wrap" id="peopleAddWrap"></div>
+
+    <p class="people-note">This lives only in this browser on this device. Clearing your browser data will erase it &mdash; download a backup now and then.</p>
+
+    <div class="sr-only" role="status" aria-live="polite" id="peopleStatus"></div>
+  </main>
+
+  <footer class="site-footer" id="siteFooter"></footer>
+
+  <!-- ═══ MUSIC (rendered by src/modules/siteChrome.js) ═══ -->
+  <div id="siteMusic"></div>
+
+</body>
+</html>

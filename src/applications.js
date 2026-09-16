@@ -15,8 +15,9 @@ import {
   listApplications, getApplication, addApplication, updateApplication, deleteApplication,
   orderForAttention, nextAttention,
   exportAll, importAll, backupFilename,
-  subscribeApplications, subscribeMaterials, onSaveFailure,
+  subscribeApplications, subscribeMaterials, onSaveFailure, syncTargets,
 } from './modules/applicationsStore.js';
+import { initCloudSync } from './modules/cloudSync.js';
 import { promptTemplates, getTemplate, DEFAULT_KINDS_BY_TEMPLATE, TONES } from './data/promptTemplates.js';
 import { mountReminderStrip } from './modules/reminderUI.js';
 
@@ -77,6 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
   } catch (err) {
     warn('site chrome failed to initialise; continuing without it', err);
   }
+  // Applications and materials follow her between devices; the subscriptions below re-render on arrival.
+  initCloudSync({ stores: syncTargets() });
 
   mountReminderStrip('#deskReminders', { types: ['application'] });
 

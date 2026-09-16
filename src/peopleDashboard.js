@@ -7,7 +7,8 @@ import './styles/people-dashboard.css';
 import { initSiteChrome } from './modules/siteChrome.js';
 import { initReveal } from './modules/reveal.js';
 import { formatLongDate, formatRelativeGentle } from './modules/dates.js';
-import { getCheckInSummary, subscribe } from './modules/peopleStore.js';
+import { getCheckInSummary, subscribe, syncTargets } from './modules/peopleStore.js';
+import { initCloudSync } from './modules/cloudSync.js';
 
 const REWARDS = [
   { title: 'DoorDash night', note: 'Your pick, my treat.' },
@@ -153,4 +154,5 @@ document.addEventListener('DOMContentLoaded', () => {
   renderRewards();
   renderDashboard();
   subscribe(renderDashboard);
+  initCloudSync({ stores: syncTargets() }); // the same people + check-ins on every device
 });

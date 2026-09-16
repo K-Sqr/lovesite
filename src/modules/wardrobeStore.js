@@ -9,8 +9,11 @@
  * compressed to 640px / q0.8 before storing — thumbnails in a grid, not a
  * lightbox — see compressImage() for why that differs from upload.js.
  *
- * This module imports neither firebase.js nor upload.js. Nothing here makes a
- * network request, and nothing about the closet is ever logged.
+ * This module imports neither firebase.js nor upload.js, and nothing about the
+ * closet is ever logged. Cross-device sync is one layer up: outfit.js hands
+ * syncTargets() to cloudSync.js (metadata envelope) and registers a photo
+ * adapter through setPhotoCloud() (Firebase Storage). Without either, the
+ * closet works exactly as before, on this device only.
  *
  * Item shape (WardrobeItem):
  *   { id: 'itm_…', name, category, colour, style, warmth (1-5 | null),
@@ -177,6 +180,23 @@ const photos = createBlobStore('wardrobe-photos');
 
 export const STORE_NAME = store.name;
 
+/** The underlying metadata store, for cloudSync.js only — it mirrors the envelope between devices. */
+export function syncTargets() {
+  return [store];
+}
+
+/**
+ * Where photos go beyond this device. Registered by outfit.js once signed in
+ * (cloudSync.wardrobePhotoCloud); until then, and if it ever fails, photos
+ * simply stay in IndexedDB as before. Shape: { put(id, blob), get(id) → Blob|null, delete(id) }.
+ * @type {{ put: Function, get: Function, delete: Function } | null}
+ */
+let photoCloud = null;
+
+export function setPhotoCloud(adapter) {
+  photoCloud = adapter && typeof adapter.get === 'function' ? adapter : null;
+}
+
 function readState() {
   const data = store.read();
   if (!data || typeof data !== 'object') return { items: [], settings: { ...INITIAL_SETTINGS } };
@@ -316,7 +336,10 @@ export async function deleteItem(id) {
   if (!item) return false;
   state.items = state.items.filter((it) => it.id !== id);
   writeState(state);
-  if (item.photoId) await photos.delete(item.photoId);
+  if (item.photoId) {
+    await photos.delete(item.photoId);
+    if (photoCloud) photoCloud.delete(item.photoId).catch((err) => warn('cloud photo delete failed', err && err.code));
+  }
   return true;
 }
 
@@ -409,20 +432,36 @@ export async function setPhoto(id, file) {
     warn('photo could not be stored beyond this session');
     return null;
   }
+  if (photoCloud) {
+    try {
+      await photoCloud.put(photoId, blob);
+    } catch (err) {
+      warn('cloud photo upload failed; the photo is on this device only', err && err.code);
+    }
+  }
   updateItem(id, { photoId });
   return photoId;
 }
 
-/** @returns {Promise<Blob|null>} */
+/**
+ * The photo for an item: from this device first, else from the shared copy
+ * (then cached here so the next look is instant).
+ * @returns {Promise<Blob|null>}
+ */
 export async function getPhoto(photoId) {
   if (!photoId) return null;
-  return photos.get(photoId);
+  const local = await photos.get(photoId);
+  if (local || !photoCloud) return local;
+  const remote = await photoCloud.get(photoId);
+  if (remote) await photos.put(photoId, remote);
+  return remote;
 }
 
 export async function removePhoto(id) {
   const item = getItem(id);
   if (!item || !item.photoId) return false;
   await photos.delete(item.photoId);
+  if (photoCloud) photoCloud.delete(item.photoId).catch((err) => warn('cloud photo delete failed', err && err.code));
   updateItem(id, { photoId: null });
   return true;
 }

@@ -1,13 +1,17 @@
 /**
  * rhythm.js — page entry for rhythm.html.
  *
- * Local-only by construction: this file and everything it imports touch no
- * network. Not the Firebase SDK module (it reports a page view on import), no fetch, no beacon.
+ * Entries are encrypted under her passphrase before they are saved, and the
+ * only thing that ever leaves this page is that ciphertext: rhythmSync.js
+ * keeps one shared envelope in Firestore so the same entries open on her
+ * phone, her laptop, and his. The server never sees a record or the passphrase.
  * Nothing here writes to the console either — every error becomes a calm
  * sentence on the page, and record contents never leave the DOM/module state.
  *
  * The passphrase exists only as a local inside attemptUnlock() for the length
  * of one call to rhythmStore.unlock(). It is never assigned to module state.
+ * The site passcode, typed once per device to reach the shared copy, is a
+ * local inside attemptSignIn() in the same way.
  */
 
 import './styles/base.css';
@@ -24,6 +28,8 @@ import { predictNextWindow, cycleLengthByRecord, MIN_CYCLE_DAYS, MAX_CYCLE_DAYS 
 import { toISO, addDays, daysBetween, parseISO, formatDateRange, formatLongDate } from './modules/dates.js';
 import { registerEphemeral, clearEphemeral } from './modules/reminders.js';
 import { mountReminderStrip } from './modules/reminderUI.js';
+import * as sync from './modules/rhythmSync.js';
+import { whenAuthReady, authenticateWithPasscode } from './modules/auth.js';
 
 /* ────────────────────────────────── copy ────────────────────────────────── */
 // Gentle, factual, second person. No streaks, no nagging, no single certain date.
@@ -34,15 +40,29 @@ const COPY = {
   pastWindow: "You're a few days past your usual window. Cycles move around — this is just what I've got recorded.",
   loss: "There's no way to reset this. If the passphrase is forgotten, the entries are gone for good — that's the trade for keeping them truly private. Download a copy if you want a safety net.",
   exportWarning: 'This file is not encrypted. Anyone who opens it can read it. Put it somewhere you trust.',
-  honestLock: "The passphrase stops a glance and a curious tap-around. The encryption is what actually protects what's saved: it's unreadable on this phone without the passphrase. Nothing protects what's on screen while it's open, so lock it when you put the phone down.",
-  localOnly: 'Everything stays on this device. It is never sent anywhere, and no other page on this site can see it.',
+  honestLock: "The passphrase stops a glance and a curious tap-around. The encryption is what actually protects what's saved: it's unreadable anywhere without the passphrase. Nothing protects what's on screen while it's open, so lock it when you put the phone down.",
+  shared: 'Entries are encrypted with your passphrase before they are saved, and that encrypted copy is what the site keeps in step between your phone, your computer, and his. Nobody can read it without the passphrase — not the site, not the server.',
+  signIn: "Type the site passcode — the same one as the Letters page — so this device can reach the shared copy. It's remembered here, so it's a one-time thing.",
+  firstTime: "Nothing is set up yet. Whatever you type now becomes the passphrase, and the same one opens Rhythm on every phone and computer — so it's one to share with him. Pick something you'll both remember.",
+  unlockIntro: "Your passphrase opens the entries. It isn't kept anywhere — not here, not on a server — so there's no hint and no reset.",
+  checking: 'Checking for the latest entries…',
+  unreachable: "I can't reach the shared copy right now. Check the connection and try again.",
   unlocking: 'Unlocking…',
+  sync: {
+    ok: 'Shared with your other devices.',
+    saving: 'Saving to the shared copy…',
+    offline: "Couldn't reach the shared copy. Saved here for now — I'll try again when the connection is back.",
+    updated: 'Updated with what was saved on another device.',
+    repassphrased: 'Rhythm was set up again with a different passphrase on another device. Unlock with that one.',
+  },
   errors: {
     'wrong-passphrase': "That's not it. Try again.",
     corrupt: "I can't read the saved data with that passphrase.",
     'no-crypto': "This browser can't keep things private, so Rhythm can't open here.",
     'write-failed': "Saving isn't working in this browser right now.",
     'empty-passphrase': 'Type the passphrase to open this.',
+    'empty-passcode': 'Type the site passcode to continue.',
+    'wrong-passcode': "That's not it. Try again.",
     generic: "Something went wrong there. Try again.",
   },
 };
@@ -63,6 +83,8 @@ const state = {
   calendarMonth: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
   /** @type {{ unmount: () => void } | null} the in-page reminder card while unlocked */
   reminderStrip: null,
+  /** true while beginUnlock() is mid-flight, so a double tap doesn't open two prompts */
+  beginning: false,
 };
 
 /** @type {HTMLElement} */ let content;
@@ -74,7 +96,13 @@ const state = {
 /** @type {HTMLElement} */ let unlockIntro;
 /** @type {HTMLElement} */ let unlockError;
 /** @type {HTMLButtonElement} */ let unlockBtn;
+/** @type {HTMLElement} */ let signInModal;
+/** @type {HTMLInputElement} */ let codeInput;
+/** @type {HTMLElement} */ let signInError;
+/** @type {HTMLButtonElement} */ let signInBtn;
+/** @type {((ok: boolean) => void) | null} */ let signInResolve = null;
 /** @type {HTMLElement | null} */ let statusEl = null;
+/** @type {HTMLElement | null} */ let syncEl = null;
 /** @type {HTMLElement | null} */ let answerEl = null;
 /** @type {HTMLElement | null} */ let overviewEl = null;
 /** @type {HTMLElement | null} */ let calendarEl = null;
@@ -138,8 +166,9 @@ function clearTimers() {
  * Drop the key, forget every decrypted record, and replace the DOM so no
  * plaintext survives — nothing is merely hidden.
  */
-function lock({ prompt = true } = {}) {
+function lock({ prompt = true, note = null } = {}) {
   clearTimers();
+  stopSync();
   // The reminder lives only in memory and only while unlocked: drop it before the key.
   clearEphemeral('rhythm');
   if (state.reminderStrip) { state.reminderStrip.unmount(); state.reminderStrip = null; }
@@ -148,12 +177,12 @@ function lock({ prompt = true } = {}) {
   state.settings = null;
   state.hiddenAt = null;
   state.historyAnimated = false;
-  statusEl = answerEl = overviewEl = calendarEl = historyEl = null;
+  statusEl = syncEl = answerEl = overviewEl = calendarEl = historyEl = null;
   content.replaceChildren();
   if (passInput) passInput.value = '';
   if (confirmInput) confirmInput.value = '';
-  renderLocked();
-  if (prompt) showUnlockModal();
+  renderLocked(note);
+  if (prompt) beginUnlock();
 }
 
 function autoLockMs() {
@@ -177,6 +206,129 @@ function wireAutoLock() {
   });
   // storage.js drops its key on pagehide too; this clears the screen and module state as well.
   window.addEventListener('pagehide', () => { if (store.isUnlocked()) lock({ prompt: false }); });
+}
+
+/* ───────────────────────────── sign-in modal ───────────────────────────── */
+// The site passcode, once per device. It reaches the shared ciphertext and
+// nothing else — the passphrase below is still what makes the entries readable.
+
+function buildSignInModal() {
+  codeInput = el('input', {
+    type: 'password',
+    class: 'usm-input',
+    id: 'rhythmCode',
+    autocomplete: 'off',
+    spellcheck: 'false',
+    autocapitalize: 'off',
+    autocorrect: 'off',
+    'aria-describedby': 'rhythmCodeHint',
+    placeholder: '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022',
+  });
+  codeInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); attemptSignIn(); }
+  });
+  signInError = el('p', { class: 'usm-field__error', 'aria-live': 'polite' });
+  signInBtn = button('Continue', 'usm-btn--primary', attemptSignIn);
+
+  signInModal = el('div', {
+    class: 'usm-modal rhythm-unlock',
+    role: 'dialog',
+    'aria-modal': 'true',
+    'aria-labelledby': 'rhythmSignInTitle',
+    'data-focus-trap': true,
+    hidden: true,
+  }, [
+    el('div', { class: 'usm-modal__scrim', 'data-modal-close': true }),
+    el('div', { class: 'usm-modal__card' }, [
+      el('h3', { id: 'rhythmSignInTitle', text: 'One thing first' }),
+      el('p', { id: 'rhythmCodeHint', text: COPY.signIn }),
+      el('div', { class: 'usm-field' }, [
+        el('label', { class: 'usm-field__label', for: 'rhythmCode', text: 'Site passcode' }),
+        codeInput,
+      ]),
+      signInError,
+      el('div', { class: 'usm-modal__actions' }, [
+        signInBtn,
+        button('Not now', 'usm-btn--ghost', null, { 'data-modal-close': true }),
+      ]),
+    ]),
+  ]);
+  document.body.appendChild(signInModal);
+}
+
+/** @returns {Promise<boolean>} true once signed in; false if she closed it */
+function showSignInModal() {
+  return new Promise((resolve) => {
+    signInResolve = resolve;
+    signInError.textContent = '';
+    codeInput.value = '';
+    openModal(signInModal, {
+      initialFocus: codeInput,
+      onClose: () => {
+        const done = signInResolve;
+        signInResolve = null;
+        if (done) done(false);
+      },
+    });
+  });
+}
+
+async function attemptSignIn() {
+  if (signInBtn.disabled) return;
+  const passcode = codeInput.value.trim();
+  codeInput.value = '';
+  if (!passcode) {
+    signInError.textContent = COPY.errors['empty-passcode'];
+    codeInput.focus();
+    return;
+  }
+  signInError.textContent = '';
+  signInBtn.disabled = true;
+  codeInput.disabled = true;
+  let ok = false;
+  try {
+    ok = await authenticateWithPasscode(passcode, { remember: true });
+  } catch {
+    ok = false;
+  }
+  signInBtn.disabled = false;
+  codeInput.disabled = false;
+  if (!ok) {
+    signInError.textContent = COPY.errors['wrong-passcode'];
+    codeInput.focus();
+    return;
+  }
+  const done = signInResolve;
+  signInResolve = null;
+  closeModal(signInModal);
+  if (done) done(true);
+}
+
+/**
+ * The path from "Unlock" to the passphrase prompt: sign in if this device
+ * hasn't yet, fetch the shared envelope so this device is judged against every
+ * device (first time anywhere vs. just first time here), then ask.
+ */
+async function beginUnlock() {
+  if (state.beginning) return;
+  state.beginning = true;
+  try {
+    if (!(await whenAuthReady())) {
+      const ok = await showSignInModal();
+      if (!ok) return;
+    }
+    renderLocked(COPY.checking);
+    await pullLatest();
+    if (!syncState.reachable && !store.hasData()) {
+      // Setting up fresh while blind to the shared copy could overwrite it later.
+      renderLocked(COPY.unreachable);
+      return;
+    }
+    renderLocked();
+    showUnlockModal();
+  } finally {
+    state.beginning = false;
+  }
 }
 
 /* ───────────────────────────── unlock modal ───────────────────────────── */
@@ -252,9 +404,7 @@ function buildUnlockModal() {
 function showUnlockModal() {
   const firstTime = !store.hasData();
   unlockTitle.textContent = firstTime ? 'Choose a passphrase' : 'Unlock Rhythm';
-  unlockIntro.textContent = firstTime
-    ? "First time here. Whatever you type now becomes the passphrase for this phone. Pick something you'll remember."
-    : "Your passphrase opens the entries on this phone. It isn't kept anywhere — not here, not on a server — so there's no hint and no reset.";
+  unlockIntro.textContent = firstTime ? COPY.firstTime : COPY.unlockIntro;
   confirmWrap.hidden = !firstTime;
   unlockBtn.textContent = firstTime ? 'Set it up' : 'Unlock';
   unlockError.textContent = '';
@@ -295,6 +445,7 @@ async function attemptUnlock() {
     setUnlockBusy(false);
     closeModal(unlockModal);
     renderUnlocked();
+    startSync();
   } catch (err) {
     setUnlockBusy(false);
     renderLocked();
@@ -305,12 +456,14 @@ async function attemptUnlock() {
 
 /* ───────────────────────────── locked views ───────────────────────────── */
 
-function renderLocked() {
+/** @param {string|null} [note]  one line under the button: progress, or why it stopped */
+function renderLocked(note = null) {
   content.replaceChildren(
     el('div', { class: 'usm-card rhythm-locked' }, [
       el('p', { class: 'rhythm-answer', text: store.hasData() ? 'Rhythm is locked.' : "Rhythm is ready when you are." }),
-      el('p', { class: 'rhythm-note', text: COPY.localOnly }),
-      button('Unlock', 'usm-btn--primary', showUnlockModal),
+      el('p', { class: 'rhythm-note', text: COPY.shared }),
+      button('Unlock', 'usm-btn--primary', beginUnlock),
+      note ? el('p', { class: 'rhythm-note', role: 'status', text: note }) : null,
       el('p', { class: 'rhythm-note', text: COPY.loss }),
     ]),
   );
@@ -325,6 +478,118 @@ function renderUnlocking() {
     ]),
     el('p', { class: 'rhythm-note', role: 'status', text: COPY.unlocking }),
   );
+}
+
+/* ─────────────────────────────── sync ─────────────────────────────── */
+// Only the ciphertext envelope crosses this line — see rhythmSync.js. The
+// newer envelope wins, whichever device sealed it.
+
+const syncState = {
+  /** @type {object|null} the envelope the server is known to hold */
+  remote: null,
+  /** false after a pull or listener failure: the shared copy can't be reached */
+  reachable: true,
+  /** true once the server has told us what it holds; nothing is pushed blind */
+  primed: false,
+  pushing: false,
+  /** @type {(() => void) | null} */ unwatch: null,
+  /** @type {(() => void) | null} */ unsubscribe: null,
+};
+
+function setSyncNote(text) {
+  if (syncEl) syncEl.textContent = text;
+}
+
+/** Bring this device's envelope up to the shared one before the passphrase is asked. */
+async function pullLatest() {
+  let remote = null;
+  try {
+    remote = await sync.pull();
+  } catch {
+    syncState.reachable = false;
+    syncState.primed = false;
+    return;
+  }
+  syncState.reachable = true;
+  syncState.primed = true;
+  syncState.remote = remote;
+  if (sync.isNewer(remote, store.getEnvelope())) {
+    try {
+      await store.adoptEnvelope(remote);
+    } catch {
+      // Unreadable shared copy; the local one stays and the passphrase prompt decides.
+    }
+  }
+}
+
+/** Push this device's envelope if it is newer than what the server holds. */
+async function pushLocal() {
+  if (!store.isUnlocked() || !syncState.primed) return;
+  const env = store.getEnvelope();
+  if (!sync.isNewer(env, syncState.remote)) {
+    setSyncNote(syncState.reachable ? COPY.sync.ok : COPY.sync.offline);
+    return;
+  }
+  if (syncState.pushing) return; // re-checked once the current push lands
+  syncState.pushing = true;
+  setSyncNote(typeof navigator !== 'undefined' && navigator.onLine === false ? COPY.sync.offline : COPY.sync.saving);
+  try {
+    await sync.push(env);
+    syncState.remote = env;
+    syncState.reachable = true;
+    setSyncNote(COPY.sync.ok);
+  } catch {
+    syncState.reachable = false;
+    setSyncNote(COPY.sync.offline);
+  } finally {
+    syncState.pushing = false;
+  }
+  // Anything written while that was in flight.
+  if (syncState.reachable && store.isUnlocked() && sync.isNewer(store.getEnvelope(), syncState.remote)) pushLocal();
+}
+
+/** The server's copy changed (or was first read). Adopt it if it is newer than ours. */
+async function onRemote(env) {
+  syncState.reachable = true;
+  syncState.primed = true;
+  if (env) syncState.remote = env;
+  if (!env || !sync.isNewer(env, store.getEnvelope())) {
+    pushLocal();
+    return;
+  }
+  let data = null;
+  try {
+    data = await store.adoptEnvelope(env);
+  } catch {
+    // Sealed under a different passphrase elsewhere; the store has locked itself.
+    lock({ prompt: false, note: COPY.sync.repassphrased });
+    return;
+  }
+  if (!data) return;
+  state.records = data.records;
+  state.settings = data.settings;
+  await refresh();
+  showStatus(COPY.sync.updated);
+  setSyncNote(COPY.sync.ok);
+}
+
+function startSync() {
+  stopSync();
+  syncState.unsubscribe = store.subscribe((unlocked) => { if (unlocked) pushLocal(); });
+  syncState.unwatch = sync.watch(onRemote, () => {
+    syncState.reachable = false;
+    setSyncNote(COPY.sync.offline);
+  });
+  setSyncNote(syncState.reachable ? COPY.sync.ok : COPY.sync.offline);
+  pushLocal(); // a first-time setup here, or entries saved while the shared copy was out of reach
+}
+
+function stopSync() {
+  if (syncState.unwatch) syncState.unwatch();
+  if (syncState.unsubscribe) syncState.unsubscribe();
+  syncState.unwatch = null;
+  syncState.unsubscribe = null;
+  syncState.pushing = false;
 }
 
 /* ──────────────────────────── unlocked: answer ──────────────────────────── */
@@ -669,7 +934,8 @@ function buildLogging() {
   ]);
 
   statusEl = el('div', { class: 'rhythm-status', 'aria-live': 'polite' });
-  return [primary, corrections, pickRow, statusEl];
+  syncEl = el('p', { class: 'rhythm-note rhythm-sync', text: COPY.sync.ok });
+  return [primary, corrections, pickRow, statusEl, syncEl];
 }
 
 /* ─────────────────────────── unlocked: history ─────────────────────────── */
@@ -893,7 +1159,7 @@ async function offerRestore(file) {
     }
   });
   const keep = button('Keep what I have', 'usm-btn--ghost', clearStatus);
-  showStatus('Restoring a backup replaces the entries currently on this device.', [replace, keep]);
+  showStatus('Restoring a backup replaces the entries currently saved — on every device, once it syncs.', [replace, keep]);
 }
 
 function buildSettings() {
@@ -925,7 +1191,7 @@ function buildSettings() {
     el('summary', { text: 'Settings' }),
     el('div', { class: 'rhythm-details__body' }, [
       el('p', { class: 'rhythm-note', text: COPY.honestLock }),
-      el('p', { class: 'rhythm-note', text: COPY.localOnly }),
+      el('p', { class: 'rhythm-note', text: COPY.shared }),
       el('div', { class: 'usm-field' }, [
         el('label', { class: 'usm-field__label', for: 'rhythmAutoLock', text: 'Lock on its own after' }),
         lockSelect,
@@ -980,9 +1246,11 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+  buildSignInModal();
   buildUnlockModal();
   wireAutoLock();
+  window.addEventListener('online', () => pushLocal());
   renderLocked();
   requestAnimationFrame(() => setTimeout(() => initReveal(), 50));
-  showUnlockModal();
+  beginUnlock();
 });

@@ -13,9 +13,10 @@
  * The energy selection is NOT in either store. It lives in sessionStorage
  * under `usm.people.energy` as one string — no history, no timestamps, ever.
  *
- * Everything here is local-only. This module never imports firebase.js, never
- * fetches, never logs a person. The `warn()` helper below is the only console
- * output and it must never be handed a record.
+ * This module never imports firebase.js, never fetches, never logs a person.
+ * Cross-device sync happens one layer up: people.js hands syncTargets() to
+ * cloudSync.js, which mirrors the stores' envelopes. The `warn()` helper
+ * below is the only console output and it must never be handed a record.
  *
  * ── Reminder seam (08 R7 → 11-NOTIFICATIONS) ─────────────────────────────
  * `src/modules/reminders.js` is owned by 11-NOTIFICATIONS.md. It is loaded
@@ -153,6 +154,11 @@ const peopleStore = createStore('people', {
 const templatesStore = createStore('messageTemplates', { version: 1, initial: { customTemplates: [] } });
 
 export const storeKeys = { people: peopleStore.key, messageTemplates: templatesStore.key };
+
+/** The underlying stores, for cloudSync.js only — it mirrors their envelopes between devices. */
+export function syncTargets() {
+  return [peopleStore, templatesStore];
+}
 
 /* ─────────────────────────────── helpers ─────────────────────────────── */
 

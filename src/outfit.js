@@ -10,6 +10,7 @@ import { openModal, closeModal } from './modules/modal.js';
 import { toISO, formatRelativeGentle } from './modules/dates.js';
 import * as store from './modules/wardrobeStore.js';
 import { mountReminderStrip } from './modules/reminderUI.js';
+import { initCloudSync, wardrobePhotoCloud } from './modules/cloudSync.js';
 import * as weatherApi from './modules/weather.js';
 import { suggestOutfit, rankSlot, explainOutfit, SPARSE_CLOSET_LINE } from './modules/outfitEngine.js';
 
@@ -1145,6 +1146,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // An empty closet opens the manager so the first add is one tap away.
   if (store.listItems().length === 0 && mounts.closet) mounts.closet.open = true;
+
+  // The closet follows her between devices: metadata through cloudSync, photos
+  // through the Storage adapter. A change from another device re-renders here.
+  store.subscribe(() => { computeOutfit(); renderOutfit(); renderCloset(); });
+  initCloudSync({
+    stores: store.syncTargets(),
+    onSignedIn: () => store.setPhotoCloud(wardrobePhotoCloud),
+  });
 
   // Never prompts: saved → already-granted geolocation → Winnipeg.
   try {

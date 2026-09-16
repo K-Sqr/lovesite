@@ -22,6 +22,17 @@ service firebase.storage {
       allow update, delete: if request.auth != null && request.auth.uid == 'owner';
     }
 
+    // Closet photos: one compressed JPEG per wardrobe item, mirrored from
+    // IndexedDB by cloudSync.wardrobePhotoCloud. Read needs the site passcode
+    // too — these are hers, not gallery images.
+    match /wardrobe/{fileName} {
+      allow read:   if request.auth != null && request.auth.uid == 'owner';
+      allow create, update: if request.auth != null && request.auth.uid == 'owner'
+                    && request.resource.size < 2 * 1024 * 1024
+                    && request.resource.contentType.matches('image/.*');
+      allow delete: if request.auth != null && request.auth.uid == 'owner';
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }

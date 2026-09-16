@@ -10,6 +10,12 @@
  * The passphrase is a function argument and nothing else: never assigned to
  * module state, never stored, never logged.
  *
+ * Cross-device sync (rhythmSync.js) happens one layer up and only ever sees
+ * the ciphertext envelope: getEnvelope() hands it out, adoptEnvelope() takes
+ * one sealed elsewhere, and subscribe() fires after every local write so the
+ * sync layer knows there is something new to push. Records never pass through
+ * that boundary in the clear.
+ *
  * Decrypted payload:
  *   { version: 1, records: [Record], settings: { autoLockMinutes: 5 }, reminders: { [sourceId]: State } }
  * `records` is kept sorted newest-first on every write, so rendering never sorts.
@@ -221,6 +227,41 @@ export function lock() {
   if (store) store.lock();
 }
 
+/* ─────────────────────────────── sync boundary ─────────────────────────────── */
+
+/** The ciphertext envelope on this device, or null. Never contains a readable record. */
+export function getEnvelope() {
+  try {
+    return getStore().envelope();
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Take an envelope sealed on another device. Works locked (it just lands on
+ * disk for the next unlock) or unlocked (decrypted in place with the current
+ * key). Rejects with 'wrong-passphrase' and locks if the passphrase differs.
+ * @returns {Promise<{ records: object[], settings: object } | null>} fresh data while unlocked, else null
+ */
+export async function adoptEnvelope(env) {
+  const data = await getStore().adopt(env);
+  if (data === null) return null;
+  const clean = coerceData(data);
+  return { records: clean.records, settings: { ...clean.settings } };
+}
+
+/**
+ * Called after every write on this device (and on lock, with `null`), so a
+ * sync layer can push the new envelope. The callback receives no records —
+ * only whether the store is unlocked — and reads getEnvelope() itself.
+ * @param {(unlocked: boolean) => void} fn
+ * @returns {() => void} unsubscribe
+ */
+export function subscribe(fn) {
+  return getStore().subscribe((value) => fn(value !== null));
+}
+
 /* ──────────────────────────────── records ──────────────────────────────── */
 
 async function readData() {
@@ -356,7 +397,7 @@ export async function exportJson() {
 /**
  * Replace the current records from a plaintext file made by exportJson().
  * The imported data is immediately encrypted again under the currently
- * unlocked passphrase. Reminder state is kept on this device.
+ * unlocked passphrase (and so syncs like any other write). Reminder state is kept.
  */
 export async function importJson(json) {
   let backup;

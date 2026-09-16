@@ -1,5 +1,5 @@
 import { auth } from './firebase.js';
-import { setPersistence, signInWithCustomToken, browserSessionPersistence } from 'firebase/auth';
+import { setPersistence, signInWithCustomToken, browserSessionPersistence, browserLocalPersistence } from 'firebase/auth';
 
 // Reuse the LoveGPT Cloud Function URL.
 // It now supports `action: "verify-passcode"` for secure admin actions.
@@ -19,7 +19,26 @@ export function getRole() {
   return uid === 'owner' || uid === 'tolu' ? uid : null;
 }
 
-export async function authenticateWithPasscode(passcode) {
+/**
+ * Wait until Firebase has restored any remembered sign-in, then say whether
+ * someone is signed in. `auth.currentUser` is null for a moment after load
+ * even when a session was remembered, so gates should await this first.
+ */
+export async function whenAuthReady() {
+  try {
+    await auth.authStateReady();
+  } catch {
+    // Older SDK without authStateReady: fall through to whatever currentUser says.
+  }
+  return isAuthenticated();
+}
+
+/**
+ * @param {string} passcode
+ * @param {{ remember?: boolean }} [options]  remember=true keeps the sign-in on
+ *   this device across browser restarts (Rhythm); the default lasts one session.
+ */
+export async function authenticateWithPasscode(passcode, { remember = false } = {}) {
   const res = await fetch(FUNCTION_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -34,8 +53,8 @@ export async function authenticateWithPasscode(passcode) {
   if (!data || !data.token) return false;
 
   try {
-    // Keep auth scoped to this browser session.
-    await setPersistence(auth, browserSessionPersistence);
+    // Keep auth scoped to this browser session unless asked to remember it.
+    await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
     await signInWithCustomToken(auth, data.token);
     return true;
   } catch (err) {

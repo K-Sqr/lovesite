@@ -527,3 +527,9 @@
     align-items: flex-start;
   }
 }
+
+/* ── Sync line ── one quiet sentence under the status: shared, saving, or out of reach */
+.rhythm-sync {
+  font-size: 0.8rem;
+  margin: 0;
+}

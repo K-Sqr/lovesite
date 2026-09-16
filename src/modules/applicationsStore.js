@@ -169,6 +169,11 @@ const materials = createStore('materials', {
   },
 });
 
+/** The underlying stores, for cloudSync.js only — it mirrors their envelopes between devices. */
+export function syncTargets() {
+  return [applications, materials];
+}
+
 /** Listeners told when a write did not reach disk (storage kept it in memory). */
 const failureListeners = new Set();
 

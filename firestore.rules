@@ -15,6 +15,44 @@ service cloud.firestore {
       allow delete: if request.auth != null && request.auth.uid == 'owner';
     }
 
+    // Rhythm: one shared AES-GCM envelope (see src/modules/rhythmSync.js).
+    // Only ciphertext ever lands here; the passphrase that opens it is never
+    // sent. Anyone signed in with the site passcode may read and replace it.
+    match /rhythm/shared {
+      allow read: if request.auth != null && request.auth.uid == 'owner';
+      allow create, update: if request.auth != null
+                    && request.auth.uid == 'owner'
+                    && request.resource.data.keys().hasOnly(['v', 'alg', 'kdf', 'iterations', 'salt', 'iv', 'ciphertext', 'updatedAt'])
+                    && request.resource.data.keys().hasAll(['v', 'alg', 'kdf', 'iterations', 'salt', 'iv', 'ciphertext', 'updatedAt'])
+                    && request.resource.data.v is int
+                    && request.resource.data.alg == 'AES-GCM'
+                    && request.resource.data.kdf is string
+                    && request.resource.data.iterations is int
+                    && request.resource.data.salt is string
+                    && request.resource.data.iv is string
+                    && request.resource.data.ciphertext is string
+                    && request.resource.data.ciphertext.size() <= 900000
+                    && request.resource.data.updatedAt is string;
+      allow delete: if false;
+    }
+
+    // For You pages: one plain { v, updatedAt, data } envelope per store
+    // (people, messageTemplates, applications, materials, wardrobe), the same
+    // shape storage.js keeps in localStorage — see src/modules/cloudSync.js.
+    match /foryou/{store} {
+      allow read: if request.auth != null && request.auth.uid == 'owner'
+                    && store in ['people', 'messageTemplates', 'applications', 'materials', 'wardrobe'];
+      allow create, update: if request.auth != null
+                    && request.auth.uid == 'owner'
+                    && store in ['people', 'messageTemplates', 'applications', 'materials', 'wardrobe']
+                    && request.resource.data.keys().hasOnly(['v', 'updatedAt', 'data'])
+                    && request.resource.data.keys().hasAll(['v', 'updatedAt', 'data'])
+                    && request.resource.data.v is int
+                    && request.resource.data.updatedAt is string
+                    && request.resource.data.data is map;
+      allow delete: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

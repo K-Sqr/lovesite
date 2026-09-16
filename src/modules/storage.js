@@ -5,6 +5,11 @@
  *   createStore(name, { version, migrate, initial, encrypted }) → async store (AES-GCM, passphrase)
  *   createBlobStore(name)                                       → async IndexedDB blob store
  *
+ * Every store also exposes `envelope()` and `adopt(env)` — the seam that
+ * cloudSync.js (plain stores) and rhythmSync.js (the encrypted one) use to
+ * mirror the on-disk envelope between devices. This module itself still never
+ * talks to the network.
+ *
  * Contract (04-SHARED-FOUNDATIONS R3):
  *   • Every key is `usm.<name>.v<version>` — the k-sqr.github.io origin is shared
  *     with every other Pages site, so nothing is ever stored un-namespaced.
@@ -255,6 +260,34 @@ export function createStore(name, options = {}) {
     return clone(data);
   }
 
+  /**
+   * The envelope { v, updatedAt, data } this device holds, or null when nothing
+   * has been written yet (a fresh page showing `initial` has no envelope). For
+   * a sync layer: `updatedAt` is what decides which device's copy is newer.
+   */
+  function envelope() {
+    read(); // migrates and fills `cache` if there is anything on disk
+    return cache ? clone(cache) : null;
+  }
+
+  /**
+   * Take an envelope written on another device as this device's copy — verbatim,
+   * keeping its `updatedAt`, so a round trip does not make it look newer than
+   * it is. Migrates first if it is from an older version. Notifies subscribers.
+   */
+  function adopt(env) {
+    if (!env || typeof env !== 'object' || !('data' in env)) throw new StorageError('That is not a stored envelope', 'bad-envelope');
+    if (!Number.isInteger(env.v) || env.v < 1) throw new StorageError('That envelope has no version', 'bad-version');
+    if (env.v > version) throw new StorageError('That data is from a newer version of this page', 'newer-version');
+    if (env.v < version) {
+      write(runMigration(env.data, env.v));
+      return;
+    }
+    cache = { v: version, updatedAt: typeof env.updatedAt === 'string' ? env.updatedAt : new Date().toISOString(), data: clone(env.data) };
+    dirty = !safeSet(key, JSON.stringify(cache));
+    notify();
+  }
+
   let storageListenerAttached = false;
   function subscribe(fn) {
     listeners.add(fn);
@@ -269,7 +302,7 @@ export function createStore(name, options = {}) {
     return () => listeners.delete(fn);
   }
 
-  return { name, key, version, read, write, update, clear, export: exportJSON, import: importJSON, subscribe };
+  return { name, key, version, read, write, update, clear, export: exportJSON, import: importJSON, subscribe, envelope, adopt };
 }
 
 /* ───────────────────────────── encrypted store ───────────────────────────── */
@@ -487,6 +520,49 @@ function createEncryptedStore(name, { version, migrate, initial }) {
     return ok;
   }
 
+  /** The on-disk ciphertext envelope, or null. Safe to hand to a sync layer: it holds nothing readable. */
+  function envelope() {
+    return readEnvelope();
+  }
+
+  /**
+   * Replace the on-disk envelope with one written elsewhere (another device)
+   * without dropping the session, provided the same key still opens it.
+   * Returns the decrypted data while unlocked, or null while locked. If the
+   * envelope was sealed under a different salt or passphrase, the store locks
+   * itself and rejects with StorageError('wrong-passphrase') — ask again.
+   */
+  async function adopt(env) {
+    if (!isEncryptedEnvelope(env) || !Number.isInteger(env.v)) throw new StorageError('That is not an encrypted envelope', 'bad-envelope');
+    if (env.v > version) throw new StorageError('That data is from a newer version of this page', 'newer-version');
+    const stored = {
+      v: env.v, alg: env.alg, kdf: env.kdf, iterations: env.iterations,
+      salt: env.salt, iv: env.iv, ciphertext: env.ciphertext,
+      updatedAt: typeof env.updatedAt === 'string' ? env.updatedAt : new Date().toISOString(),
+    };
+    if (!cryptoKey) {
+      safeSet(key, JSON.stringify(stored));
+      return null;
+    }
+    if (env.salt !== b64encode(salt) || env.iterations !== iterations) {
+      safeSet(key, JSON.stringify(stored));
+      lock();
+      throw new StorageError("That's not it", 'wrong-passphrase');
+    }
+    let data;
+    try {
+      data = await decryptEnvelope(env, cryptoKey);
+    } catch (err) {
+      safeSet(key, JSON.stringify(stored));
+      lock();
+      throw err;
+    }
+    safeSet(key, JSON.stringify(stored));
+    cache = env.v < version && typeof migrate === 'function' ? migrate(data, env.v) : data;
+    notify();
+    return clone(cache);
+  }
+
   let storageListenerAttached = false;
   function subscribe(fn) {
     listeners.add(fn);
@@ -517,6 +593,7 @@ function createEncryptedStore(name, { version, migrate, initial }) {
     name, key, version, encrypted: true,
     unlock, lock, isUnlocked, hasData, changePassphrase,
     read, write, update, clear, export: exportJSON, import: importJSON, subscribe,
+    envelope, adopt,
   };
 }
 

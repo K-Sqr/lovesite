@@ -511,3 +511,52 @@
   .usm-modal__card { padding: 1.5rem 1.2rem; }
   .usm-pill { font-size: 0.78rem; padding: 6px 12px; }
 }
+
+/* ── Cloud sync strip (cloudSync.js) ── one quiet line under a page header:
+   a passcode field until the device is signed in, then a status sentence. */
+.usm-sync {
+  margin: 0 0 var(--space-4);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.usm-sync:empty {
+  margin: 0;
+}
+
+.usm-sync__line {
+  margin: 0;
+}
+
+.usm-sync__signin {
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: var(--space-2) var(--space-3);
+}
+
+.usm-sync__signin summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.usm-sync__hint {
+  margin: var(--space-2) 0 var(--space-3);
+}
+
+.usm-sync__form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.usm-sync__form .usm-input {
+  flex: 1 1 12rem;
+  max-width: 20rem;
+}
+
+.usm-sync .usm-field__error {
+  margin: var(--space-2) 0 0;
+}

@@ -10,6 +10,7 @@ import { openModal, closeModal } from './modules/modal.js';
 import { formatRelativeGentle, toISO, addDays } from './modules/dates.js';
 import * as store from './modules/peopleStore.js';
 import { mountReminderStrip } from './modules/reminderUI.js';
+import { initCloudSync } from './modules/cloudSync.js';
 
 /**
  * people.js — renders people.html and wires its events. All data goes
@@ -947,6 +948,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   mountReminderStrip('#peopleReminders', { types: ['checkin', 'birthday'] });
+  // People, check-ins, and custom templates follow her between devices; the store's subscribe() re-renders on arrival.
+  initCloudSync({ stores: store.syncTargets() });
 
   mounts = {
     energy: document.getElementById('peopleEnergy'),

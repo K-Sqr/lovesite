@@ -1,5 +1,5 @@
 const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/reminders-Dyepzyzn.js","assets/dates-CppsR5VL.js","assets/storage-h-jcr-e6.js"])))=>i.map(i=>d[i]);
-import"./reminders-Dyepzyzn.js";import{t as e}from"./siteChrome-DXge4GQ4.js";import{n as t,t as n}from"./reveal-Bd8FA7dK.js";import{a as r,c as i,l as a,o,r as s,s as c,t as l}from"./dates-CppsR5VL.js";import"./firebase-D-fvYmZK.js";import"./auth-BrzwPwpr.js";/* empty css           */import{n as ee}from"./reminderUI-x7fFxLel.js";import{r as u}from"./storage-h-jcr-e6.js";import{n as te,t as ne}from"./modal-DmQctm61.js";import{t as d}from"./preload-helper-DL_t86br.js";import{t as re}from"./cloudSync-cpI7krDJ.js";var ie=`**DEBORAH ALABI**\r
+import"./reminders-Dyepzyzn.js";import{t as e}from"./siteChrome-JQqN-e2l.js";import{n as t,t as n}from"./reveal-Bd8FA7dK.js";import{a as r,c as i,l as a,o,r as s,s as c,t as l}from"./dates-CppsR5VL.js";import"./firebase-D-fvYmZK.js";import"./auth-BrzwPwpr.js";/* empty css           */import{n as ee}from"./reminderUI-x7fFxLel.js";import{r as u}from"./storage-h-jcr-e6.js";import{n as te,t as ne}from"./modal-DmQctm61.js";import{t as d}from"./preload-helper-DL_t86br.js";import{t as re}from"./cloudSync-cpI7krDJ.js";var ie=`**DEBORAH ALABI**\r
 \r
 Winnipeg, MB, R3T 3M2  |  tolualabi310@gmail.com  |  \\+1 (204) 881-3349\r
 \r

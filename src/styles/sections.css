@@ -808,7 +808,7 @@ body { padding-top: 52px; }
   border: 0;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--pink-hot), var(--pink-light));
-  color: var(--white);
+  color: #fff;
   font-size: 1.15rem;
   line-height: 1;
   cursor: pointer;
@@ -870,7 +870,7 @@ body { padding-top: 52px; }
   place-items: center;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--pink-hot), var(--pink-light));
-  color: var(--white);
+  color: #fff;
   font-size: 1rem;
 }
 
@@ -915,7 +915,7 @@ body { padding-top: 52px; }
   place-items: center;
   border: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.45);
+  background: var(--tone-warm-soft); /* a pink tint in both themes, never a gray disc */
   color: var(--pink-deep);
   cursor: pointer;
   font-size: 0.78rem;
@@ -941,13 +941,21 @@ body { padding-top: 52px; }
 
 .music-player__control:hover {
   transform: translateY(-2px);
-  background: var(--white);
+  background: var(--shadow-pink);
 }
 
+/* The filled buttons keep their gradient on hover — the icon is white on
+   pink, so a white hover fill would make it vanish (which it did). */
 .music-player__control.is-active,
-.music-player__play {
+.music-player__play,
+.music-player__control.is-active:hover,
+.music-player__play:hover {
   background: linear-gradient(135deg, var(--pink-hot), var(--pink-light));
-  color: var(--white);
+  color: #fff;
+}
+
+.music-player__play:hover {
+  filter: brightness(1.06);
 }
 
 .music-player__close {
@@ -997,13 +1005,13 @@ body { padding-top: 52px; }
 .music-player__volume::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 999px;
-  background: rgba(215, 38, 96, 0.18);
+  background: var(--shadow-pink);
 }
 
 .music-player__volume::-moz-range-track {
   height: 4px;
   border-radius: 999px;
-  background: rgba(215, 38, 96, 0.18);
+  background: var(--shadow-pink);
 }
 
 .music-player__volume::-webkit-slider-thumb {
@@ -1011,7 +1019,7 @@ body { padding-top: 52px; }
   width: 16px;
   height: 16px;
   margin-top: -6px;
-  border: 2px solid var(--white);
+  border: 2px solid var(--card-bg);
   border-radius: 50%;
   background: var(--pink-hot);
   box-shadow: 0 2px 8px var(--shadow-pink);
@@ -1020,7 +1028,7 @@ body { padding-top: 52px; }
 .music-player__volume::-moz-range-thumb {
   width: 12px;
   height: 12px;
-  border: 2px solid var(--white);
+  border: 2px solid var(--card-bg);
   border-radius: 50%;
   background: var(--pink-hot);
   box-shadow: 0 2px 8px var(--shadow-pink);

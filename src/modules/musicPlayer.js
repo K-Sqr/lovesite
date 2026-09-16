@@ -75,75 +75,163 @@ function tabsHeight() {
 }
 
 /**
- * Drag the player by its top row (anywhere that isn't a button). The position
- * is kept in viewport coordinates and clamped back on screen on load and on
- * resize, so a spot saved on a wide screen never strands it off a phone.
+ * Drag the player anywhere that isn't a control. The position is kept in
+ * viewport coordinates and clamped back on screen on load and on resize, so
+ * a spot saved on a wide screen never strands it off a phone.
+ *
+ * Swipe it to the side (a quick horizontal flick, or shoving it past the
+ * edge) and it tucks into a small tab at that edge; tap the tab, or swipe it
+ * back in, and it returns. The tab keeps the player's vertical position.
  */
-function makeDraggable(player, handle) {
+function makeDraggable(player, tab) {
   const MARGIN = 8;
+  /** px/ms — a flick, not a slow drag */
+  const FLICK = 0.55;
+  /** how much of the player may hang off the edge before it docks */
+  const OVERHANG = 0.35;
+
+  const clampTop = (y, height) => {
+    const maxY = window.innerHeight - height - MARGIN - tabsHeight();
+    return Math.round(Math.min(Math.max(MARGIN, y), Math.max(MARGIN, maxY)));
+  };
 
   const place = (x, y) => {
     const rect = player.getBoundingClientRect();
     const maxX = window.innerWidth - rect.width - MARGIN;
-    const maxY = window.innerHeight - rect.height - MARGIN - tabsHeight();
     const left = Math.round(Math.min(Math.max(MARGIN, x), Math.max(MARGIN, maxX)));
-    const top = Math.round(Math.min(Math.max(MARGIN, y), Math.max(MARGIN, maxY)));
+    const top = clampTop(y, rect.height);
     player.style.left = `${left}px`;
     player.style.top = `${top}px`;
     player.style.right = 'auto';
     player.style.bottom = 'auto';
   };
 
+  const save = (extra = {}) => {
+    const rect = player.getBoundingClientRect();
+    const dock = player.dataset.dock || null;
+    writeJSON(POSITION_KEY, { left: rect.left, top: rect.top, dock, ...extra });
+  };
+
+  const dock = (side, top) => {
+    player.dataset.dock = side;
+    player.classList.add('is-docked');
+    player.style.left = 'auto';
+    player.style.right = 'auto';
+    player.style[side] = '0px';
+    player.style.top = `${clampTop(top, 48)}px`;
+    player.style.bottom = 'auto';
+    tab.setAttribute('aria-label', 'Show music player');
+    save({ dock: side });
+  };
+
+  const undock = () => {
+    const side = player.dataset.dock;
+    const top = parseFloat(player.style.top) || MARGIN;
+    delete player.dataset.dock;
+    player.classList.remove('is-docked');
+    // Come back on the same side it was tucked into.
+    const rect = player.getBoundingClientRect();
+    place(side === 'left' ? MARGIN : window.innerWidth - rect.width - MARGIN, top);
+    save({ dock: null });
+  };
+
   const saved = readJSON(POSITION_KEY);
-  if (saved && Number.isFinite(saved.left) && Number.isFinite(saved.top)) {
-    place(saved.left, saved.top);
+  if (saved && Number.isFinite(saved.top)) {
+    if (saved.dock === 'left' || saved.dock === 'right') dock(saved.dock, saved.top);
+    else if (Number.isFinite(saved.left)) place(saved.left, saved.top);
   }
 
   let drag = null;
-  handle.addEventListener('pointerdown', (e) => {
-    if (e.button !== 0 || e.target.closest('button')) return;
+  player.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0 || e.target.closest('input, .music-player__control')) return;
     const rect = player.getBoundingClientRect();
-    drag = { x: e.clientX, y: e.clientY, left: rect.left, top: rect.top, moved: false };
+    drag = {
+      x: e.clientX, y: e.clientY, left: rect.left, top: rect.top, width: rect.width,
+      moved: false, lastX: e.clientX, lastT: e.timeStamp, vx: 0,
+      docked: player.classList.contains('is-docked'),
+    };
     try {
-      handle.setPointerCapture(e.pointerId);
+      player.setPointerCapture(e.pointerId);
     } catch {
-      // synthetic or already-captured pointer; dragging still works within the handle
+      // synthetic or already-captured pointer; dragging still works within the element
     }
     player.classList.add('is-dragging');
     e.preventDefault();
   });
-  handle.addEventListener('pointermove', (e) => {
+
+  player.addEventListener('pointermove', (e) => {
     if (!drag) return;
     const dx = e.clientX - drag.x;
     const dy = e.clientY - drag.y;
     if (!drag.moved && Math.hypot(dx, dy) < 3) return;
     drag.moved = true;
+    const dt = e.timeStamp - drag.lastT;
+    if (dt > 0) drag.vx = (e.clientX - drag.lastX) / dt;
+    drag.lastX = e.clientX;
+    drag.lastT = e.timeStamp;
+    drag.unclampedX = drag.left + dx;
+
+    if (drag.docked) {
+      // Swiping the tab back toward the middle brings the player out.
+      const inward = player.dataset.dock === 'left' ? dx : -dx;
+      if (inward > 28) {
+        drag.docked = false;
+        undock();
+        const rect = player.getBoundingClientRect();
+        drag.left = rect.left;
+        drag.top = rect.top;
+        drag.width = rect.width;
+        drag.x = e.clientX;
+        drag.y = e.clientY;
+      }
+      return;
+    }
     place(drag.left + dx, drag.top + dy);
   });
+
   const end = (e) => {
     if (!drag) return;
-    if (drag.moved) {
-      const rect = player.getBoundingClientRect();
-      writeJSON(POSITION_KEY, { left: rect.left, top: rect.top });
-    }
+    const d = drag;
     drag = null;
     player.classList.remove('is-dragging');
     try {
-      handle.releasePointerCapture(e.pointerId);
+      player.releasePointerCapture(e.pointerId);
     } catch {
       // already released
     }
+
+    if (d.docked) {
+      // A tap (or a tiny wobble) on the tab opens the player.
+      if (!d.moved || Math.abs(e.clientX - d.x) < 28) undock();
+      return;
+    }
+    if (!d.moved) return;
+
+    // Flicked sideways, or shoved past the edge → tuck away on that side.
+    const x = d.unclampedX ?? d.left;
+    const overLeft = x < -d.width * OVERHANG;
+    const overRight = x + d.width > window.innerWidth + d.width * OVERHANG;
+    const flickLeft = d.vx < -FLICK && e.clientX < window.innerWidth * 0.5;
+    const flickRight = d.vx > FLICK && e.clientX > window.innerWidth * 0.5;
+    const top = parseFloat(player.style.top) || MARGIN;
+    if (overLeft || flickLeft) dock('left', top);
+    else if (overRight || flickRight) dock('right', top);
+    else save();
   };
-  handle.addEventListener('pointerup', end);
-  handle.addEventListener('pointercancel', end);
+  player.addEventListener('pointerup', end);
+  player.addEventListener('pointercancel', end);
 
   let resizeTimer = null;
   window.addEventListener('resize', () => {
-    if (!player.style.left) return;
+    if (!player.style.top) return;
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
       const rect = player.getBoundingClientRect();
-      place(rect.left, rect.top);
+      if (player.classList.contains('is-docked')) {
+        player.style.top = `${clampTop(rect.top, rect.height)}px`;
+      } else {
+        place(rect.left, rect.top);
+      }
     }, 150);
   });
 }
@@ -196,7 +284,7 @@ export async function initMusicPlayer() {
   const shuffleButton = document.getElementById('musicShuffle');
   const restoreButton = document.getElementById('musicRestore');
   const volumeSlider = document.getElementById('musicVolume');
-  const handle = document.getElementById('musicHandle');
+  const dockTab = document.getElementById('musicDockTab');
   if (!audio || !player) return;
 
   // Volume first, before any src is set, so nothing ever plays at full blast.
@@ -204,7 +292,7 @@ export async function initMusicPlayer() {
   let volume = readVolume();
   volumeControl.set(volume);
   if (volumeSlider) volumeSlider.value = String(Math.round(volume * 100));
-  if (handle) makeDraggable(player, handle);
+  if (dockTab) makeDraggable(player, dockTab);
 
   ensureSessionDefaults();
 
@@ -231,6 +319,7 @@ export async function initMusicPlayer() {
 
   const updateUI = () => {
     const isPlaying = !audio.paused && !audio.ended;
+    player.classList.toggle('is-playing', isPlaying);
     if (title) title.textContent = playlist[trackIndex].title;
     if (playButton) {
       setIcon(playButton, isPlaying ? 'pause' : 'play');

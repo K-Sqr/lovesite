@@ -99,6 +99,15 @@ function renderMusic() {
     id: 'musicPlayer',
     'aria-label': 'Mini music player',
   }, [
+    // Only visible when the player is tucked into a screen edge (see musicPlayer.js)
+    el('button', {
+      type: 'button',
+      id: 'musicDockTab',
+      class: 'music-player__tab',
+      'aria-label': 'Show music player',
+      title: 'Music',
+      text: '\u266B',
+    }),
     el('div', { class: 'music-player__top', id: 'musicHandle' }, [
       el('span', { class: 'music-player__note', 'aria-hidden': 'true', text: '♫' }),
       el('div', { class: 'music-player__track' }, [

@@ -1,0 +1,12 @@
+import{a as e,c as t,i as n,s as r,t as i}from"./firebase-DpfnYirS.js";var a=`https://lovegpt-osmy5pclpq-uc.a.run.app`;function o(){return!!i.currentUser}function s(){let e=i.currentUser?i.currentUser.uid:null;return e===`owner`||e===`tolu`?e:null}async function c(){try{await i.authStateReady()}catch{}return o()}async function l(o,{remember:s=!1}={}){let c=await fetch(a,{method:`POST`,headers:{"Content-Type":`application/json`},body:JSON.stringify({action:`verify-passcode`,passcode:o})});if(!c.ok)return!1;let l=await c.json();if(!l||!l.token)return!1;try{return await r(i,s?n:e),await t(i,l.token),!0}catch(e){return console.error(`Custom token sign-in failed:`,e),!1}}async function u(){return new Promise(e=>{let t=document.createElement(`div`);t.className=`passcode-overlay`,t.innerHTML=`
+      <div class="passcode-modal">
+        <h3>Enter Passcode</h3>
+        <p>Enter your shared passcode to manage memories</p>
+        <input type="password" class="passcode-input" placeholder="Passcode" autocomplete="off" />
+        <div class="passcode-actions">
+          <button type="button" class="passcode-cancel">Cancel</button>
+          <button type="button" class="passcode-submit">Enter</button>
+        </div>
+        <p class="passcode-error" style="display:none">Wrong passcode</p>
+      </div>
+    `,document.body.appendChild(t),requestAnimationFrame(()=>t.classList.add(`active`));let n=t.querySelector(`.passcode-input`),r=t.querySelector(`.passcode-submit`),i=t.querySelector(`.passcode-cancel`),a=t.querySelector(`.passcode-error`),o=!1;n.focus();function s(n){o||(o=!0,t.classList.remove(`active`),setTimeout(()=>t.remove(),300),e(n))}async function c(){let e=n.value.trim();if(!e){a.textContent=`Please enter a passcode`,a.style.display=`block`,n.focus();return}r.disabled=!0;let t=await l(e);if(r.disabled=!1,!t){a.style.display=`block`,a.textContent=`Wrong passcode`,n.focus();return}s(!0)}r.addEventListener(`click`,c),i.addEventListener(`click`,()=>s(null)),n.addEventListener(`keydown`,e=>{e.key===`Enter`&&c(),e.key===`Escape`&&s(null)}),t.addEventListener(`click`,e=>{e.target===t&&s(null)})})}async function d(){return o()?!0:await u()===!0}export{c as i,d as n,s as r,l as t};

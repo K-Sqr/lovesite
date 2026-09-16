@@ -260,6 +260,34 @@ function embedFrame(blobUrl, title) {
   return frame;
 }
 
+/** iPhones, iPads (which report as Mac + touch) and Android phones. */
+function isTouchDevice() {
+  const ua = navigator.userAgent || '';
+  return /iPhone|iPad|iPod|Android/i.test(ua)
+    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+/**
+ * When the pages can't be drawn: a desktop gets the browser's own viewer in a
+ * frame (it paginates fine there); a phone gets a plain door into its native
+ * reader, because an <iframe> on iOS is one page and on Android is nothing.
+ */
+function fallbackStage(url, letter) {
+  const stage = el('div', 'letter-stage');
+  if (!isTouchDevice()) {
+    stage.appendChild(embedFrame(url, displayTitle(letter)));
+    return stage;
+  }
+  stage.classList.add('letter-stage--open');
+  const line = el('p', 'letter-open__line', 'This one opens in your reader — every page is there.');
+  const open = el('a', 'usm-btn usm-btn--primary letter-open__btn', 'Open the letter');
+  open.href = url;
+  open.target = '_blank';
+  open.rel = 'noopener';
+  stage.append(line, open);
+  return stage;
+}
+
 function setFullView(on) {
   const ui = getUI();
   state.full = Boolean(on);
@@ -418,11 +446,12 @@ async function openLetter(letter, ui = getUI()) {
       body.replaceChildren(stage);
       setZoom(1);
     } catch (err) {
-      warn('page render failed, falling back to the frame', err);
+      warn('page render failed, falling back', err);
       if (state.open !== open) return;
-      const frameStage = el('div', 'letter-stage');
-      frameStage.appendChild(embedFrame(url, displayTitle(letter)));
-      body.replaceChildren(frameStage);
+      // Zoom and the page readout mean nothing here; Download still does.
+      tools.querySelector('.letters-zoom').hidden = true;
+      pageReadout.hidden = true;
+      body.replaceChildren(fallbackStage(url, letter));
     }
     return;
   }

@@ -376,6 +376,10 @@
   gap: var(--space-3);
 }
 
+.letters-zoom[hidden] {
+  display: none;
+}
+
 .letters-zoom {
   display: inline-flex;
   align-items: center;
@@ -479,6 +483,20 @@
   display: block;
   width: 100%;
   height: auto;
+}
+
+/* Phone fallback when pages can't be drawn: one door into the native reader */
+.letter-stage--open {
+  text-align: center;
+  padding: clamp(2rem, 8vw, 3rem) 1.5rem;
+}
+
+.letter-open__line {
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 3.5vw, 1.4rem);
+  color: var(--pink-deep);
+  line-height: 1.4;
+  margin-bottom: var(--space-5);
 }
 
 .letter-embed {

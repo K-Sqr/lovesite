@@ -240,7 +240,16 @@ change). This replaced the `<iframe>` viewer, which on iOS shows only a non-scro
 and on Android Chrome shows nothing — she was seeing page one of every letter. Pages are
 placeholders at the right aspect ratio and are only rasterised while within 150% of the viewport,
 released when they scroll away (a 77-page letter would otherwise be ~250 MB of canvases on a
-phone); DPR is capped at 2. If pdf.js fails to load or parse, the iframe is the fallback.
+phone); DPR is capped at 2. If pdf.js can't load, fetch or parse the file, the fallback is the
+browser's own viewer in an iframe on desktop, and on a phone an "Open the letter" button into the
+native reader (an iframe there is one page on iOS and nothing on Android).
+
+**The bucket needs CORS for this.** pdf.js reads the bytes with `fetch`, and a plain
+`?alt=media` GET from `firebasestorage.googleapis.com` carries no `Access-Control-Allow-Origin`
+until the bucket has a CORS rule — without it every device silently lands on the fallback.
+The rule lives in `cors.json` at the repo root; apply it once from Google Cloud Shell:
+`gsutil cors set cors.json gs://lovesite-1540e.firebasestorage.app`. Verify with
+`curl -sI -H "Origin: https://k-sqr.github.io" "<letter url>" | grep -i access-control`.
 
 The reading bar for a PDF carries: zoom (− / level / +, 50–250 % of the column in 25 % steps,
 also the plain `+` `−` `0` keys; wider than the column scrolls sideways, and visible pages are

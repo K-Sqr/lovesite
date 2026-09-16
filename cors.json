@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["https://k-sqr.github.io", "http://localhost:5173", "http://localhost:4173"],
+    "method": ["GET", "HEAD"],
+    "responseHeader": ["Content-Type", "Content-Length", "Content-Range", "Accept-Ranges", "Range"],
+    "maxAgeSeconds": 3600
+  }
+]

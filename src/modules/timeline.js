@@ -110,6 +110,15 @@ function renderEntry(entry, { variant, delay, side }) {
   node.appendChild(el('h3', null, entry.title));
   node.appendChild(el('p', null, entry.description));
 
+  // A quiet link, meant to be found rather than noticed. Never on the home preview.
+  if (variant === 'full' && entry.video) {
+    const link = el('a', 'timeline-video-link', entry.video.label);
+    link.href = entry.video.href;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    node.appendChild(link);
+  }
+
   if (variant === 'full') {
     if (entry.expandedBody) renderDisclosure(entry).forEach((c) => node.appendChild(c));
     if (Array.isArray(entry.photos) && entry.photos.length) node.appendChild(renderPhotos(entry));

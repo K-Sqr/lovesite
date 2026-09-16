@@ -454,6 +454,8 @@ export const timeline = [
     icon: '\u{1F49D}',
     type: 'anniversary',
     featured: true,
+    // The anniversary video (17-ANNIVERSARY-VIDEO.md, YouTube-link version). Full story only.
+    video: { href: 'https://youtu.be/IfSrv6Km4Y8', label: 'click me' },
   },
 ];
 

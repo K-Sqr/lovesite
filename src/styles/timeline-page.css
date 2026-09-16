@@ -304,6 +304,24 @@
   pointer-events: none;
 }
 
+/* the video link — an afterthought on purpose (17-ANNIVERSARY-VIDEO.md) */
+.timeline-page .timeline-video-link {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s ease;
+}
+
+.timeline-page .timeline-video-link:hover,
+.timeline-page .timeline-video-link:focus-visible {
+  text-decoration-color: currentColor;
+}
+
 /* replay control — hidden entirely under reduced motion */
 .timeline-page .timeline-replay {
   position: absolute;

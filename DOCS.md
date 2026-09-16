@@ -314,7 +314,8 @@ All modules live in `src/modules/`. Each page imports only the modules it needs.
 | `graffiti.js` | Creates a "graffiti rain" celebration — hearts, emojis, and love phrases fall from the top of the screen when the user says "Yes". Uses `requestAnimationFrame` for smooth animation. |
 | `loveCounter.js` | Live relationship duration counter. Calculates elapsed time from Sep 13, 2025 and updates every second showing months, days, hours, minutes, seconds. |
 | `memoriesGallery.js` | Memories page gallery. Fetches all memories from Firestore, renders cards with safe DOM construction (no `innerHTML` for user content), sets up lightbox click handlers. Image URLs validated to require HTTPS. |
-| `musicPlayer.js` | Background music toggle for the hero section. Play/pause with loop. |
+| `musicPlayer.js` | The mini player: playlist from `music/playlist.json`, play/pause/stop/prev/next/shuffle, mute, a volume slider (default **25%** — songs arrive loud — kept in `usm.music.volume.v1`; on iOS `audio.volume` is ignored so the element is routed through a Web Audio gain node, elsewhere `audio.volume` is used directly so autoplay-after-engagement keeps working), and dragging by the top row (position kept in `usm.music.position.v1`, clamped on screen on load/resize and above the phone tab bar). Icons are inline SVG from `icons.js`. |
+| `icons.js` | Inline SVG icons (Material paths) for the chrome: `svgIcon(name)` / `setIcon(button, name)`. Text glyphs and emoji rendered differently on every phone. |
 | `textReveal.js` | Sparkle text reveal animation. Reveals text character-by-character with sparkle particle effects. Supports a skip button to complete instantly. |
 | `theme.js` | Light/dark theme toggle. Uses `data-theme` attribute on `<html>`, persists choice in `localStorage`. Defaults to light mode on first visit. |
 | `timeline.js` | Renders `src/data/timeline.js` as a vertical timeline via `initTimeline({ variant: 'preview' \| 'full', mount })`. Safe DOM construction (no `innerHTML`). `preview` = capped featured slice + "View full timeline →"; `full` = year chapters, explicit left/right classes, disclosures, photos. |
@@ -379,6 +380,7 @@ The site lives at `k-sqr.github.io/lovesite/`; localStorage is scoped to the who
 | `usm.wardrobe-photos` | IndexedDB database | `wardrobeStore.js` — compressed item photos as Blobs |
 | `usm.reminders.v1`, `usm.reminderPrefs.v1` | localStorage | `reminders.js` — `{ items: Reminder[] }` and the preferences; never a `rhythm` row |
 | `music_should_play`, `music_muted`, `music_popup_shown` | sessionStorage | `musicPlayer.js` |
+| `usm.music.volume.v1`, `usm.music.position.v1` | localStorage | `musicPlayer.js` — slider level (0–1) and where the player was dragged to (`{left, top}` in viewport px) |
 
 ---
 
@@ -785,7 +787,8 @@ ahosite/
 │   │   ├── loveCounter.js       # Live duration counter
 │   │   ├── memoriesGallery.js   # Memories fetch, render, lightbox
 │   │   ├── modal.js             # Accessible modal open/close
-│   │   ├── musicPlayer.js       # Background music toggle
+│   │   ├── icons.js             # Inline SVG icons for the chrome
+│   │   ├── musicPlayer.js       # Mini player: volume, drag, playlist
 │   │   ├── reveal.js            # Shared scroll-reveal observer
 │   │   ├── siteChrome.js        # Nav + music + footer renderer
 │   │   ├── storage.js           # Namespaced local storage (+ encrypted, + blobs)

@@ -15,6 +15,7 @@
 
 import { initTheme } from './theme.js';
 import { initMusicPlayer } from './musicPlayer.js';
+import { svgIcon } from './icons.js';
 
 /** @type {{ id: string, label: string, href: string, icon: string }[]} */
 export const NAV_LINKS = [
@@ -80,7 +81,17 @@ function renderMusic() {
     class: `music-player__control ${extraClass}`.trim(),
     'aria-label': label,
     title: label,
-    text: icon,
+  }, [svgIcon(icon)]);
+
+  const volume = el('input', {
+    type: 'range',
+    id: 'musicVolume',
+    class: 'music-player__volume',
+    min: '0',
+    max: '100',
+    step: '1',
+    value: '25',
+    'aria-label': 'Volume',
   });
 
   const player = el('aside', {
@@ -88,21 +99,24 @@ function renderMusic() {
     id: 'musicPlayer',
     'aria-label': 'Mini music player',
   }, [
-    el('div', { class: 'music-player__top' }, [
+    el('div', { class: 'music-player__top', id: 'musicHandle' }, [
       el('span', { class: 'music-player__note', 'aria-hidden': 'true', text: '♫' }),
       el('div', { class: 'music-player__track' }, [
         el('span', { class: 'music-player__eyebrow', text: 'Now playing' }),
         el('span', { class: 'music-player__title', id: 'musicTrackTitle', text: 'Wind II' }),
       ]),
-      control('musicClose', 'Remove music player', '×', 'music-player__close'),
+      control('musicClose', 'Remove music player', 'close', 'music-player__close'),
     ]),
     el('div', { class: 'music-player__controls' }, [
-      control('musicShuffle', 'Shuffle off', '↝'),
-      control('musicPrev', 'Previous song', '◀'),
-      control('musicPlay', 'Play', '▶', 'music-player__play'),
-      control('musicStop', 'Stop', '■'),
-      control('musicNext', 'Next song', '▶'),
-      control('musicMute', 'Mute', '🔊'),
+      control('musicShuffle', 'Shuffle off', 'shuffle'),
+      control('musicPrev', 'Previous song', 'prev'),
+      control('musicPlay', 'Play', 'play', 'music-player__play'),
+      control('musicStop', 'Stop', 'stop'),
+      control('musicNext', 'Next song', 'next'),
+    ]),
+    el('div', { class: 'music-player__volume-row' }, [
+      control('musicMute', 'Mute', 'volumeLow', 'music-player__mute'),
+      volume,
     ]),
   ]);
 

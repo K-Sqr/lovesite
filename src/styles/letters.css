@@ -355,6 +355,34 @@
   background: var(--surface-sunken);
 }
 
+/* Pages drawn by pdfPages.js — a stack of sheets, not a viewer chrome */
+.letter-stage--pages {
+  overflow: visible;
+  box-shadow: none;
+  background: none;
+  padding: 0;
+}
+
+.letter-pages {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.6rem, 2vw, 1rem);
+}
+
+.pdf-page {
+  width: 100%;
+  background: #fff;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 8px 40px var(--shadow-pink);
+  overflow: hidden;
+}
+
+.pdf-page canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 .letter-embed {
   display: block;
   width: 100%;
@@ -493,6 +521,21 @@ body.letter-full #siteMusic {
   height: 100%;
   min-height: 100%;
   border-radius: 0;
+}
+
+/* Full view with drawn pages: the body scrolls under the floating bar */
+.letters-reading.is-full .letter__body:has(.letter-stage--pages) {
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 3.6rem 0.6rem 1rem;
+}
+
+.letters-reading.is-full .letter-stage--pages {
+  flex: none;
+}
+
+.letters-reading.is-full .pdf-page {
+  border-radius: var(--radius-sm);
 }
 
 .letters-reading.is-full .letter__body:not(:has(.letter-stage)) {

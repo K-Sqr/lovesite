@@ -234,9 +234,14 @@ search, no filters, no badges. Each card is a `<button>`; opening plays a 340ms 
 **Reading view.** 66ch measure, `--font-body` at `clamp(1rem, 2.2vw, 1.15rem)` / 1.7; script for
 the title and occasion only. Escape or the close control returns to the archive, restores scroll,
 and puts focus back on the card. A text body (`text/*` blob — R3 path (a), transcribed) renders as
-plain paragraphs via text nodes only. A PDF-only letter shows "Open the original" (a `blob:` URL in
-a new tab — a navigation, not a frame, so `frame-src 'none'` is untouched: **R3 path (a), no CSP
-change**) plus "Download the original".
+plain paragraphs via text nodes only. A PDF letter is drawn page by page onto canvases by
+`src/modules/pdfPages.js` (pdf.js, loaded on demand; the worker is a same-origin asset, so no CSP
+change). This replaced the `<iframe>` viewer, which on iOS shows only a non-scrollable first page
+and on Android Chrome shows nothing — she was seeing page one of every letter. Pages are
+placeholders at the right aspect ratio and are only rasterised while within 150% of the viewport,
+released when they scroll away (a 77-page letter would otherwise be ~250 MB of canvases on a
+phone); DPR is capped at 2. If pdf.js fails to load or parse, the iframe is the fallback. "Full
+view" scrolls the page stack under the floating bar.
 
 **Bytes.** `getLetterBlob(id)` → `Blob` → `URL.createObjectURL`, held in a module variable for the
 open view and revoked on close, on switching letters, and on `pagehide`. Never a download URL,

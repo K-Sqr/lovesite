@@ -23,6 +23,7 @@ import { initSiteChrome } from './modules/siteChrome.js';
 import { initReveal } from './modules/reveal.js';
 import { formatLongDate } from './modules/dates.js';
 import { getLetterList, getLetterBlob, letterPublicUrl } from './modules/letterSource.js';
+import { renderPdfPages } from './modules/pdfPages.js';
 import { displayTitle, sortOldestFirst, groupByYear } from './data/letters.js';
 
 const COPY = {
@@ -44,7 +45,7 @@ const state = {
   role: null,
   /** @type {import('./data/letters.js').Letter[]} */
   letters: [],
-  /** The letter on screen, in memory only: { id, blobUrl } */
+  /** The letter on screen, in memory only: { id, blobUrl, destroyPdf } */
   open: null,
   full: false,
 };
@@ -288,7 +289,7 @@ async function openLetter(letter, ui = getUI()) {
   if (state.open && state.open.id === letter.id) return;
   closeLetter(ui, { restore: false });
 
-  const open = { id: letter.id, blobUrl: null };
+  const open = { id: letter.id, blobUrl: null, destroyPdf: null };
   state.open = open;
 
   const bar = el('div', 'letters-reading__bar');
@@ -322,15 +323,31 @@ async function openLetter(letter, ui = getUI()) {
   ui.reading.replaceChildren(bar, header, body);
   window.scrollTo(0, 0);
 
-  // PDFs stream from a public URL so the viewer can paint before the whole
-  // file finishes downloading. Text bodies still come through getLetterBlob.
+  // PDFs stream from a public URL and are drawn page by page (pdfPages.js) —
+  // an <iframe> only ever shows page one on a phone. The frame is kept as the
+  // fallback if pdf.js can't load or the file won't parse.
   const looksLikeText = /\.(md|txt)$/i.test(letter.file || '');
   if (!looksLikeText) {
     if (state.open !== open) return;
-    body.replaceChildren();
-    const stage = el('div', 'letter-stage');
-    stage.appendChild(embedFrame(letterPublicUrl(letter.file), displayTitle(letter)));
-    body.appendChild(stage);
+    const url = letterPublicUrl(letter.file);
+    const stage = el('div', 'letter-stage letter-stage--pages');
+    const pagesMount = el('div', 'letter-pages');
+    stage.appendChild(pagesMount);
+    try {
+      const destroy = await renderPdfPages(pagesMount, url);
+      if (state.open !== open) {
+        destroy();
+        return;
+      }
+      open.destroyPdf = destroy;
+      body.replaceChildren(stage);
+    } catch (err) {
+      warn('page render failed, falling back to the frame', err);
+      if (state.open !== open) return;
+      const frameStage = el('div', 'letter-stage');
+      frameStage.appendChild(embedFrame(url, displayTitle(letter)));
+      body.replaceChildren(frameStage);
+    }
     return;
   }
 
@@ -362,6 +379,7 @@ function closeLetter(ui = getUI(), { restore = true } = {}) {
     return;
   }
   state.open = null;
+  if (open.destroyPdf) open.destroyPdf();
   if (open.blobUrl) URL.revokeObjectURL(open.blobUrl);
   ui.reading.replaceChildren();
   ui.reading.hidden = true;

@@ -8,7 +8,7 @@
  * Production: Firebase Storage `letters/<file>` with public read.
  * Local dev: Vite serves the gitignored `letters-source/` folder.
  *
- * Prefer `letterPublicUrl()` for PDFs so the browser can stream into an iframe
+ * Prefer `letterPublicUrl()` for PDFs so pdf.js can stream pages (range requests)
  * instead of waiting for the whole file to download into a Blob first.
  */
 

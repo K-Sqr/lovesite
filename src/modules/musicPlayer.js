@@ -124,7 +124,21 @@ function makeDraggable(player, tab) {
     save({ dock: side });
   };
 
+  /**
+   * The click a browser synthesises after a tap lands ~300ms later at the
+   * same spot — where, once the player has expanded, the ✕ button now sits.
+   * Swallow the one click that follows an undock so a tap only ever opens.
+   */
+  let swallowClickUntil = 0;
+  player.addEventListener('click', (e) => {
+    if (performance.now() < swallowClickUntil) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  }, true);
+
   const undock = () => {
+    swallowClickUntil = performance.now() + 600;
     const side = player.dataset.dock;
     const top = parseFloat(player.style.top) || MARGIN;
     delete player.dataset.dock;

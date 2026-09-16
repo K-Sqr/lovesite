@@ -38,17 +38,29 @@ function loadPdfjs() {
 }
 
 /**
+ * @typedef {object} PdfPagesController
+ * @property {() => void} destroy   cancels everything; safe to call twice
+ * @property {() => void} refresh   redraw the pages on screen (after a zoom / layout change)
+ * @property {number} numPages
+ */
+
+/**
  * @param {HTMLElement} mount   emptied and filled with .pdf-page elements
  * @param {string} url
- * @param {{ onFirstPage?: () => void }} [hooks]
- * @returns {Promise<() => void>} destroy — cancels everything, safe to call twice
+ * @param {{ onPage?: (current: number, total: number) => void }} [hooks]
+ *   onPage fires when the page occupying most of the viewport changes.
+ * @returns {Promise<PdfPagesController>}
  */
 export async function renderPdfPages(mount, url, hooks = {}) {
   let alive = true;
   /** @type {Map<number, { holder: HTMLElement, canvas: HTMLCanvasElement|null, task: any, drawnWidth: number }>} */
   const pages = new Map();
   const visible = new Set();
+  /** Visible fraction per page, for the "current page" readout. */
+  const ratios = new Map();
+  let current = 0;
   let observer = null;
+  let currentObserver = null;
   let doc = null;
   let loadingTask = null;
   let resizeTimer = null;
@@ -57,6 +69,7 @@ export async function renderPdfPages(mount, url, hooks = {}) {
     if (!alive) return;
     alive = false;
     if (observer) observer.disconnect();
+    if (currentObserver) currentObserver.disconnect();
     window.removeEventListener('resize', onResize);
     clearTimeout(resizeTimer);
     for (const page of pages.values()) release(page);
@@ -65,17 +78,28 @@ export async function renderPdfPages(mount, url, hooks = {}) {
     doc = null;
   };
 
+  const refresh = () => {
+    if (!alive) return;
+    for (const n of visible) {
+      const page = pages.get(n);
+      if (page && page.drawnWidth !== page.holder.clientWidth) draw(n);
+    }
+  };
+
+  const controller = { destroy, refresh, numPages: 0 };
+
   const pdfjs = await loadPdfjs();
-  if (!alive) return destroy;
+  if (!alive) return controller;
 
   loadingTask = pdfjs.getDocument({ url });
   doc = await loadingTask.promise;
-  if (!alive) return destroy;
+  if (!alive) return controller;
+  controller.numPages = doc.numPages;
 
   // Size every placeholder from page 1 so the scrollbar is honest from the start;
   // each page corrects its own aspect the first time it is drawn.
   const first = await doc.getPage(1);
-  if (!alive) return destroy;
+  if (!alive) return controller;
   const aspect = aspectOf(first.getViewport({ scale: 1 }));
 
   mount.replaceChildren();
@@ -103,17 +127,31 @@ export async function renderPdfPages(mount, url, hooks = {}) {
   }, { rootMargin: NEAR });
   for (const { holder } of pages.values()) observer.observe(holder);
 
+  // "Page 3 of 7": whichever page shows the most of itself right now.
+  if (hooks.onPage) {
+    currentObserver = new IntersectionObserver((entries) => {
+      for (const entry of entries) ratios.set(Number(entry.target.dataset.page), entry.intersectionRatio);
+      let best = current;
+      let bestRatio = -1;
+      for (const [n, ratio] of ratios) {
+        if (ratio > bestRatio) {
+          best = n;
+          bestRatio = ratio;
+        }
+      }
+      if (best !== current && bestRatio > 0) {
+        current = best;
+        hooks.onPage(current, doc.numPages);
+      }
+    }, { threshold: [0, 0.1, 0.25, 0.5, 0.75, 1] });
+    for (const { holder } of pages.values()) currentObserver.observe(holder);
+  }
+
   window.addEventListener('resize', onResize);
 
   function onResize() {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      if (!alive) return;
-      for (const n of visible) {
-        const page = pages.get(n);
-        if (page && page.drawnWidth !== page.holder.clientWidth) draw(n);
-      }
-    }, 200);
+    resizeTimer = setTimeout(refresh, 200);
   }
 
   async function draw(n) {
@@ -153,7 +191,6 @@ export async function renderPdfPages(mount, url, hooks = {}) {
     page.task = task;
     try {
       await task.promise;
-      if (alive && n === 1 && hooks.onFirstPage) hooks.onFirstPage();
     } catch (err) {
       // RenderingCancelledException on release/resize — expected, nothing to do.
     } finally {
@@ -177,7 +214,7 @@ export async function renderPdfPages(mount, url, hooks = {}) {
     page.drawnWidth = 0;
   }
 
-  return destroy;
+  return controller;
 }
 
 function aspectOf(viewport) {

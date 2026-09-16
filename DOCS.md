@@ -240,8 +240,16 @@ change). This replaced the `<iframe>` viewer, which on iOS shows only a non-scro
 and on Android Chrome shows nothing — she was seeing page one of every letter. Pages are
 placeholders at the right aspect ratio and are only rasterised while within 150% of the viewport,
 released when they scroll away (a 77-page letter would otherwise be ~250 MB of canvases on a
-phone); DPR is capped at 2. If pdf.js fails to load or parse, the iframe is the fallback. "Full
-view" scrolls the page stack under the floating bar.
+phone); DPR is capped at 2. If pdf.js fails to load or parse, the iframe is the fallback.
+
+The reading bar for a PDF carries: zoom (− / level / +, 50–250 % of the column in 25 % steps,
+also the plain `+` `−` `0` keys; wider than the column scrolls sideways, and visible pages are
+re-rasterised at the new size), a live "3 / 7" page readout (the page showing most of itself),
+**Download** (the public URL with `download` — desktops save it under the letter's file name,
+phones open it in the native viewer, which can save), and **Full view** as a primary button.
+In full view the bar stays in normal flow above the pages — never overlaid on them — and the body
+is the scroller; Escape leaves full view first, then the letter. On a phone the tools collapse
+to one row and Download is icon-only (label in `aria-label`).
 
 **Bytes.** `getLetterBlob(id)` → `Blob` → `URL.createObjectURL`, held in a module variable for the
 open view and revoked on close, on switching letters, and on `pagehide`. Never a download URL,

@@ -45,9 +45,11 @@ const state = {
   role: null,
   /** @type {import('./data/letters.js').Letter[]} */
   letters: [],
-  /** The letter on screen, in memory only: { id, blobUrl, destroyPdf } */
+  /** The letter on screen, in memory only: { id, blobUrl, pdf, pagesMount } */
   open: null,
   full: false,
+  /** Page width as a fraction of the column; 1 = fit the column. */
+  zoom: 1,
 };
 
 function warn(...args) {
@@ -265,9 +267,71 @@ function setFullView(on) {
   ui.reading.classList.toggle('is-full', state.full);
   const btn = ui.reading.querySelector('.letters-reading__full');
   if (btn) {
-    btn.textContent = state.full ? 'Exit full view' : 'Full view';
+    btn.replaceChildren(
+      el('span', 'letters-reading__full-icon', state.full ? '✖' : '⤢'),
+      el('span', null, state.full ? 'Exit full view' : 'Full view'),
+    );
     btn.setAttribute('aria-pressed', state.full ? 'true' : 'false');
   }
+  // The column width changes with the chrome; redraw what's on screen at the new size.
+  if (state.open && state.open.pdf) requestAnimationFrame(() => state.open && state.open.pdf && state.open.pdf.refresh());
+}
+
+const ZOOM_MIN = 0.5;
+const ZOOM_MAX = 2.5;
+const ZOOM_STEP = 0.25;
+
+function setZoom(zoom) {
+  state.zoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, Math.round(zoom * 100) / 100));
+  const open = state.open;
+  if (!open || !open.pagesMount) return;
+  open.pagesMount.style.width = `${state.zoom * 100}%`;
+  const label = getUI().reading.querySelector('.letters-zoom__level');
+  if (label) label.textContent = `${Math.round(state.zoom * 100)}%`;
+  const out = getUI().reading.querySelector('.letters-zoom__out');
+  const zin = getUI().reading.querySelector('.letters-zoom__in');
+  if (out) out.disabled = state.zoom <= ZOOM_MIN;
+  if (zin) zin.disabled = state.zoom >= ZOOM_MAX;
+  if (open.pdf) requestAnimationFrame(() => open.pdf && open.pdf.refresh());
+}
+
+/** The reading tools for a PDF: zoom, page readout, download. Text letters get none of this. */
+function buildPdfTools(letter, url) {
+  const tools = el('div', 'letters-tools');
+
+  const zoom = el('div', 'letters-zoom');
+  zoom.setAttribute('role', 'group');
+  zoom.setAttribute('aria-label', 'Zoom');
+  const out = el('button', 'usm-icon-btn letters-zoom__out', '−');
+  out.type = 'button';
+  out.setAttribute('aria-label', 'Zoom out');
+  out.addEventListener('click', () => setZoom(state.zoom - ZOOM_STEP));
+  const level = el('button', 'letters-zoom__level', '100%');
+  level.type = 'button';
+  level.title = 'Reset zoom';
+  level.setAttribute('aria-label', 'Reset zoom');
+  level.addEventListener('click', () => setZoom(1));
+  const zin = el('button', 'usm-icon-btn letters-zoom__in', '+');
+  zin.type = 'button';
+  zin.setAttribute('aria-label', 'Zoom in');
+  zin.addEventListener('click', () => setZoom(state.zoom + ZOOM_STEP));
+  zoom.append(out, level, zin);
+
+  const pageReadout = el('span', 'letters-pages-readout');
+  pageReadout.setAttribute('aria-live', 'polite');
+
+  // Cross-origin, so `download` is a hint: phones open it in the native viewer
+  // (which can save it), desktops save it under the letter's own file name.
+  const download = el('a', 'usm-btn usm-btn--secondary letters-download');
+  download.href = url;
+  download.download = letter.file;
+  download.target = '_blank';
+  download.rel = 'noopener';
+  download.setAttribute('aria-label', 'Download this letter');
+  download.append(el('span', 'letters-download__icon', '⤓'), el('span', null, 'Download'));
+
+  tools.append(zoom, pageReadout, download);
+  return { tools, pageReadout };
 }
 
 function syncFromHash(ui = getUI()) {
@@ -289,8 +353,9 @@ async function openLetter(letter, ui = getUI()) {
   if (state.open && state.open.id === letter.id) return;
   closeLetter(ui, { restore: false });
 
-  const open = { id: letter.id, blobUrl: null, destroyPdf: null };
+  const open = { id: letter.id, blobUrl: null, pdf: null, pagesMount: null };
   state.open = open;
+  state.zoom = 1;
 
   const bar = el('div', 'letters-reading__bar');
   const back = el('a', 'usm-btn usm-btn--ghost letters-reading__close', '← Back to the letters');
@@ -300,11 +365,15 @@ async function openLetter(letter, ui = getUI()) {
     history.replaceState(null, '', window.location.pathname + window.location.search);
     closeLetter(ui);
   });
-  const full = el('button', 'usm-btn usm-btn--ghost letters-reading__full', 'Full view');
+  const full = el('button', 'usm-btn usm-btn--primary letters-reading__full');
   full.type = 'button';
+  full.append(el('span', 'letters-reading__full-icon', '⤢'), el('span', null, 'Full view'));
   full.setAttribute('aria-pressed', 'false');
+  full.title = 'Read this letter edge to edge';
   full.addEventListener('click', () => setFullView(!state.full));
-  bar.append(back, full);
+  const actions = el('div', 'letters-reading__actions');
+  actions.appendChild(full);
+  bar.append(back, actions);
 
   const header = el('header', 'letter__header');
   header.appendChild(el('h1', 'letter__title', displayTitle(letter)));
@@ -333,14 +402,21 @@ async function openLetter(letter, ui = getUI()) {
     const stage = el('div', 'letter-stage letter-stage--pages');
     const pagesMount = el('div', 'letter-pages');
     stage.appendChild(pagesMount);
+    const { tools, pageReadout } = buildPdfTools(letter, url);
+    actions.prepend(tools);
     try {
-      const destroy = await renderPdfPages(pagesMount, url);
+      const pdf = await renderPdfPages(pagesMount, url, {
+        onPage: (n, total) => { pageReadout.textContent = `${n} / ${total}`; },
+      });
       if (state.open !== open) {
-        destroy();
+        pdf.destroy();
         return;
       }
-      open.destroyPdf = destroy;
+      open.pdf = pdf;
+      open.pagesMount = pagesMount;
+      pageReadout.textContent = `1 / ${pdf.numPages}`;
       body.replaceChildren(stage);
+      setZoom(1);
     } catch (err) {
       warn('page render failed, falling back to the frame', err);
       if (state.open !== open) return;
@@ -379,7 +455,7 @@ function closeLetter(ui = getUI(), { restore = true } = {}) {
     return;
   }
   state.open = null;
-  if (open.destroyPdf) open.destroyPdf();
+  if (open.pdf) open.pdf.destroy();
   if (open.blobUrl) URL.revokeObjectURL(open.blobUrl);
   ui.reading.replaceChildren();
   ui.reading.hidden = true;
@@ -423,6 +499,13 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('hashchange', () => syncFromHash(ui));
 
   document.addEventListener('keydown', (e) => {
+    // + / − / 0 zoom an open PDF (plain keys, so browser zoom is untouched).
+    if (state.open && state.open.pdf && !e.ctrlKey && !e.metaKey && !e.altKey
+        && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || '')) {
+      if (e.key === '+' || e.key === '=') { e.preventDefault(); setZoom(state.zoom + ZOOM_STEP); return; }
+      if (e.key === '-' || e.key === '_') { e.preventDefault(); setZoom(state.zoom - ZOOM_STEP); return; }
+      if (e.key === '0') { e.preventDefault(); setZoom(1); return; }
+    }
     if (e.key !== 'Escape') return;
     if (state.full) {
       e.preventDefault();

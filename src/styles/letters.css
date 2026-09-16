@@ -343,8 +343,100 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-2);
+  flex-wrap: wrap;
+  gap: var(--space-3);
   margin: 0 0 var(--space-5);
+}
+
+.letters-reading__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-left: auto;
+}
+
+/* Full view is the one button on this page that should look like one */
+.letters-reading__full {
+  gap: 0.45rem;
+  padding: 0.55rem 1.2rem;
+  font-size: 0.9rem;
+}
+
+.letters-reading__full-icon {
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+/* ── PDF reading tools: zoom, page readout, download ── */
+.letters-tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.letters-zoom {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.15rem;
+  border-radius: 999px;
+  background: var(--card-bg);
+  box-shadow: 0 2px 12px var(--shadow-soft);
+}
+
+.letters-zoom .usm-icon-btn {
+  width: 36px;
+  height: 36px;
+  font-size: 1.1rem;
+  box-shadow: none;
+  background: transparent;
+}
+
+.letters-zoom .usm-icon-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+  transform: none;
+}
+
+.letters-zoom__level {
+  min-width: 3.4em;
+  padding: 0.3rem 0.2rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--pink-deep);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.letters-pages-readout {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  min-width: 3.2em;
+  text-align: center;
+}
+
+.letters-pages-readout:empty {
+  display: none;
+}
+
+.letters-download {
+  gap: 0.4rem;
+  min-height: 40px;
+  padding: 0.45rem 1.1rem;
+}
+
+.letters-download__icon {
+  font-size: 1.05rem;
+  line-height: 1;
 }
 
 .letter-stage {
@@ -355,18 +447,24 @@
   background: var(--surface-sunken);
 }
 
-/* Pages drawn by pdfPages.js — a stack of sheets, not a viewer chrome */
+/* Pages drawn by pdfPages.js — a stack of sheets, not a viewer chrome.
+   Zoom sets .letter-pages width inline (50%–250% of the column); wider than
+   the column scrolls sideways inside the stage, narrower sits centred. */
 .letter-stage--pages {
-  overflow: visible;
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
   box-shadow: none;
   background: none;
-  padding: 0;
+  padding: 0 0 0.5rem;
 }
 
 .letter-pages {
   display: flex;
   flex-direction: column;
   gap: clamp(0.6rem, 2vw, 1rem);
+  width: 100%;
+  margin: 0 auto;
 }
 
 .pdf-page {
@@ -487,18 +585,18 @@ body.letter-full #siteMusic {
   display: none;
 }
 
+/* The bar stays in flow in full view so it can never sit on top of the pages
+   or their controls; the pages scroll underneath it. */
 .letters-reading.is-full .letters-reading__bar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  flex: none;
   z-index: 2;
   margin: 0;
-  padding: 0.4rem 0.6rem;
-  background: linear-gradient(180deg, var(--pink-bg) 0%, transparent 100%);
+  padding: calc(0.5rem + env(safe-area-inset-top, 0px)) 0.8rem 0.5rem;
+  background: var(--pink-bg);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
-.letters-reading.is-full .letters-reading__bar .usm-btn {
+.letters-reading.is-full .letters-reading__close {
   background: var(--card-bg);
   box-shadow: 0 2px 12px var(--shadow-soft);
 }
@@ -523,11 +621,15 @@ body.letter-full #siteMusic {
   border-radius: 0;
 }
 
-/* Full view with drawn pages: the body scrolls under the floating bar */
+/* Full view with drawn pages: the body is the scroller, in both directions */
 .letters-reading.is-full .letter__body:has(.letter-stage--pages) {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 3.6rem 0.6rem 1rem;
+  padding: 0.8rem 0.6rem calc(1rem + env(safe-area-inset-bottom, 0px));
+}
+
+.letters-reading.is-full .letter-stage--pages {
+  overflow: visible;
 }
 
 .letters-reading.is-full .letter-stage--pages {
@@ -540,7 +642,7 @@ body.letter-full #siteMusic {
 
 .letters-reading.is-full .letter__body:not(:has(.letter-stage)) {
   overflow: auto;
-  padding: 4.5rem clamp(1rem, 4vw, 2rem) 2rem;
+  padding: 1.5rem clamp(1rem, 4vw, 2rem) 2rem;
   max-width: 70ch;
   margin: 0 auto;
   width: 100%;
@@ -593,6 +695,52 @@ body.letter-full #siteMusic {
   .letters-reading__bar {
     margin-left: 0;
     flex-wrap: wrap;
+  }
+
+  /* One row of tools on a phone: zoom · page · download · full view */
+  .letters-reading__actions,
+  .letters-tools {
+    width: 100%;
+    margin-left: 0;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .letters-tools {
+    width: auto;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .letters-zoom .usm-icon-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .letters-zoom__level {
+    min-width: 3em;
+    font-size: 0.75rem;
+  }
+
+  .letters-pages-readout {
+    min-width: 0;
+    font-size: 0.75rem;
+  }
+
+  .letters-download {
+    min-width: 40px;
+    padding: 0.45rem 0.7rem;
+  }
+
+  .letters-download span:last-child {
+    display: none; /* icon only on a phone; the label is in the aria-label */
+  }
+
+  .letters-reading__full {
+    padding: 0.5rem 0.85rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
   }
 
   .letter__body {

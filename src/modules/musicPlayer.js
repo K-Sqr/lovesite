@@ -60,7 +60,9 @@ function createVolumeControl(audio) {
     ctx.createMediaElementSource(audio).connect(gain).connect(ctx.destination);
     return {
       set: (v) => { gain.gain.value = v; },
-      resume: () => { if (ctx.state === 'suspended') ctx.resume().catch(() => {}); },
+      // iOS also parks the context in 'interrupted' after a call or the lock
+      // screen; the element keeps "playing" through it silently unless resumed.
+      resume: () => { if (ctx.state !== 'running') ctx.resume().catch(() => {}); },
     };
   } catch {
     return direct;
@@ -128,10 +130,12 @@ function makeDraggable(player, tab) {
    * The click a browser synthesises after a tap lands ~300ms later at the
    * same spot — where, once the player has expanded, the ✕ button now sits.
    * Swallow the one click that follows an undock so a tap only ever opens.
+   * Only that one, though — a quick tap on play right after must still land.
    */
   let swallowClickUntil = 0;
   player.addEventListener('click', (e) => {
     if (performance.now() < swallowClickUntil) {
+      swallowClickUntil = 0;
       e.stopPropagation();
       e.preventDefault();
     }
@@ -237,7 +241,9 @@ function makeDraggable(player, tab) {
 
   let resizeTimer = null;
   window.addEventListener('resize', () => {
-    if (!player.style.top) return;
+    // Phones fire resize when the URL bar or keyboard comes and goes; a hidden
+    // player measures 0×0 and would be clamped into the top-left corner.
+    if (!player.style.top || player.hidden) return;
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
       const rect = player.getBoundingClientRect();
@@ -356,24 +362,59 @@ export async function initMusicPlayer() {
     }
   };
 
+  /**
+   * Every play goes through here so the iOS gain node is always woken first —
+   * otherwise "next" as the first tap on an iPhone plays in silence.
+   * Resolves true if playback actually started.
+   */
+  const startPlayback = async () => {
+    volumeControl.resume();
+    try {
+      await audio.play();
+      return true;
+    } catch {
+      // Autoplay blocked until a gesture, or a newer play/pause won the race.
+      updateUI();
+      return false;
+    }
+  };
+
+  const updateMediaSession = () => {
+    if (!('mediaSession' in navigator) || !window.MediaMetadata) return;
+    try {
+      navigator.mediaSession.metadata = new MediaMetadata({ title: playlist[trackIndex].title });
+    } catch {
+      // Not supported here; the lock screen just shows the page title.
+    }
+  };
+
+  let restoreTimeListener = null;
   const setTrack = (nextIndex, { play = true, restoreTime = false } = {}) => {
     trackIndex = (nextIndex + playlist.length) % playlist.length;
     sessionStorage.setItem(SESSION_TRACK, String(trackIndex));
     sessionStorage.setItem(SESSION_TRACK_SRC, playlist[trackIndex].src);
+    // A restore still pending from the previous track must not seek this one.
+    if (restoreTimeListener) {
+      audio.removeEventListener('loadedmetadata', restoreTimeListener);
+      restoreTimeListener = null;
+    }
     audio.src = playlist[trackIndex].src;
     audio.load();
     if (restoreTime) {
-      audio.addEventListener('loadedmetadata', () => {
+      restoreTimeListener = () => {
+        restoreTimeListener = null;
         const savedTime = Number.parseFloat(sessionStorage.getItem(SESSION_TIME) || '0');
         if (Number.isFinite(savedTime) && savedTime < audio.duration) audio.currentTime = savedTime;
-      }, { once: true });
+      };
+      audio.addEventListener('loadedmetadata', restoreTimeListener, { once: true });
     } else {
       sessionStorage.setItem(SESSION_TIME, '0');
     }
+    updateMediaSession();
     updateUI();
     if (play) {
       setShouldPlay(true);
-      audio.play().catch(() => updateUI());
+      startPlayback();
     }
   };
 
@@ -387,15 +428,11 @@ export async function initMusicPlayer() {
     setTrack(trackIndex + 1);
   };
 
+  /** Resolves true when there was nothing left to do: playing, or not wanted. */
   const playIfAllowed = async () => {
-    if (!getShouldPlay()) return;
-    if (audio.muted) return;
-    volumeControl.resume();
-    try {
-      await audio.play();
-    } catch {
-      // Autoplay can be blocked until a user gesture.
-    }
+    if (!getShouldPlay() || audio.muted) return true;
+    if (!audio.paused) return true;
+    return startPlayback();
   };
 
   setTrack(trackIndex, { play: false, restoreTime: true });
@@ -404,27 +441,53 @@ export async function initMusicPlayer() {
   audio.addEventListener('ended', nextTrack);
   playIfAllowed();
 
-  const gestureHandler = () => {
-    volumeControl.resume();
-    document.removeEventListener('click', gestureHandler);
-    document.removeEventListener('touchstart', gestureHandler);
-    document.removeEventListener('keydown', gestureHandler);
-    playIfAllowed();
+  /*
+   * Autoplay is usually blocked until she touches the page, so the first
+   * gesture anywhere starts the music. Two things matter on a phone:
+   *
+   * - Listen for the *end* of a tap, not `touchstart`: browsers only count
+   *   pointerup / touchend / click as activation, so a play() from touchstart
+   *   is refused — and the old once-only handler then gave up for good.
+   *   The handler stays armed until a play actually goes through.
+   * - Ignore taps on the player itself. Its buttons handle their own state;
+   *   kicking play() from the tap that lands on the play button made the
+   *   button's own click see "already playing" and pause it straight back.
+   */
+  const GESTURE_EVENTS = ['pointerup', 'touchend', 'keydown', 'click'];
+  const gestureHandler = async (e) => {
+    if (player.contains(e.target)) return;
+    if (await playIfAllowed()) {
+      GESTURE_EVENTS.forEach((type) => document.removeEventListener(type, gestureHandler));
+    }
   };
-  document.addEventListener('click', gestureHandler, { once: true });
-  document.addEventListener('touchstart', gestureHandler, { once: true });
-  document.addEventListener('keydown', gestureHandler, { once: true });
+  GESTURE_EVENTS.forEach((type) => document.addEventListener(type, gestureHandler));
 
-  playButton?.addEventListener('click', () => {
+  const togglePlayback = () => {
     if (audio.paused) {
       setShouldPlay(true);
-      volumeControl.resume();
-      audio.play().catch(() => updateUI());
+      startPlayback();
     } else {
       setShouldPlay(false);
       audio.pause();
     }
-  });
+  };
+  playButton?.addEventListener('click', togglePlayback);
+
+  // Lock-screen / notification controls should mean the same as the buttons,
+  // so a pause there stays paused on the next page too.
+  if ('mediaSession' in navigator) {
+    const bind = (action, handler) => {
+      try {
+        navigator.mediaSession.setActionHandler(action, handler);
+      } catch {
+        // action not supported on this browser
+      }
+    };
+    bind('play', () => { if (audio.paused) togglePlayback(); });
+    bind('pause', () => { if (!audio.paused) togglePlayback(); });
+    bind('previoustrack', () => setTrack(trackIndex - 1));
+    bind('nexttrack', () => nextTrack());
+  }
 
   document.getElementById('musicStop')?.addEventListener('click', () => {
     setShouldPlay(false);
@@ -443,6 +506,9 @@ export async function initMusicPlayer() {
     audio.muted = !audio.muted;
     setMuted(audio.muted);
     updateUI();
+    // Muted players don't auto-start on a new page, so unmuting on one would
+    // otherwise sit silent with the play icon showing. This is a tap, so allowed.
+    if (!audio.muted) playIfAllowed();
   });
 
   volumeSlider?.addEventListener('input', () => {
@@ -475,10 +541,17 @@ export async function initMusicPlayer() {
     restoreButton.hidden = true;
   });
 
-  window.addEventListener('pagehide', () => {
+  const saveProgress = () => {
     sessionStorage.setItem(SESSION_TRACK, String(trackIndex));
     sessionStorage.setItem(SESSION_TRACK_SRC, playlist[trackIndex].src);
     sessionStorage.setItem(SESSION_TIME, String(audio.currentTime || 0));
+  };
+  window.addEventListener('pagehide', saveProgress);
+  // Phones often kill a backgrounded tab without ever firing pagehide.
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') saveProgress();
+    // Coming back from the lock screen on iOS, the gain node may be interrupted.
+    else if (!audio.paused) volumeControl.resume();
   });
 
   updateUI();

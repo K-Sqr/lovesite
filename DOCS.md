@@ -101,6 +101,7 @@ A dedicated page for browsing and uploading relationship photos.
 The full story of the relationship with stats and milestones.
 
 - **Stats bar** — four cards derived from real data: days together, calendar duration (`1 yr 0 mo`), moments recorded, photos (or letters)
+- **Monthsary banner** — on the 13th of every month a pop-in "Happy N months, Baby girl" card (heartbeat badge, rising hearts, tap for a burst) appears above the stats; month 12/24/… reads "Happy 1 year"/"2 years". Preview any day with `timeline.html?monthsary`
 - **Full timeline** — every entry in `src/data/timeline.js`, grouped under sticky year headings, with type accents, "Read more" disclosures, photo thumbnails + lightbox, a scroll-linked rail fill, and a one-off celebration on the `one-year` entry
 - **Dark mode support** — all cards respect the current theme
 
@@ -320,6 +321,7 @@ All modules live in `src/modules/`. Each page imports only the modules it needs.
 | `theme.js` | Light/dark theme toggle. Uses `data-theme` attribute on `<html>`, persists choice in `localStorage`. Defaults to light mode on first visit. |
 | `timeline.js` | Renders `src/data/timeline.js` as a vertical timeline via `initTimeline({ variant: 'preview' \| 'full', mount })`. Safe DOM construction (no `innerHTML`). `preview` = capped featured slice + "View full timeline →"; `full` = year chapters, explicit left/right classes, disclosures, photos. |
 | `celebrate.js` | The one-year burst: `celebrate(anchor)` (hand-rolled fireworks + confetti, CSS keyframes, full teardown) and `celebrateOnce(anchor)` (module flag + `sessionStorage` `usm.celebrate.one-year`). Creates nothing under `prefers-reduced-motion`. |
+| `monthsary.js` | The 13th-of-the-month banner: `monthsaryFor(start, now)` (real calendar months via `calendarDuration`, null unless today is a monthsary) and `initMonthsary({ start, before })`. Safe DOM, CSS-only motion, tap-for-hearts burst skipped under `prefers-reduced-motion`. |
 | `upload.js` | Image upload to Firebase Storage. Compresses images client-side using Canvas API before uploading. Creates a Firestore document with URL, caption, timestamp, and the uploader's passcode hash. |
 | `verses.js` | Bible verse carousel with prev/next navigation and floating verse overlay. Sources verses from `src/data/verses.js`. |
 | `webhook.js` | Sends the Yes/No response to a configurable external URL (Formspree, Discord, etc.). |

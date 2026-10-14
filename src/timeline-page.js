@@ -13,6 +13,7 @@ import { initSiteChrome } from './modules/siteChrome.js';
 import { initReveal } from './modules/reveal.js';
 import { setupLightbox } from './modules/memoriesGallery.js';
 import { celebrate, celebrateOnce, celebratePage, isAnniversaryDay } from './modules/celebrate.js';
+import { initMonthsary } from './modules/monthsary.js';
 
 const START_DATE = '2025-09-13';
 
@@ -127,6 +128,7 @@ function initReplayControl() {
 
 document.addEventListener('DOMContentLoaded', () => {
   initSiteChrome({ active: 'story' });
+  initMonthsary({ start: START_DATE, before: '#timelineStats' });
   renderStats();
   initTimeline({ variant: 'full', mount: '#fullTimeline' });
   initLoveCounter();

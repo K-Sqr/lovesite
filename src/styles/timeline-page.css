@@ -466,3 +466,169 @@
     padding: 1.6rem 1.3rem 1.5rem;
   }
 }
+
+/* ══ Monthsary banner (monthsary.js) ══ shown on the 13th of every month.
+   Compositor-only motion: transform + opacity. Tones: 0 hot pink, 1 light pink, 2 gold. */
+.timeline-page .monthsary {
+  position: relative;
+  max-width: 520px;
+  margin: 0 auto 2.5rem;
+  padding: 1.5rem 1.5rem 1.4rem;
+  text-align: center;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--pink-hot) 16%, var(--card-bg)),
+    var(--card-bg) 70%
+  );
+  box-shadow:
+    0 8px 28px var(--shadow-pink),
+    0 0 0 1px var(--gold-anniversary-soft);
+  animation: monthsary-pop 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* rising hearts live in their own clipped layer so the burst can overflow the card */
+.monthsary__floats {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.monthsary__float,
+.monthsary__spark {
+  position: absolute;
+  width: var(--size, 14px);
+  height: var(--size, 14px);
+  color: var(--pink-hot);
+  pointer-events: none;
+}
+
+.monthsary__float svg,
+.monthsary__spark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.monthsary__float[data-tone="1"],
+.monthsary__spark[data-tone="1"] { color: var(--pink-light); }
+.monthsary__float[data-tone="2"],
+.monthsary__spark[data-tone="2"] { color: var(--gold-anniversary); }
+
+.monthsary__float {
+  left: var(--x, 50%);
+  bottom: -24px;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: monthsary-float var(--dur, 8s) ease-in var(--delay, 0s) infinite;
+}
+
+.monthsary__badge {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 104px;
+  height: 96px;
+  margin: 0 auto 0.5rem;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--pink-deep);
+  cursor: pointer;
+  filter: drop-shadow(0 6px 10px var(--shadow-pink));
+  -webkit-tap-highlight-color: transparent;
+  animation: monthsary-beat 1.9s ease-in-out 0.9s infinite;
+}
+
+.monthsary__badge:focus-visible {
+  outline: 2px solid var(--pink-hot);
+  outline-offset: 4px;
+  border-radius: var(--radius-md);
+}
+
+.monthsary__badge > svg {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+}
+
+.monthsary__count {
+  grid-area: 1 / 1;
+  margin-top: -4px;
+  font-family: var(--font-display);
+  font-size: 2.3rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--white);
+}
+
+.monthsary__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 6vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--pink-deep);
+}
+
+.monthsary__name {
+  margin-top: 0.15rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 4.2vw, 1.75rem);
+  color: var(--pink-hot);
+}
+
+.monthsary__note {
+  margin-top: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* tap-for-hearts: spawned inside the badge, flies out, removes itself */
+.monthsary__spark {
+  left: 50%;
+  top: 46%;
+  margin: calc(var(--size, 14px) / -2) 0 0 calc(var(--size, 14px) / -2);
+  will-change: transform, opacity;
+  animation: monthsary-spark 0.95s cubic-bezier(0.1, 0.8, 0.3, 1) both;
+}
+
+@keyframes monthsary-pop {
+  0%   { opacity: 0; transform: translateY(14px) scale(0.6); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes monthsary-beat {
+  0%, 100% { transform: scale(1); }
+  14%      { transform: scale(1.1); }
+  28%      { transform: scale(1); }
+  42%      { transform: scale(1.06); }
+  56%      { transform: scale(1); }
+}
+
+@keyframes monthsary-float {
+  0%   { opacity: 0;    transform: translate3d(0, 0, 0) scale(0.7); }
+  15%  { opacity: 0.6; }
+  85%  { opacity: 0.45; }
+  100% { opacity: 0;    transform: translate3d(var(--sway, 0px), -320px, 0) scale(1.1); }
+}
+
+@keyframes monthsary-spark {
+  0%   { opacity: 1; transform: translate3d(0, 0, 0) scale(0.5); }
+  70%  { opacity: 0.9; }
+  100% { opacity: 0; transform: translate3d(var(--dx), var(--dy), 0) scale(1.1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .monthsary__floats,
+  .monthsary__spark {
+    display: none;
+  }
+
+  .timeline-page .monthsary,
+  .monthsary__badge {
+    animation: none;
+  }
+}

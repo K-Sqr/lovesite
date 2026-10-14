@@ -1,6 +1,7 @@
 /**
  * monthsary.js — the little "Happy N months" banner that pops up on the timeline
- * page every 13th (she said yes on the 13th, so every 13th is ours).
+ * page every 13th and stays through the 14th (she said yes on the 13th, so every
+ * 13th is ours).
  *
  *   monthsaryFor(start, now)      → { count, unit } on a monthsary, otherwise null
  *   initMonthsary({ start, before })   build the banner and put it before `before`
@@ -18,6 +19,9 @@
 
 import { calendarDuration, daysBetween } from './dates.js';
 import { svgIcon } from './icons.js';
+
+/** The monthsary day itself, plus one more day of it. */
+const DAYS_SHOWN = 2;
 
 const FLOATERS = 10;
 const BURST = 10;
@@ -46,7 +50,7 @@ function countFor({ years, months }) {
 }
 
 /**
- * @param {Date|string} start  the day it began (its day-of-month is the monthsary)
+ * @param {Date|string} start  the day it began (its day-of-month is the monthsary; the day after still counts)
  * @param {Date|string} [now]
  * @param {{ force?: boolean }} [opts]  force: ignore the day, count whole months so far
  * @returns {{ count: number, unit: 'month' | 'year' } | null}
@@ -54,7 +58,7 @@ function countFor({ years, months }) {
 export function monthsaryFor(start, now = new Date(), { force = false } = {}) {
   if (daysBetween(start, now) < 1) return null;
   const duration = calendarDuration(start, now);
-  if (!force && duration.days !== 0) return null;
+  if (!force && duration.days >= DAYS_SHOWN) return null;
   return countFor(duration);
 }
 

@@ -101,7 +101,7 @@ A dedicated page for browsing and uploading relationship photos.
 The full story of the relationship with stats and milestones.
 
 - **Stats bar** — four cards derived from real data: days together, calendar duration (`1 yr 0 mo`), moments recorded, photos (or letters)
-- **Monthsary banner** — on the 13th of every month (and the 14th) a pop-in "Happy N months, Baby girl" card (heartbeat badge, rising hearts, tap for a burst) appears above the stats; month 12/24/… reads "Happy 1 year"/"2 years". Preview any day with `timeline.html?monthsary`
+- **Monthsary banner** — on the 13th of every month, and for the week after it (13th–19th), a pop-in "Happy N months, Baby girl" card (heartbeat badge, rising hearts, tap for a burst) appears above the stats; month 12/24/… reads "Happy 1 year"/"2 years". Preview any day with `timeline.html?monthsary`
 - **Full timeline** — every entry in `src/data/timeline.js`, grouped under sticky year headings, with type accents, "Read more" disclosures, photo thumbnails + lightbox, a scroll-linked rail fill, and a one-off celebration on the `one-year` entry
 - **Dark mode support** — all cards respect the current theme
 

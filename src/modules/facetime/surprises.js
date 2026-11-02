@@ -38,7 +38,7 @@ export function heartsBurst(origin, { count = 14, cap = 40 } = {}) {
  * @param {Date} birthday  her date of birth
  * @param {Date} now
  * @returns {{ mode: 'window'|'countdown'|'none', days: number, age: number, nextAge: number }}
- *   window: her birthday and the 13 days after it. countdown: the 14 days before.
+ *   window: her birthday and the 60 days after it. countdown: the 14 days before.
  */
 export function birthdayState(birthday, now = new Date()) {
   const y = now.getFullYear();
@@ -50,7 +50,7 @@ export function birthdayState(birthday, now = new Date()) {
   const sinceLast = Math.round((today - last) / msDay);
   const untilNext = Math.round((next - today) / msDay);
   const age = last.getFullYear() - birthday.getFullYear();
-  if (sinceLast >= 0 && sinceLast <= 13) return { mode: 'window', days: sinceLast, age, nextAge: age + 1 };
+  if (sinceLast >= 0 && sinceLast <= 60) return { mode: 'window', days: sinceLast, age, nextAge: age + 1 };
   if (untilNext > 0 && untilNext <= 14) return { mode: 'countdown', days: untilNext, age, nextAge: age + 1 };
   return { mode: 'none', days: untilNext, age, nextAge: age + 1 };
 }

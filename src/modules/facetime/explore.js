@@ -72,7 +72,7 @@ export function buildExplore(stats, notes, { onReplay, birthday, now = new Date(
     el('h1', { class: 'ft-head__title', text: 'Us, on FaceTime' }),
     el('p', { class: 'ft-head__lede', text: `Every call since the very first one. ${longDate(stats.range.first_call)} to ${longDate(stats.range.last_call)}.` }),
     monthsary ? el('p', { class: 'ft-head__line', text: monthsary }) : null,
-    bday.mode === 'window' ? el('p', { class: 'ft-head__line', text: `Happy ${tripLabel(bday.age)}.` }) : null,
+    bday.mode === 'window' ? el('p', { class: 'ft-head__line', text: `Happy ${tripLabel(bday.age)}, my Miracle☀️.` }) : null,
     el('div', { class: 'ft-stats' }, [
       stat(Math.floor(t.hours), 'hours'),
       stat(t.connected_calls, 'calls that connected'),
@@ -288,9 +288,12 @@ export function buildExplore(stats, notes, { onReplay, birthday, now = new Date(
       text: `From ${clock(xmas.call_started)} on Christmas Eve until ${clock(xmas.call_ended)} on Boxing Day.` } : null,
     { icon: '\u{1F525}', value: plural(streak.facetime.days, 'day'), title: 'In a row on FaceTime',
       text: `${monthDay(streak.facetime.from)} to ${longDate(streak.facetime.to)}.` },
-    { icon: '\u{1F440}', value: plural(streak.facetime_or_together.days, 'day'), title: 'In a row seeing each other',
-      text: `Counting the days we were together. ${monthDay(streak.facetime_or_together.from)} to ${longDate(streak.facetime_or_together.to)}.` },
-    streak.current.days > 1 ? { icon: '\u{1F4C8}', value: plural(streak.current.days, 'day'), title: 'And counting',
+    streak.current.days === streak.facetime_or_together.days
+      ? { icon: '\u{1F440}', value: `${plural(streak.current.days, 'day')} and counting`, title: 'In a row seeing each other',
+        text: `On a screen or in the same room, every single day since ${longDate(streak.current.from)}.` }
+      : { icon: '\u{1F440}', value: plural(streak.facetime_or_together.days, 'day'), title: 'In a row seeing each other',
+        text: `Counting the days we were together. ${monthDay(streak.facetime_or_together.from)} to ${longDate(streak.facetime_or_together.to)}.` },
+    streak.current.days > 1 && streak.current.days !== streak.facetime_or_together.days ? { icon: '\u{1F4C8}', value: plural(streak.current.days, 'day'), title: 'And counting',
       text: `Every single day since ${longDate(streak.current.from)}.` } : null,
     { icon: '\u{1F4F1}', value: plural(r.most_attempts_in_a_day.calls, 'call'), title: 'In a single day',
       text: `${longDate(r.most_attempts_in_a_day.date)}. Some of them even connected.` },

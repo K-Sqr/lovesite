@@ -139,7 +139,8 @@ function defineLayers(stats, notes, { birthday, now }) {
         banner,
         el('p', { class: 'ft-date ft-in', text: `${longDate(fc.at)}, ${fc.time}.` }),
         el('p', { class: 'ft-lead ft-in', text: `${callerSentence(fc.who_called)} me. It lasted ${plural(fc.seconds, 'second')}.` }),
-        el('p', { class: 'ft-small ft-in', text: `It really began on ${monthDay(stats.before_facetime.first_day)}, on WhatsApp. WhatsApp kept no record of those weeks, so the count starts with our first FaceTime.` }),
+        el('p', { class: 'ft-small ft-in', text: `It really began on ${monthDay(stats.before_facetime.first_day)}, on WhatsApp. I had missed you terribly. I called you, and we rekindled our friendship once more.` }),
+        el('p', { class: 'ft-small ft-in', text: 'WhatsApp kept no record of those weeks, so the count starts with our first FaceTime.' }),
         noteBlock(notes, 'first-call', 'ft-note ft-in'),
         late ? el('p', { class: 'ft-small ft-in ft-late', text: late }) : null,
         el('p', { class: 'ft-hint ft-in', text: tapWord() === 'Click' ? 'Click anywhere to peel, or use the arrow keys' : 'Tap anywhere to peel' }),
@@ -452,7 +453,7 @@ function defineLayers(stats, notes, { birthday, now }) {
       const words = el('div', { class: 'ft-split-text' }, [
         el('p', { class: 'ft-lead ft-in', text: 'This past year of your life,' }),
         big.wrap,
-        el('p', { class: 'ft-small ft-in', text: `${y.share_pct >= 48 && y.share_pct <= 52 ? 'Almost exactly half of it.' : `${fmtInt(y.share_pct)}% of it.`} ${fmtInt(seen)} of its ${fmtInt(y.days)} days, we saw each other's faces, on a screen or in the same room.` }),
+        el('p', { class: 'ft-small ft-in', text: `${y.share_pct >= 48 && y.share_pct <= 52 ? 'Almost exactly half of it.' : `${fmtInt(y.share_pct)}% of it.`} ${seen === y.days ? `And every single one of its ${fmtInt(y.days)} days` : `${fmtInt(seen)} of its ${fmtInt(y.days)} days`}, we saw each other's faces, on a screen or in the same room.` }),
         y.counted_from_first_call ? el('p', { class: 'ft-small ft-in', text: 'Counted from our first call, since your birthday came before it.' }) : null,
         el('p', { class: 'ft-hint ft-in', text: `${tapWord()} a day` }),
         detail,
@@ -490,27 +491,29 @@ function defineLayers(stats, notes, { birthday, now }) {
       let headline;
       let sub = null;
       if (bday.mode === 'window') {
-        headline = `Happy ${tripLabel(bday.age)}, Miracle☀️`;
+        headline = `Happy ${tripLabel(bday.age)}, my Miracle☀️`;
       } else if (bday.mode === 'countdown') {
-        headline = `${plural(bday.days, 'day')} until your ${tripLabel(bday.nextAge)}`;
+        headline = `${plural(bday.days, 'day')} until your ${tripLabel(bday.nextAge)}, my Miracle☀️`;
         sub = 'I am already counting.';
       } else {
-        headline = `${ordinal(bday.age).replace(/(\d+)/, (n) => fmtInt(Number(n)))} trip around the sun, Miracle☀️`;
+        headline = `${ordinal(bday.age).replace(/(\d+)/, (n) => fmtInt(Number(n)))} trips around the sun, my Miracle☀️`;
         sub = `This last one, we spent ${fmtInt(y.share_pct)}% of on FaceTime.`;
       }
       const sunTap = el('button', { type: 'button', class: 'ft-suntap', 'aria-label': 'Tap the sun' }, [ring]);
       const more = reveal([noteBlock(notes, 'birthday', 'ft-note')]);
       sunTap.addEventListener('click', () => { heartsBurst(sunTap, { count: 18 }); show(more); });
       const done = el('button', { type: 'button', class: 'ft-cta ft-in', text: 'See everything' });
-      const kids = [
-        sunTap,
+      // Sun on the left, words on the right on a laptop; stacked on a phone.
+      const words = el('div', { class: 'ft-split-text' }, [
         el('h2', { class: 'ft-headline ft-in', text: headline }),
+        noteBlock(notes, 'prayer', 'ft-prayer ft-in'),
         sub ? el('p', { class: 'ft-small ft-in', text: sub }) : null,
         more,
         done,
-      ];
+      ]);
+      const kids = [sunTap, words];
       return {
-        content: el('div', { class: 'ft-content' }, kids),
+        content: el('div', { class: 'ft-content ft-content--split ft-content--finale' }, kids),
         doneButton: done,
         finale: true,
       };

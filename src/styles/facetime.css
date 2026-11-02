@@ -173,6 +173,17 @@
 .ft-letter { font-size: clamp(1.2rem, 3.8vw, 1.5rem); max-width: 34ch; text-align: left; }
 .ft-letter p + p { margin-top: 0.8rem; }
 
+.ft-prayer {
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 3.2vw, 1.5rem);
+  line-height: 1.5;
+  color: var(--ink);
+  max-width: 36ch;
+  opacity: 0.92;
+}
+
+.ft-prayer p + p { margin-top: 0.3rem; }
+
 .ft-headline {
   font-family: var(--font-display);
   font-weight: 700;
@@ -1055,7 +1066,8 @@ body[data-palette='pink'] .ft-page { background: none; }
   .ft-note { font-size: 2.1rem; max-width: 30ch; }
   .ft-dear { font-size: 2.6rem; }
   .ft-letter { font-size: 1.75rem; max-width: 36ch; }
-  .ft-headline { font-size: 3.8rem; max-width: 18ch; }
+  .ft-headline { font-size: 3.6rem; max-width: 20ch; }
+  .ft-prayer { font-size: 1.7rem; max-width: 40ch; }
   .ft-detail { font-size: 1.08rem; max-width: 52ch; }
   .ft-banner { width: 27rem; padding: 1rem 1.2rem; gap: 0.9rem; }
   .ft-banner__avatar { width: 54px; height: 54px; font-size: 1.6rem; }
@@ -1085,6 +1097,10 @@ body[data-palette='pink'] .ft-page { background: none; }
   .ft-content--split .ft-big { align-items: flex-start; }
   .ft-content--split .ft-big--md .ft-num { font-size: clamp(4rem, 7vw, 6.4rem); }
   .ft-content--split .ft-orbit { width: min(58vh, 440px); }
+  .ft-content--finale .ft-orbit { width: min(52vh, 400px); }
+  .ft-content--finale .ft-headline { text-align: left; }
+  .ft-content--finale .ft-prayer { text-align: left; }
+  .ft-content--finale .ft-reveal { align-items: flex-start; }
   .ft-monthly { max-width: 44rem; }
   .ft-cta { font-size: 1.1rem; padding: 0.9rem 2rem; min-height: 54px; }
   .ft-progress { gap: 7px; }

@@ -268,37 +268,40 @@ export function buildExplore(stats, notes, { onReplay, birthday, now = new Date(
   const L = stats.longest_call;
   const S = stats.longest_stretch;
   const xmas = stats.moments.find((m) => m.label === 'Christmas');
-  const record = ({ icon, value, title, text, big = false }) => el('article', { class: `ft-rec${big ? ' ft-rec--big' : ''}` }, [
-    el('span', { class: 'ft-rec__icon', 'aria-hidden': 'true', text: icon }),
-    el('div', { class: 'ft-rec__body' }, [
+  const record = ({ value, unit, title, text, big = false }) => el('article', { class: `ft-rec${big ? ' ft-rec--big' : ''}` }, [
+    el('div', { class: 'ft-rec__num' }, [
       el('b', { class: 'ft-rec__n', text: value }),
+      unit ? el('span', { class: 'ft-rec__u', text: unit }) : null,
+    ]),
+    el('div', { class: 'ft-rec__body' }, [
       el('h3', { class: 'ft-rec__t', text: title }),
       el('p', { class: 'ft-rec__s', text: text }),
     ]),
   ]);
+  const wordNumber = (n) => ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'][n - 1] || fmtInt(n);
   const streak = stats.streaks;
   const records = [
-    { big: true, icon: '\u{23F3}', value: hms(L.seconds), title: 'Our longest call',
+    { big: true, value: hms(L.seconds), unit: 'hours, minutes, seconds', title: 'Our longest call',
       text: `${callerSentence(L.who_called)} at ${L.time} on ${longDate(L.at)}, and we were still on at ${L.ended_time} the next day.` },
-    S.hours > L.hours ? { icon: '\u{1F501}', value: hoursMinutes(S.hours * 3600), title: 'Our longest stretch',
+    S.hours > L.hours ? { value: fmtInt(Math.floor(S.hours)), unit: `hours, ${Math.round((S.hours % 1) * 60)} minutes`, title: 'Our longest stretch',
       text: `${monthDay(S.from)} to ${monthDay(S.to)}, ${S.break_seconds && S.break_seconds.length === 1 ? `with one ${S.break_seconds[0]} second break` : 'with hardly a break'}.` } : null,
-    r.full_24_hour_days.length ? { icon: '\u{1F319}', value: plural(r.full_24_hour_days.length, 'day'), title: 'All 24 hours, on FaceTime',
+    r.full_24_hour_days.length ? { value: fmtInt(r.full_24_hour_days.length), unit: r.full_24_hour_days.length === 1 ? 'day' : 'days', title: 'All 24 hours on FaceTime',
       text: r.full_24_hour_days.map((x) => monthDay(x)).join(', ') + '.' } : null,
-    xmas && xmas.on_facetime ? { icon: '\u{1F384}', value: `${fmtInt(xmas.call_hours)} hours`, title: 'Christmas, inside one call',
+    xmas && xmas.on_facetime ? { value: fmtInt(xmas.call_hours), unit: 'hours, one call', title: 'Christmas, start to finish',
       text: `From ${clock(xmas.call_started)} on Christmas Eve until ${clock(xmas.call_ended)} on Boxing Day.` } : null,
-    { icon: '\u{1F525}', value: plural(streak.facetime.days, 'day'), title: 'In a row on FaceTime',
+    { value: fmtInt(streak.facetime.days), unit: 'days in a row', title: 'On FaceTime every day',
       text: `${monthDay(streak.facetime.from)} to ${longDate(streak.facetime.to)}.` },
     streak.current.days === streak.facetime_or_together.days
-      ? { icon: '\u{1F440}', value: `${plural(streak.current.days, 'day')} and counting`, title: 'In a row seeing each other',
+      ? { value: fmtInt(streak.current.days), unit: 'days and counting', title: 'Seeing each other every day',
         text: `On a screen or in the same room, every single day since ${longDate(streak.current.from)}.` }
-      : { icon: '\u{1F440}', value: plural(streak.facetime_or_together.days, 'day'), title: 'In a row seeing each other',
+      : { value: fmtInt(streak.facetime_or_together.days), unit: 'days in a row', title: 'Seeing each other every day',
         text: `Counting the days we were together. ${monthDay(streak.facetime_or_together.from)} to ${longDate(streak.facetime_or_together.to)}.` },
-    streak.current.days > 1 && streak.current.days !== streak.facetime_or_together.days ? { icon: '\u{1F4C8}', value: plural(streak.current.days, 'day'), title: 'And counting',
+    streak.current.days > 1 && streak.current.days !== streak.facetime_or_together.days ? { value: fmtInt(streak.current.days), unit: 'days and counting', title: 'Right now',
       text: `Every single day since ${longDate(streak.current.from)}.` } : null,
-    { icon: '\u{1F4F1}', value: plural(r.most_attempts_in_a_day.calls, 'call'), title: 'In a single day',
+    { value: fmtInt(r.most_attempts_in_a_day.calls), unit: 'calls', title: 'In a single day',
       text: `${longDate(r.most_attempts_in_a_day.date)}. Some of them even connected.` },
-    { icon: '\u{1F55B}', value: plural(r.calls_over_12_hours, 'call'), title: 'Longer than twelve hours',
-      text: r.calls_over_24_hours ? `${plural(r.calls_over_24_hours, 'call').replace(/^\d+/, (n) => ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'][Number(n) - 1] || n)} went past a whole day.` : `${plural(r.days_over_20_hours, 'day')} with more than twenty hours.` },
+    { value: fmtInt(r.calls_over_12_hours), unit: 'calls', title: 'Longer than twelve hours',
+      text: r.calls_over_24_hours ? `${wordNumber(r.calls_over_24_hours)} of them went past a whole day.` : `${plural(r.days_over_20_hours, 'day')} with more than twenty hours.` },
   ].filter(Boolean);
   root.appendChild(section('records', 'For the record', 'The ones worth bragging about.', [
     el('div', { class: 'ft-recs' }, records.map(record)),

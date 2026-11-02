@@ -15,7 +15,7 @@ import { el, svg, hash01, monthShort, hourLabel, fmtNum } from './format.js';
  * a bar chart; the tallest peaks are the days we spent all 24 hours on a call.
  * @param {{hours:number}[]} daily
  */
-export function horizonPath(daily, { width = 1000, height = 200, smooth = 2, scale = 0.92 } = {}) {
+function horizonPoints(daily, { width = 1000, height = 200, smooth = 2, scale = 0.92 } = {}) {
   const n = daily.length;
   const pts = [];
   for (let i = 0; i < n; i += 1) {
@@ -28,10 +28,20 @@ export function horizonPath(daily, { width = 1000, height = 200, smooth = 2, sca
     const v = sum / count;
     pts.push([(i / (n - 1)) * width, height - (v / 24) * height * scale]);
   }
+  return pts;
+}
+
+export function horizonPath(daily, opts = {}) {
+  const { width = 1000, height = 200 } = opts;
   let d = `M0,${height} `;
-  pts.forEach(([x, y]) => { d += `L${x.toFixed(1)},${y.toFixed(1)} `; });
+  horizonPoints(daily, opts).forEach(([x, y]) => { d += `L${x.toFixed(1)},${y.toFixed(1)} `; });
   d += `L${width},${height} Z`;
   return d;
+}
+
+/** The top edge only, as an open line, so it can glow and draw itself. */
+export function horizonEdgePath(daily, opts = {}) {
+  return horizonPoints(daily, opts).map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
 }
 
 /**
@@ -47,6 +57,7 @@ export function horizon(daily, { width = 1000, height = 200, highlight = false, 
     focusable: 'false',
   });
   root.appendChild(svg('path', { class: 'ft-horizon__land', d: horizonPath(daily, { width, height }) }));
+  root.appendChild(svg('path', { class: 'ft-horizon__edge', d: horizonEdgePath(daily, { width, height }), pathLength: '1' }));
 
   if (highlight) {
     // One gold glow per visit: a soft column over the days we were in the same room.

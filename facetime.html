@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Us Machina &mdash; Us, on FaceTime &#9728;&#65039;</title>
+  <link rel="icon" type="image/png" href="./heart.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Inter:wght@400;500;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,0..100;1,9..144,300..600,0..100&display=swap" rel="stylesheet" />
+  <meta name="description" content="Every call since the very first one." />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' https://*.firebasestorage.app https://firebasestorage.googleapis.com data: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://lovegpt-osmy5pclpq-uc.a.run.app https://www.google-analytics.com https://analytics.google.com https://api.open-meteo.com; font-src 'self' https://fonts.gstatic.com; media-src 'self'; frame-src 'none';" />
+</head>
+<body class="ft-body">
+
+  <!-- ═══ NAVBAR (rendered by src/modules/siteChrome.js) ═══ -->
+  <nav class="site-nav" id="siteNav"></nav>
+
+  <!--
+    ════════════════════════════════════════════════════════════════════════
+    YOUR WORDS GO HERE  (Emmanuel)
+
+    Each <template data-note="..."> below is one of your notes. The page reads
+    the text inside it. Leave one empty and that note simply never appears,
+    so nothing half-written can show. Keep them short, a sentence or three.
+    Line breaks become paragraphs. Suggested drafts sit in the comments.
+    ════════════════════════════════════════════════════════════════════════
+  -->
+
+  <!-- Layer 1, under the first call. Draft:
+       "Seventy-seven seconds. I had no idea." -->
+  <template data-note="first-call"></template>
+
+  <!-- Layer 2, the first long call. Draft:
+       "I remember not wanting to be the one to say goodnight." -->
+  <template data-note="first-long-call"></template>
+
+  <!-- Layer 5, the night you said yes. Shown after she taps 2:00 AM. Draft:
+       "You said yes on this call. I wiped a tear and you saw." -->
+  <template data-note="said-yes"></template>
+
+  <!-- Layer 7, the longest call. Shown after she taps April 15. Draft:
+       "Twenty-nine hours, and I still didn't want to hang up." -->
+  <template data-note="longest-call"></template>
+
+  <!-- Layer 7, Christmas. Draft:
+       "All of Christmas Day, together. Our first." -->
+  <template data-note="christmas"></template>
+
+  <!-- Layer 9, the visits. One line for all four, or leave it. Draft:
+       "The quiet weeks in the data are my favourite ones." -->
+  <template data-note="visits"></template>
+
+  <!-- Layer 10, the 1,000 hour milestone. Draft:
+       "A thousand hours by December. We were just getting started." -->
+  <template data-note="milestone-1000"></template>
+
+  <!-- Layer 12, the sunrises. Draft:
+       "You are the sun I kept waiting up for." -->
+  <template data-note="sunrises"></template>
+
+  <!-- Layer 13, her year. Draft:
+       "Half of your twenty-fourth year, you spent looking at me. I don't take that lightly." -->
+  <template data-note="her-year"></template>
+
+  <!-- Layer 14, THE LETTER. The one that matters. The page shows "Dear Miracle" above whatever you write.
+       Draft, replace all of it:
+       "I added it up because I wanted you to see it the way I do.
+        Every one of these hours was a choice, and you kept choosing me.
+        Happy birthday, baby girl. Here's to the next trip around the sun." -->
+  <template data-note="letter"></template>
+
+  <!-- Layer 15, the birthday finale, after the sun blooms. Draft:
+       "Happy 25th, Miracle. I love you." -->
+  <template data-note="birthday"></template>
+
+  <main class="ft-page" id="ftPage" aria-label="Us, on FaceTime">
+    <!-- The story (layers) and the explore view are rendered by src/facetime.js -->
+    <noscript><p class="ft-noscript">This page needs JavaScript to tell its story.</p></noscript>
+  </main>
+
+  <footer class="site-footer" id="siteFooter"></footer>
+
+  <!-- ═══ MUSIC (rendered by src/modules/siteChrome.js) ═══ -->
+  <div id="siteMusic"></div>
+
+  <script type="module" src="/src/facetime.js"></script>
+</body>
+</html>

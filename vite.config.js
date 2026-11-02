@@ -90,6 +90,7 @@ export default defineConfig({
         outfit: resolve(__dirname, 'outfit.html'),
         letters: resolve(__dirname, 'letters.html'),
         wedding: resolve(__dirname, 'wedding.html'),
+        facetime: resolve(__dirname, 'facetime.html'),
       },
     },
   },

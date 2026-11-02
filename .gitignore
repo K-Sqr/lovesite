@@ -25,3 +25,9 @@ public/letters/
 letters-source/
 *.pdf
 !docs/anniversary/**
+
+# Private call data, never commit
+_private/
+calls.csv
+*.sqlite
+extract_calls.py

@@ -21,6 +21,7 @@ const TOOLS = [
   { id: 'rhythm',       emoji: '\u{1F337}', name: 'Rhythm',               purpose: 'Your month, kept quietly.',            href: './rhythm.html',       comingSoon: false },
   { id: 'outfit',       emoji: '\u{1F457}', name: 'What to Wear',         purpose: 'For the mornings the wardrobe says nothing.', href: './outfit.html', comingSoon: false },
   { id: 'wedding',      emoji: '\u{1F48D}', name: 'Our Wedding Fund',     purpose: 'A little set aside every week, for the day.', href: './wedding.html', comingSoon: false },
+  { id: 'facetime',     emoji: '\u{2600}\u{FE0F}', name: 'Us, on FaceTime', purpose: 'Every call since the very first one.', href: './facetime.html', comingSoon: false },
 ];
 
 function renderCard(tool, index) {

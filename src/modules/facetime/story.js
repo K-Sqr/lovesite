@@ -177,7 +177,7 @@ function defineLayers(stats, notes, { birthday, now }) {
     build() {
       const t = stats.totals;
       const big = bigNumber('hours on FaceTime');
-      const more = reveal([el('p', { class: 'ft-small', text: `The glowing line along the bottom is our ${fmtInt(stats.range.days_span)} days, one for each, rising where we talked longer. The peaks are the days we never hung up at all.` })]);
+      const more = reveal([el('p', { class: 'ft-small', text: `The skyline along the bottom is our ${fmtInt(stats.range.days_span)} days, one for each, rising where we talked longer. The peaks are the days we never hung up at all.` })]);
       const chip = el('button', { type: 'button', class: 'ft-chip ft-in', text: 'What is the horizon?' });
       chip.addEventListener('click', () => { show(more); chip.hidden = true; });
       const kids = [

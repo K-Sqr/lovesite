@@ -39,10 +39,7 @@ export function horizonPath(daily, opts = {}) {
   return d;
 }
 
-/** The top edge only, as an open line, so it can glow and draw itself. */
-export function horizonEdgePath(daily, opts = {}) {
-  return horizonPoints(daily, opts).map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
-}
+
 
 /**
  * The horizon element. `highlight` lights the days we were together in gold.
@@ -57,7 +54,6 @@ export function horizon(daily, { width = 1000, height = 200, highlight = false, 
     focusable: 'false',
   });
   root.appendChild(svg('path', { class: 'ft-horizon__land', d: horizonPath(daily, { width, height }) }));
-  root.appendChild(svg('path', { class: 'ft-horizon__edge', d: horizonEdgePath(daily, { width, height }), pathLength: '1' }));
 
   if (highlight) {
     // One gold glow per visit: a soft column over the days we were in the same room.

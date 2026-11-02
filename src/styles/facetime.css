@@ -401,10 +401,6 @@
 }
 
 .ft-horizon__land { fill: var(--land); }
-.ft-horizon__edge { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-linejoin: round; vector-effect: non-scaling-stroke; opacity: 0.55; }
-.ft-horizon--draws .ft-horizon__edge { stroke-width: 2.5; opacity: 0.95; stroke-dasharray: 1; stroke-dashoffset: 1; filter: drop-shadow(0 0 6px var(--accent)); }
-.ft-layer.is-current .ft-horizon--draws .ft-horizon__edge { stroke-dashoffset: 0; transition: stroke-dashoffset 3s cubic-bezier(0.3, 0.7, 0.3, 1) 0.4s; }
-.ft-layer.is-settled .ft-horizon--draws .ft-horizon__edge { transition: none; }
 .ft-horizon__visit { opacity: 0; }
 .ft-layer.is-current .ft-horizon__visit { opacity: 1; transition: opacity 1.2s ease 0.8s; }
 
@@ -1227,7 +1223,6 @@ body[data-palette='pink'] .ft-page { background: none; }
   .ft-in, .ft-layer.is-current .ft-in { opacity: 1; transform: none; transition: none; }
   .ft-banner { opacity: 1; transform: none; animation: none !important; }
   .ft-horizon--draws, .ft-layer.is-current .ft-horizon--draws { clip-path: none; transition: none; }
-  .ft-horizon--draws .ft-horizon__edge { stroke-dashoffset: 0; }
   .ft-sun, .ft-sun[data-pos='rising'] { transition: none; }
   .ft-sun[data-pos='rising'] { transform: translateY(-4%); }
   .ft-corner, .ft-shoot, .ft-spark { display: none; }

@@ -1097,7 +1097,9 @@ body[data-palette='pink'] .ft-page { background: none; }
   .ft-content--split .ft-big { align-items: flex-start; }
   .ft-content--split .ft-big--md .ft-num { font-size: clamp(4rem, 7vw, 6.4rem); }
   .ft-content--split .ft-orbit { width: min(58vh, 440px); }
-  .ft-content--finale .ft-orbit { width: min(52vh, 400px); }
+  .ft-content--finale .ft-orbit { width: min(44vh, 340px); }
+  .ft-content--finale .ft-split-text { gap: 0.8rem; }
+  .ft-content--finale .ft-prayer { font-size: 1.45rem; }
   .ft-content--finale .ft-headline { text-align: left; }
   .ft-content--finale .ft-prayer { text-align: left; }
   .ft-content--finale .ft-reveal { align-items: flex-start; }
@@ -1158,7 +1160,13 @@ body[data-palette='pink'] .ft-page { background: none; }
   .ft-toggle__btn { font-size: 0.82rem; padding: 0.4rem 0.8rem; }
   .ft-rec--big { flex-direction: column; align-items: flex-start; }
   .ft-horizon { height: calc(16vh + var(--tabs)); }
-  .ft-orbit { width: min(64vw, 250px); }
+  .ft-orbit { width: min(56vw, 220px); }
+  .ft-content--finale .ft-orbit { width: min(46vw, 180px); }
+  .ft-content--finale .ft-headline { font-size: clamp(1.6rem, 6vw, 2.2rem); }
+  .ft-prayer { font-size: 1.05rem; line-height: 1.45; }
+  .ft-big--md .ft-num { font-size: clamp(2.6rem, 10vw, 3.6rem); }
+  .ft-content--split { gap: 0.6rem; }
+  .ft-split-text { gap: 0.6rem; }
 }
 
 @media (max-height: 700px) {

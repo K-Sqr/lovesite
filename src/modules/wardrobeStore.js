@@ -561,6 +561,6 @@ export async function syncMorningReminder(now = new Date()) {
     dueAt: morningOf(tomorrow),
     title: "Today's outfit is ready",
     body: 'Open it, get dressed, go.',
-    href: '/lovesite/outfit.html',
+    href: `${import.meta.env?.BASE_URL ?? '/'}outfit.html`,
   });
 }

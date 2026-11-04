@@ -248,12 +248,24 @@ function cleanText(value, max) {
   return value.replace(/\s+/g, ' ').trim().slice(0, max);
 }
 
+const SITE_BASE = import.meta.env?.BASE_URL ?? '/';
+
+/**
+ * Rewrites a link saved while the site lived at k-sqr.github.io/lovesite/
+ * (e.g. '/lovesite/people.html#per_x') onto the current base. Synced reminder
+ * rows from before the usmachina.love move still carry the old prefix.
+ */
+export function sitePath(href) {
+  if (typeof href !== 'string') return href;
+  return href.startsWith('/lovesite/') ? SITE_BASE + href.slice('/lovesite/'.length) : href;
+}
+
 /** Same-site links only. Anything with a scheme, or outside the site, is dropped. */
 function cleanHref(value) {
   if (typeof value !== 'string') return null;
-  const s = value.trim();
+  const s = sitePath(value.trim());
   if (!s || /[\s]/.test(s) || /^[a-z][a-z0-9+.-]*:/i.test(s) || s.startsWith('//')) return null;
-  if (s.startsWith('/lovesite/') || s.startsWith('./') || s.startsWith('#')) return s;
+  if (s.startsWith('/') || s.startsWith('./') || s.startsWith('#')) return s;
   return null;
 }
 

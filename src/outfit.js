@@ -99,7 +99,7 @@ function showPhoto(img, url, scope, revokeOnRelease = false) {
   if (placeholder) placeholder.hidden = true;
 }
 
-/** Resolve a static seed photo against the site base (`/lovesite/`). */
+/** Resolve a static seed photo against the site base (`import.meta.env.BASE_URL`). */
 function staticPhotoUrl(src) {
   if (!src) return null;
   if (/^(?:https?:|data:|blob:)/i.test(src)) return src;

@@ -69,9 +69,9 @@ function automaticMusicPlaylist() {
 
 export default defineConfig({
   root: '.',
-  base: '/lovesite/',
+  base: '/',
   // Multi-page site: without this, Vite's SPA fallback rewrites every
-  // /lovesite/*.html request to index.html in `npm run dev`.
+  // /*.html request to index.html in `npm run dev`.
   appType: 'mpa',
   plugins: [automaticMusicPlaylist()],
   build: {

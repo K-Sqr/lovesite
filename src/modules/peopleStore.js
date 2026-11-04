@@ -31,7 +31,7 @@
  *     dueAt: '2026-04-16T13:00:00.000Z',            // ISO instant, 1pm local the day before
  *     title: 'Tinu’s birthday is tomorrow',
  *     body: 'A quick hello counts.',                 // same tone rules as the page
- *     href: '/lovesite/people.html#per_k3n8v',
+ *     href: '/people.html#per_k3n8v',
  *   }
  * Calls: `reminders.upsertReminder(rec)` and `reminders.cancelReminder(id)`.
  * The engine maps kind birthday → 'birthday', checkin → 'checkin',
@@ -830,7 +830,7 @@ function dayBeforeAt1pm(date) {
 }
 
 function hrefFor(person) {
-  return `/lovesite/people.html#${person.id}`;
+  return `${import.meta.env?.BASE_URL ?? '/'}people.html#${person.id}`;
 }
 
 function reminderIds(person) {

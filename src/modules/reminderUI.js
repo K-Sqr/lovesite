@@ -21,7 +21,7 @@ import '../styles/reminders.css';
 import {
   REMINDER_TYPES, PERSISTED_TYPES, MAX_VISIBLE,
   listActionable, snoozeReminder, dismissReminder, getPrefs, setPrefs,
-  subscribeReminders, startEvaluating,
+  subscribeReminders, startEvaluating, sitePath,
 } from './reminders.js';
 import { attachSurface } from './notifiers/inApp.js';
 import { getNotifier } from './notifiers/index.js';
@@ -103,8 +103,8 @@ function buildItem(reminder) {
   const tone = TONE[reminder.type] || TONE.date;
   const actions = el('div', { class: 'reminder-item__actions' });
 
-  if (!isThisPage(reminder.href)) {
-    actions.appendChild(el('a', { class: 'usm-btn usm-btn--ghost reminder-item__open', href: reminder.href, text: COPY.open }));
+  if (!isThisPage(sitePath(reminder.href))) {
+    actions.appendChild(el('a', { class: 'usm-btn usm-btn--ghost reminder-item__open', href: sitePath(reminder.href), text: COPY.open }));
   }
   const gotIt = el('button', { type: 'button', class: 'usm-btn usm-btn--secondary', text: COPY.gotIt });
   gotIt.addEventListener('click', () => dismissReminder(reminder.id));

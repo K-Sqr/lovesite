@@ -141,6 +141,8 @@ function validateHistory(history) {
 }
 
 const ALLOWED_ORIGINS = [
+  'https://usmachina.love',
+  'https://www.usmachina.love',
   'https://k-sqr.github.io',
   'http://localhost:5173',
   'http://localhost:4173',

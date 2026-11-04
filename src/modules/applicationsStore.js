@@ -48,7 +48,7 @@
  *     dueAt: '2026-10-01T13:00:00.000Z',        // full ISO; the moment to surface it
  *     title: 'Manso Manitoba closes tomorrow',
  *     body: 'Ready when you are.',
- *     href: '/lovesite/applications.html#app_7fq2m',
+ *     href: '/applications.html#app_7fq2m',
  *   }
  *
  * Consumed as:  reminders.upsertReminder(record)   and   reminders.cancelReminder(id)
@@ -541,7 +541,7 @@ const REMINDER_KINDS = ['deadline', 'interview', 'followup'];
 const MORNING_HOUR = 8; // local time — the same hour the spec's example lands in Winnipeg
 
 function reminderId(appId, kind) { return `applications:${appId}:${kind}`; }
-function hrefFor(appId) { return `/lovesite/applications.html#${appId}`; }
+function hrefFor(appId) { return `${import.meta.env?.BASE_URL ?? '/'}applications.html#${appId}`; }
 function orgName(app) { return app.organization || app.position || 'This one'; }
 
 /** Local morning of a calendar date, as ISO. */

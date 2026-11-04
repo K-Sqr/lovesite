@@ -13,13 +13,31 @@
  */
 
 import { svgIcon } from '../icons.js';
-import { el, dateOf, fmtInt, fmtNum, hms, clock, longDate, monthDay, monthLabel, hourLabel, ordinal, callerSentence, prefersReducedMotion, plural, hoursMinutes } from './format.js';
+import { el, svg, dateOf, fmtInt, fmtNum, hms, clock, longDate, monthDay, shortMonthDay, weekdayShort, monthLabel, hourLabel, ordinal, callerSentence, prefersReducedMotion, plural, hoursMinutes } from './format.js';
 import { noteBlock } from './notes.js';
 import { countUp, countUpClock } from './countup.js';
 import { horizon, starField, orbit, monthlyLine, splitBar } from './charts.js';
 import { heartsBurst, birthdayState, lateNightLine, tripLabel } from './surprises.js';
 
 const PEEL_MS = 980;
+const KNOB_INSET = 6; // px between the answer knob and its track, matches .ft-answer padding
+const APP_NAME = { whatsapp: 'WhatsApp', facetime: 'FaceTime', phone: 'Phone' };
+const WEEKDAYS_LONG = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+/** 744 → "12:24", 39079 → "10:51:19" */
+function mmss(seconds) {
+  const v = Math.max(0, Math.round(seconds));
+  if (v >= 3600) return hms(v);
+  return `${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}`;
+}
+
+const CALL_ICONS = {
+  handset: 'M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.3 1l-2.2 2.2z',
+  video: 'M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z',
+};
+function callIcon(name) {
+  return svg('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true', focusable: 'false' }, [svg('path', { d: CALL_ICONS[name], fill: 'currentColor' })]);
+}
 
 /** "Click" with a mouse or trackpad, "Tap" on a phone. */
 function tapWord() {
@@ -31,7 +49,8 @@ function tapWord() {
 // top, mid, bottom: the gradient. ink: text. land: the horizon silhouette.
 // stars: how many nights to show (0 = none). sun: where the sun sits.
 const SKY = {
-  lateGold:  { top: '#f9c86f', mid: '#f7a46a', bottom: '#f28a86', ink: '#3a1530', muted: 'rgba(58,21,48,.72)', accent: '#8f1d4e', land: '#5a2d5e', stars: 0, sun: 'high', tone: 'dark' },
+  // mid-June in Winnipeg: at 11 PM the last of the light still sits on the horizon
+  june:      { top: '#121640', mid: '#2e2b66', bottom: '#a86a78', ink: '#fff4e4', muted: 'rgba(255,244,228,.78)', accent: '#ffc247', land: '#140f2c', stars: 30, sun: 'hidden', tone: 'light' },
   dusk:      { top: '#2b1b4f', mid: '#7a3f7e', bottom: '#e4809a', ink: '#fff4e4', muted: 'rgba(255,244,228,.74)', accent: '#ffc247', land: '#2a1434', stars: 40, sun: 'set', tone: 'light' },
   midnight:  { top: '#150b1f', mid: '#24143a', bottom: '#3b1f55', ink: '#fff4e4', muted: 'rgba(255,244,228,.72)', accent: '#ffc247', land: '#120817', stars: 90, sun: 'hidden', tone: 'light' },
   small:     { top: '#130d24', mid: '#211846', bottom: '#3a2a66', ink: '#fff4e4', muted: 'rgba(255,244,228,.72)', accent: '#ffc247', land: '#0f0a1c', stars: 70, sun: 'hidden', tone: 'light' },
@@ -53,7 +72,7 @@ const SKY = {
 const PINK_INK_DARK = { ink: '#b4164e', muted: 'rgba(180,22,78,.74)', accent: '#c9962b', tone: 'dark' };
 const PINK_INK_LIGHT = { ink: '#fff4f8', muted: 'rgba(255,244,248,.82)', accent: '#ffe08a', tone: 'light' };
 const PINK_SKY = {
-  lateGold:   { top: '#fff0f5', mid: '#ffd9e6', bottom: '#ffbfd3', land: '#e86fa0', stars: 0, sun: 'high', ...PINK_INK_DARK },
+  june:       { top: '#4e0d2c', mid: '#8f1d4e', bottom: '#e0729b', land: '#330819', stars: 30, sun: 'hidden', ...PINK_INK_LIGHT, accent: '#ffc247' },
   dusk:       { top: '#ffb6c1', mid: '#ff7fb5', bottom: '#ff4da6', land: '#8f1d4e', stars: 40, sun: 'set', ...PINK_INK_LIGHT },
   midnight:   { top: '#5a0f33', mid: '#8f1d4e', bottom: '#b5164f', land: '#3a0a20', stars: 90, sun: 'hidden', ...PINK_INK_LIGHT, accent: '#ffc247' },
   small:      { top: '#4e0d2c', mid: '#7a1040', bottom: '#a3184b', land: '#330819', stars: 70, sun: 'hidden', ...PINK_INK_LIGHT, accent: '#ffc247' },
@@ -121,31 +140,138 @@ function defineLayers(stats, notes, { birthday, now }) {
 
   const layers = [];
 
-  // 1 ── 6:33 PM, the first call
+  // 1 ── 11:16 PM, June 12, 2025: she is calling, and the story starts when she picks up
   layers.push({
-    id: 'first-call', sky: SKY.lateGold, title: 'The first call',
+    id: 'first-call', sky: SKY.june, title: 'The first call',
     build() {
       const fc = stats.first_call;
+      const ft = stats.first_facetime;
       const late = lateNightLine(now);
-      const banner = el('div', { class: 'ft-banner', role: 'img', 'aria-label': 'FaceTime from Miracle' }, [
-        el('span', { class: 'ft-banner__avatar', 'aria-hidden': 'true', text: '☀️' }),
-        el('span', { class: 'ft-banner__text' }, [
-          el('span', { class: 'ft-banner__name', text: 'Miracle☀️' }),
-          el('span', { class: 'ft-banner__sub', text: 'FaceTime Video' }),
-        ]),
-        el('span', { class: 'ft-banner__time', text: fc.time }),
+      const reduced = prefersReducedMotion();
+      const app = APP_NAME[fc.app] || 'WhatsApp';
+      const at = dateOf(fc.at);
+      const [hm, meridiem] = clock(fc.at).split(' ');
+
+      const lock = el('div', { class: 'ft-call__lock ft-in' }, [
+        el('p', { class: 'ft-call__day', text: `${WEEKDAYS_LONG[at.getDay()]}, ${longDate(fc.at)}` }),
+        el('p', { class: 'ft-call__clock' }, [hm, el('small', { text: meridiem })]),
       ]);
-      const kids = [
-        banner,
-        el('p', { class: 'ft-date ft-in', text: `${longDate(fc.at)}, ${fc.time}.` }),
-        el('p', { class: 'ft-lead ft-in', text: `${callerSentence(fc.who_called)} me. It lasted ${plural(fc.seconds, 'second')}.` }),
-        el('p', { class: 'ft-small ft-in', text: `It really began on ${monthDay(stats.before_facetime.first_day)}, on WhatsApp. I had missed you terribly. I called you, and we rekindled our friendship once more.` }),
-        el('p', { class: 'ft-small ft-in', text: 'WhatsApp kept no record of those weeks, so the count starts with our first FaceTime.' }),
-        noteBlock(notes, 'first-call', 'ft-note ft-in'),
-        late ? el('p', { class: 'ft-small ft-in ft-late', text: late }) : null,
-        el('p', { class: 'ft-hint ft-in', text: tapWord() === 'Click' ? 'Click anywhere to peel, or use the arrow keys' : 'Tap anywhere to peel' }),
-      ];
-      return { content: el('div', { class: 'ft-content' }, kids) };
+      const status = el('p', { class: 'ft-call__status', text: `Incoming ${app} call` });
+      const timer = el('p', { class: 'ft-call__timer', 'aria-hidden': 'true', text: '0:00' });
+      const who = el('div', { class: 'ft-call__who ft-in' }, [
+        el('span', { class: 'ft-call__avatar', 'aria-hidden': 'true' }, [
+          el('i', { class: 'ft-call__ring' }), el('i', { class: 'ft-call__ring' }), el('i', { class: 'ft-call__ring' }),
+          el('span', { class: 'ft-call__face', text: '☀️' }),
+        ]),
+        el('p', { class: 'ft-call__name', text: 'Miracle☀️' }),
+        status,
+        timer,
+      ]);
+
+      // slide to answer: drag the handset across, or just press it
+      const knob = el('button', { type: 'button', class: 'ft-answer__knob', 'aria-label': `Answer the call from Miracle, ${longDate(fc.at)} at ${fc.time}` }, [callIcon('handset')]);
+      const track = el('div', { class: 'ft-answer ft-in', 'data-no-peel': '' }, [
+        el('span', { class: 'ft-answer__label', 'aria-hidden': 'true', text: 'slide to answer' }),
+        knob,
+      ]);
+      const hint = el('p', { class: 'ft-hint ft-call__hint ft-in', text: `${tapWord() === 'Click' ? 'Drag or click' : 'Slide or tap'} the green button to pick up` });
+
+      // what's left on screen once she answers
+      const tries = fc.her_tries_before || 0;
+      const triedLine = tries && fc.her_tries_month
+        ? `You'd tried ${tries === 1 ? 'once' : tries === 2 ? 'twice' : `${tries} times`} in ${monthLabel(fc.her_tries_month).split(' ')[0]}. This time I picked up.`
+        : null;
+      const logRow = (kind, appName, iso, seconds, tag) => el('li', { class: 'ft-log__row' }, [
+        el('span', { class: 'ft-log__icon', 'aria-hidden': 'true' }, [callIcon(kind)]),
+        el('span', { class: 'ft-log__what' }, [
+          el('b', { text: appName }),
+          el('span', { text: `${weekdayShort(iso)}, ${shortMonthDay(iso)}, ${dateOf(iso).getFullYear()} · ${clock(iso)}` }),
+          tag ? el('em', { text: tag }) : null,
+        ]),
+        el('span', { class: 'ft-log__dur', text: mmss(seconds) }),
+      ]);
+      const after = el('div', { class: 'ft-call__after', hidden: true }, [
+        el('p', { class: 'ft-lead', text: `${callerSentence(fc.who_called)} me.` }),
+        triedLine ? el('p', { class: 'ft-small', text: triedLine }) : null,
+        el('ol', { class: 'ft-log', 'aria-label': 'Where it started' }, [
+          logRow('handset', app, fc.at, fc.seconds, null),
+          ft ? logRow('video', 'FaceTime', ft.at, ft.seconds, 'our first FaceTime') : null,
+        ]),
+        noteBlock(notes, 'first-call', 'ft-note'),
+        stats.prologue && stats.prologue.first_ever_call
+          ? el('p', { class: 'ft-small ft-call__prologue', text: `We go back further than this. Our first call ever was ${longDate(stats.prologue.first_ever_call)}.` })
+          : null,
+        late ? el('p', { class: 'ft-small ft-late', text: late }) : null,
+        el('p', { class: 'ft-hint', text: tapWord() === 'Click' ? 'Click anywhere to peel, or use the arrow keys' : 'Tap anywhere to peel' }),
+      ]);
+
+      const call = el('div', { class: 'ft-call', 'data-state': 'ringing' }, [lock, who, track, hint, after]);
+      let answered = false;
+      let answeredAt = 0;
+
+      function answer() {
+        if (answered) return;
+        answered = true;
+        answeredAt = Date.now();
+        call.dataset.state = 'live';
+        knob.disabled = true;
+        status.textContent = app;
+        timer.removeAttribute('aria-hidden');
+        timer.setAttribute('aria-label', `Call length ${hoursMinutes(fc.seconds)}`);
+        show(after);
+        countUp(timer, { to: fc.seconds, duration: 2400, delay: reduced ? 0 : 350, format: mmss });
+        setTimeout(() => { track.hidden = true; hint.hidden = true; }, reduced ? 0 : 450);
+      }
+
+      function nudge() {
+        if (answered || reduced) return;
+        track.classList.remove('is-nudged');
+        void track.offsetWidth;
+        track.classList.add('is-nudged');
+      }
+
+      // dragging
+      let drag = null;
+      const maxX = () => track.clientWidth - knob.offsetWidth - 2 * KNOB_INSET;
+      knob.addEventListener('pointerdown', (e) => {
+        if (answered) return;
+        e.stopPropagation();
+        drag = { x0: e.clientX, x: 0, moved: false };
+        knob.setPointerCapture(e.pointerId);
+        track.classList.add('is-dragging');
+      });
+      knob.addEventListener('pointermove', (e) => {
+        if (!drag) return;
+        const x = Math.max(0, Math.min(maxX(), e.clientX - drag.x0));
+        if (Math.abs(x) > 4) drag.moved = true;
+        drag.x = x;
+        track.style.setProperty('--knob-x', `${x}px`);
+        track.style.setProperty('--knob-p', String(x / Math.max(1, maxX())));
+      });
+      const release = () => {
+        if (!drag) return;
+        const { x, moved } = drag;
+        drag = null;
+        track.classList.remove('is-dragging');
+        if (!moved || x > maxX() * 0.6) {
+          track.style.setProperty('--knob-x', `${maxX()}px`);
+          track.style.setProperty('--knob-p', '1');
+          answer();
+        } else {
+          track.style.setProperty('--knob-x', '0px');
+          track.style.setProperty('--knob-p', '0');
+        }
+      };
+      knob.addEventListener('pointerup', (e) => { e.stopPropagation(); release(); });
+      knob.addEventListener('pointercancel', release);
+      // keyboard and assistive tech land here; pointer presses are handled on release
+      knob.addEventListener('click', (e) => { e.stopPropagation(); if (e.detail === 0) answer(); });
+
+      return {
+        content: el('div', { class: 'ft-content ft-content--call' }, [call]),
+        // the press that answers must not also peel the layer away
+        gate: { isOpen: () => answered && Date.now() - answeredAt > 700, open: answer, nudge },
+      };
     },
   });
 
@@ -176,7 +302,7 @@ function defineLayers(stats, notes, { birthday, now }) {
     id: 'hours', sky: SKY.midnight, title: 'The hours',
     build() {
       const t = stats.totals;
-      const big = bigNumber('hours on FaceTime');
+      const big = bigNumber('hours on a call');
       const more = reveal([el('p', { class: 'ft-small', text: `The skyline along the bottom is our ${fmtInt(stats.range.days_span)} days, one for each, rising where we talked longer. The peaks are the days we never hung up at all.` })]);
       const chip = el('button', { type: 'button', class: 'ft-chip ft-in', text: 'What is the horizon?' });
       chip.addEventListener('click', () => { show(more); chip.hidden = true; });
@@ -235,7 +361,7 @@ function defineLayers(stats, notes, { birthday, now }) {
       const kids = [
         el('p', { class: 'ft-date ft-in', text: longDate(yes ? yes.at : '2025-09-13') }),
         tap,
-        el('p', { class: 'ft-lead ft-in', text: yes && yes.on_facetime ? 'We were on FaceTime when you said yes.' : 'The night you said yes.' }),
+        el('p', { class: 'ft-lead ft-in', text: yes && yes.on_facetime ? `We were on ${yes.app === 'facetime' ? 'FaceTime' : 'a call'} when you said yes.` : 'The night you said yes.' }),
         yes && yes.on_facetime ? el('p', { class: 'ft-small ft-in', text: `The call started at ${clock(yes.call_started)}. We stayed on, one call after another, until ${endedClock}${afternoon}.` }) : null,
         el('p', { class: 'ft-hint ft-in', text: `${tapWord()} the time` }),
         more,
@@ -249,11 +375,11 @@ function defineLayers(stats, notes, { birthday, now }) {
     id: 'nights', sky: SKY.stars, title: 'The nights we fell asleep',
     build() {
       const n = stats.nights;
-      const big = bigNumber('nights we fell asleep on FaceTime');
+      const big = bigNumber('nights we fell asleep on a call');
       const kids = [
         big.wrap,
         el('p', { class: 'ft-small ft-in', text: 'One star for each of them.' }),
-        el('p', { class: 'ft-small ft-in', text: `${fmtInt(n.night_share_pct)}% of our time on FaceTime was between midnight and 6 AM. Our hour is ${hourLabel(n.peak_hour)}.` }),
+        el('p', { class: 'ft-small ft-in', text: `${fmtInt(n.night_share_pct)}% of our time on calls was between midnight and 6 AM. Our hour is ${hourLabel(n.peak_hour)}.` }),
       ];
       return {
         content: el('div', { class: 'ft-content' }, kids),
@@ -343,8 +469,8 @@ function defineLayers(stats, notes, { birthday, now }) {
           chips.querySelectorAll('.ft-chip').forEach((c) => c.classList.toggle('is-active', c === b));
           detail.replaceChildren(
             el('p', { text: `${v.who}. ${plural(v.days, 'day')}${v.note ? `. ${v.note}` : '.'}` }),
-            v.back_on_facetime ? el('p', { text: `Back on FaceTime ${fmtNum(v.back_on_facetime.hours_after_leaving)} hours after we said goodbye.` }) : null,
-            el('p', { text: `${fmtInt(v.hours_week_before)} hours on FaceTime the week before. ${fmtInt(v.hours_week_after)} the week after.` }),
+            v.back_on_facetime ? el('p', { text: `Back on a call ${fmtNum(v.back_on_facetime.hours_after_leaving)} hours after we said goodbye.` }) : null,
+            el('p', { text: `${fmtInt(v.hours_week_before)} hours on calls the week before. ${fmtInt(v.hours_week_after)} the week after.` }),
           );
           detail.classList.add('is-shown');
         });
@@ -439,13 +565,13 @@ function defineLayers(stats, notes, { birthday, now }) {
       const y = stats.her_year;
       const ring = orbit(y.orbit, { size: 320 });
       ring.classList.add('ft-in');
-      const big = bigNumber('hours on FaceTime');
+      const big = bigNumber('hours on a call');
       const detail = el('p', { class: 'ft-detail', 'aria-live': 'polite' });
       const pick = (ray) => {
         ring.querySelectorAll('.ft-orbit__ray').forEach((r) => r.classList.toggle('is-active', r === ray));
         detail.textContent = ray.dataset.together
           ? `${longDate(ray.dataset.date)}: together, in person.`
-          : `${longDate(ray.dataset.date)}: ${Number(ray.dataset.hours) > 0 ? `${fmtNum(Number(ray.dataset.hours))} hours on FaceTime.` : 'a quiet day.'}`;
+          : `${longDate(ray.dataset.date)}: ${Number(ray.dataset.hours) > 0 ? `${fmtNum(Number(ray.dataset.hours))} hours on a call.` : 'a quiet day.'}`;
       };
       ring.addEventListener('click', (e) => { const r = e.target.closest('.ft-orbit__ray'); if (r) pick(r); });
       const seen = y.days - y.days_neither;
@@ -497,7 +623,7 @@ function defineLayers(stats, notes, { birthday, now }) {
         sub = 'I am already counting.';
       } else {
         headline = `${ordinal(bday.age).replace(/(\d+)/, (n) => fmtInt(Number(n)))} trips around the sun, my Miracle☀️`;
-        sub = `This last one, we spent ${fmtInt(y.share_pct)}% of on FaceTime.`;
+        sub = `This last one, we spent ${fmtInt(y.share_pct)}% of on a call.`;
       }
       const sunTap = el('button', { type: 'button', class: 'ft-suntap', 'aria-label': 'Tap the sun' }, [ring]);
       const more = reveal([noteBlock(notes, 'birthday', 'ft-note')]);
@@ -534,7 +660,7 @@ export function buildStory(stats, notes, { onDone, onSkip, birthday, now = new D
   const { layers, nights } = defineLayers(stats, notes, { birthday, now });
   const reduced = prefersReducedMotion();
   let pink = palette === 'pink';
-  const stage = el('div', { class: 'ft-stage', role: 'region', 'aria-roledescription': 'story', 'aria-label': 'Us, on FaceTime, the story' });
+  const stage = el('div', { class: 'ft-stage', role: 'region', 'aria-roledescription': 'story', 'aria-label': 'One call away, the story' });
   const live = el('p', { class: 'sr-only', 'aria-live': 'polite' });
   const deck = el('div', { class: 'ft-deck' });
   stage.append(deck, live);
@@ -709,7 +835,7 @@ export function buildStory(stats, notes, { onDone, onSkip, birthday, now = new D
   }
 
   /* ── input ── */
-  const INTERACTIVE = 'button, a, input, [role="button"], .ft-monthly__pt, .ft-orbit__ray, .ft-reveal';
+  const INTERACTIVE = 'button, a, input, [role="button"], [data-no-peel], .ft-monthly__pt, .ft-orbit__ray, .ft-reveal';
   let press = null;
   stage.addEventListener('pointerdown', (e) => {
     if (e.target.closest(INTERACTIVE)) { press = null; return; }
@@ -721,12 +847,15 @@ export function buildStory(stats, notes, { onDone, onSkip, birthday, now = new D
     const dy = e.clientY - press.y;
     const dt = Date.now() - press.t;
     press = null;
+    const gate = nodes[cur].built.gate;
     if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.3) {
+      if (dx < 0 && gate && !gate.isOpen()) { gate.nudge(); return; }
       go(dx < 0 ? cur + 1 : cur - 1);
       return;
     }
     if (Math.abs(dx) < 10 && Math.abs(dy) < 10 && dt < 600) {
       if (nodes[cur].built.finale) return; // the finale ends with its own button
+      if (gate && !gate.isOpen()) { gate.nudge(); return; } // pick up first
       go(cur + 1);
     }
   });
@@ -736,7 +865,10 @@ export function buildStory(stats, notes, { onDone, onSkip, birthday, now = new D
     if (e.target && e.target.closest && e.target.closest('input, textarea')) return;
     if (['ArrowRight', 'ArrowDown', 'PageDown'].includes(e.key) || (e.key === ' ' && !(e.target instanceof HTMLButtonElement)) || (e.key === 'Enter' && !(e.target instanceof HTMLButtonElement))) {
       e.preventDefault();
-      if (nodes[cur].built.finale) finish(false); else go(cur + 1);
+      const gate = nodes[cur].built.gate;
+      if (gate && !gate.isOpen()) gate.open();
+      else if (nodes[cur].built.finale) finish(false);
+      else go(cur + 1);
     } else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) {
       e.preventDefault();
       go(cur - 1);

@@ -15,13 +15,13 @@ import { initReminders } from './modules/reminderUI.js';
  * anything from Rhythm.
  */
 const TOOLS = [
+  { id: 'facetime',     emoji: '\u{2600}\u{FE0F}', name: 'One call away', purpose: 'Every call since the very first one.', href: './facetime.html', comingSoon: false },
   { id: 'letters',      emoji: '\u{1F48C}', name: 'Letters',              purpose: "Everything I've written you.",         href: './letters.html',      comingSoon: false },
   { id: 'applications', emoji: '\u{1F4BC}', name: 'The Application Desk', purpose: 'One application at a time.',           href: './applications.html', comingSoon: false },
   { id: 'people',       emoji: '\u{1FAF6}', name: 'People',               purpose: 'Who you might want to say hi to.',     href: './people.html',       comingSoon: false },
   { id: 'rhythm',       emoji: '\u{1F337}', name: 'Rhythm',               purpose: 'Your month, kept quietly.',            href: './rhythm.html',       comingSoon: false },
   { id: 'outfit',       emoji: '\u{1F457}', name: 'What to Wear',         purpose: 'For the mornings the wardrobe says nothing.', href: './outfit.html', comingSoon: false },
   { id: 'wedding',      emoji: '\u{1F48D}', name: 'Our Wedding Fund',     purpose: 'A little set aside every week, for the day.', href: './wedding.html', comingSoon: false },
-  { id: 'facetime',     emoji: '\u{2600}\u{FE0F}', name: 'One call away', purpose: 'Every call since the very first one.', href: './facetime.html', comingSoon: false },
 ];
 
 function renderCard(tool, index) {

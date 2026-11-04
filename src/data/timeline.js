@@ -482,10 +482,12 @@ export const timeline = [
     id: 'her-25th-birthday',
     date: '2026-10-26',
     title: 'Her 25th Birthday',
-    description: 'She turned 25.',
+    description: 'She turned 25, with a surprise video from all her special family and friends, and from him.',
     icon: '\u{1F382}',
     type: 'event',
     featured: false,
+    // The surprise video, linked like the one-year video (no embeds: frame-src is 'none'). Full story only.
+    video: { href: 'https://youtu.be/goFmmT2jxxc', label: 'click me' },
   },
 ];
 

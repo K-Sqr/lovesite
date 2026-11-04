@@ -457,6 +457,36 @@ export const timeline = [
     // The anniversary video (17-ANNIVERSARY-VIDEO.md, YouTube-link version). Full story only.
     video: { href: 'https://youtu.be/IfSrv6Km4Y8', label: 'click me' },
   },
+  // The next three come from the owner in chat (2026-11-04), not from the sheet.
+  {
+    id: 'drive-to-see-her',
+    date: '2026-10-01',
+    dateDisplay: 'Oct 1 to 3, 2026',
+    title: 'The Drive to See Her',
+    description: 'He drove to see her, October 1 to 3.',
+    icon: '\u{1F6E3}\u{FE0F}',
+    type: 'trip',
+    featured: true,
+  },
+  {
+    id: 'surprise-birthday-party',
+    date: '2026-10-21',
+    dateDisplay: 'Oct 21 to 24, 2026',
+    title: 'The Surprise Party',
+    description: 'He drove to surprise her with a birthday party, with friends.',
+    icon: '\u{1F388}',
+    type: 'trip',
+    featured: true,
+  },
+  {
+    id: 'her-25th-birthday',
+    date: '2026-10-26',
+    title: 'Her 25th Birthday',
+    description: 'She turned 25.',
+    icon: '\u{1F382}',
+    type: 'event',
+    featured: false,
+  },
 ];
 
 // ── Derived helpers — pure functions over `timeline`, nothing baked in at module scope ──
